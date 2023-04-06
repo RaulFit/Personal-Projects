@@ -6,10 +6,10 @@ namespace Json
     {
         public static bool IsJsonString(string input)
         {
-            return IsWrappedInDoubleQuotes(input);
+            return !string.IsNullOrEmpty(input) && IsDoubleQuoted(input);
         }
 
-        public static bool IsWrappedInDoubleQuotes(string input)
+        public static bool IsDoubleQuoted(string input)
         {
             return input.StartsWith("\"") && input.EndsWith("\"");
         }

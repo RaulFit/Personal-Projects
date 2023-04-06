@@ -15,7 +15,7 @@ namespace Json.Facts
         [Fact(Skip = "Remove this Skip as you implement")]
         public void DoesNotContainLetters()
         {
-            Assert.False(IsJsonNumber("a"));=
+            Assert.False(IsJsonNumber("a"));
         }
 
         [Fact(Skip = "Remove this Skip as you implement")]

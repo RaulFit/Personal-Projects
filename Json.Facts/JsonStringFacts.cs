@@ -47,7 +47,7 @@ namespace Json.Facts
             Assert.False(IsJsonString(Quoted("a\nb\rc")));
         }
 
-        [Fact(Skip = "Remove this Skip as you implement")]
+        [Fact]
         public void CanContainLargeUnicodeCharacters()
         {
             Assert.True(IsJsonString(Quoted("⛅⚾")));

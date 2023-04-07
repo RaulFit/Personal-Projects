@@ -107,7 +107,7 @@ namespace Json.Facts
             Assert.True(IsJsonString(Quoted(@"a \u26Be b")));
         }
 
-        [Fact(Skip = "Remove this Skip as you implement")]
+        [Fact]
         public void CanContainAnyMultipleEscapeSequences()
         {
             Assert.True(IsJsonString(Quoted(@"\\\u1212\n\t\r\\\b")));

@@ -77,7 +77,7 @@ namespace Json.Facts
             Assert.True(IsJsonString(Quoted(@"a \b b")));
         }
 
-        [Fact(Skip = "Remove this Skip as you implement")]
+        [Fact]
         public void CanContainEscapedFormFeed()
         {
             Assert.True(IsJsonString(Quoted(@"a \f b")));

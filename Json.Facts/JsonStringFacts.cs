@@ -65,7 +65,7 @@ namespace Json.Facts
             Assert.True(IsJsonString(Quoted(@"a \\ b")));
         }
 
-        [Fact(Skip = "Remove this Skip as you implement")]
+        [Fact]
         public void CanContainEscapedSolidus()
         {
             Assert.True(IsJsonString(Quoted(@"a \/ b")));

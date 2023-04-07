@@ -83,7 +83,7 @@ namespace Json.Facts
             Assert.True(IsJsonString(Quoted(@"a \f b")));
         }
 
-        [Fact(Skip = "Remove this Skip as you implement")]
+        [Fact]
         public void CanContainEscapedLineFeed()
         {
             Assert.True(IsJsonString(Quoted(@"a \n b")));

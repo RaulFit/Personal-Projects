@@ -64,8 +64,9 @@ namespace Json
         public static bool ContainsUnfinishedHexNumber(string input)
         {
             const int hexaDigits = 4;
+            int lastPossibleUnicode = input.Length - 2;
             const string hexa = "0123456789ABCDEFabcdef";
-            for (int i = 0; i < input.Length - 2; ++i)
+            for (int i = 0; i < lastPossibleUnicode; ++i)
             {
                 if (input[i] == '\\' && input[i + 1] == 'u')
                 {

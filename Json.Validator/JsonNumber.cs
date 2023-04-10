@@ -1,14 +1,17 @@
 using System;
+using System.Linq;
 
 namespace Json
 {
     public static class JsonNumber
     {
-        const string Digits = "0123456789Ee-+.";
+        const string DigitsAndOperators = "0123456789Ee-+.";
+        const string UnfinishedExponent = "eE-+";
+        const string Digits = "0123456789";
 
         public static bool IsJsonNumber(string input)
         {
-            return IsNumber(input) && CanStartWithZeroIfFraction(input);
+            return IsNumber(input) && CanStartWithZeroIfFraction(input) && !EndsWithDot(input) && !HasMultipleFractionsOrExponets(input) && ExponentIsComplete(input) && ExponentIsAfterFraction(input);
         }
 
         public static bool IsNumber(string input)
@@ -20,7 +23,7 @@ namespace Json
 
             for (int i = 0; i < input.Length; i++)
             {
-                if (!Digits.Contains(input[i]))
+                if (!DigitsAndOperators.Contains(input[i]))
                 {
                     return false;
                 }
@@ -34,6 +37,60 @@ namespace Json
             if (input[0] == '0' && input.Length > 1)
             {
                 return input.Contains(".");
+            }
+
+            return true;
+        }
+
+        public static bool EndsWithDot(string input)
+        {
+            return input.EndsWith(".");
+        }
+
+        public static bool HasMultipleFractionsOrExponets(string input)
+        {
+            if (input.Contains(".") || input.Contains("e") || input.Contains("E"))
+            {
+                int expCount = 0;
+                int dotCount = 0;
+                for (int i = 0; i < input.Length; ++i)
+                {
+                    if (input[i] == '.')
+                    {
+                        dotCount++;
+                    }
+
+                    if (input[i] == 'e' || input[i] == 'E')
+                    {
+                        expCount++;
+                    }
+                }
+
+                return dotCount > 1 || expCount > 1;
+            }
+
+            return false;
+        }
+
+        public static bool ExponentIsComplete(string input)
+        {
+            return !UnfinishedExponent.Contains(input[input.Length - 1]);
+        }
+
+        public static bool ExponentIsAfterFraction(string input)
+        {
+            for (int i = 0; i < input.Length - 1; i++)
+            {
+                if (input[i] == 'e' || input[i] == 'E')
+                {
+                    for (int j = i + 1; j < input.Length; j++)
+                    {
+                        if (input[j] == '.')
+                        {
+                            return false;
+                        }
+                    }
+                }
             }
 
             return true;

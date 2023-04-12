@@ -7,7 +7,6 @@ namespace Json
     {
         const string DigitsAndOperators = "0123456789Ee-+.";
         const string UnfinishedExponent = "eE-+";
-        const string Digits = "0123456789";
 
         public static bool IsJsonNumber(string input)
         {

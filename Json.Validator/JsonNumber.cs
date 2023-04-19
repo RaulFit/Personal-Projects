@@ -33,12 +33,7 @@ namespace Json
 
         public static bool CanStartWithZeroIfFraction(string input)
         {
-            if (input[0] == '0' && input.Length > 1)
-            {
-                return input.Contains(".");
-            }
-
-            return true;
+            return !(input[0] == '0' && input.Length > 1) || input.Contains(".");
         }
 
         public static bool EndsWithDot(string input)
@@ -48,27 +43,27 @@ namespace Json
 
         public static bool HasMultipleFractionsOrExponets(string input)
         {
-            if (input.Contains(".") || input.Contains("e") || input.Contains("E"))
+            if (!input.Contains(".") && !input.Contains("e") && !input.Contains("E"))
             {
-                int expCount = 0;
-                int dotCount = 0;
-                for (int i = 0; i < input.Length; ++i)
-                {
-                    if (input[i] == '.')
-                    {
-                        dotCount++;
-                    }
-
-                    if (input[i] == 'e' || input[i] == 'E')
-                    {
-                        expCount++;
-                    }
-                }
-
-                return dotCount > 1 || expCount > 1;
+                return false;
             }
 
-            return false;
+            int expCount = 0;
+            int dotCount = 0;
+            for (int i = 0; i < input.Length; ++i)
+            {
+                if (input[i] == '.')
+                {
+                    dotCount++;
+                }
+
+                if (input[i] == 'e' || input[i] == 'E')
+                {
+                    expCount++;
+                }
+            }
+
+            return dotCount > 1 || expCount > 1;
         }
 
         public static bool ExponentIsComplete(string input)

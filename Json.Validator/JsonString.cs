@@ -6,14 +6,15 @@ namespace Json
 {
     public static class JsonString
     {
-        const int FirstNonUnicodeChar = 32;
+        const int LastControlCharacter = 31;
+        const int Two = 2;
         const int HexaDigits = 4;
         const string EscapeChars = "\"\\/bfnrtu";
         const string Hexa = "0123456789ABCDEFabcdef";
 
         public static bool IsJsonString(string input)
         {
-            return HasContent(input) && IsDoubleQuoted(input) && !ContainsControlCharacters(input) && !ContainsUnrecognizedEscapeCharacters(input) && !EndsWithReverseSolidus(input) && !ContainsUnfinishedHexNumber(input);
+            return HasContent(input) && !EndsWithReverseSolidus(input) && IsDoubleQuoted(input) && !ContainsUnallowedCharacters(input);
         }
 
         public static bool IsDoubleQuoted(string input)
@@ -26,68 +27,78 @@ namespace Json
             return !string.IsNullOrEmpty(input);
         }
 
-        public static bool ContainsControlCharacters(string input)
+        public static bool ContainsControlCharsOrIncorrectHexNum(string input)
         {
-            for (int i = 0; i < input.Length; i++)
+           for (int i = 0; i < input.Length; i++)
             {
-                if (input[i] < FirstNonUnicodeChar)
+                if (input[i] <= LastControlCharacter)
+                {
+                    return true;
+                }
+
+                if (input[i] == '\\' && input[i + 1] == 'u' && !IsCorrectHexNumber(input, i + 1))
                 {
                     return true;
                 }
             }
 
-            return false;
+           return false;
+        }
+
+        public static bool EndsWithReverseSolidus(string input)
+        {
+            return input.EndsWith("\\\"") && !input.EndsWith("\\\\\"");
         }
 
         public static bool ContainsUnrecognizedEscapeCharacters(string input)
         {
-            for (int i = 0; i < input.Length; ++i)
+            int lastPossibleEscapeChar = input.Length - Two;
+            int i = 0;
+            while (i < lastPossibleEscapeChar)
             {
                 if (input[i] == '\\')
                 {
-                    if (i < input.Length - 1 && EscapeChars.Contains(input[i + 1]))
+                    if (EscapeChars.Contains(input[i + 1]))
                     {
-                        i++;
+                        i += Two;
                         continue;
                     }
 
                     return true;
                 }
+
+                i++;
             }
 
             return false;
         }
 
-        public static bool EndsWithReverseSolidus(string input)
+        public static bool IsCorrectHexNumber(string input, int i)
         {
-            return input[input.Length - 2] == '\\';
-        }
-
-        public static bool ContainsUnfinishedHexNumber(string input)
-        {
-            int lastPossibleUnicode = input.Length - 2;
-            for (int i = 0; i < lastPossibleUnicode; ++i)
+            if (input[input.Length - Two] == '\\' && input[input.Length - 1] == 'u')
             {
-                if (input[i] == '\\' && input[i + 1] == 'u')
+                return false;
+            }
+
+            if (input.Length - 1 - i < HexaDigits)
+            {
+                return false;
+            }
+
+            for (int j = i + 1; j <= i + HexaDigits; ++j)
+            {
+                if (!Hexa.Contains(input[j]))
                 {
-                    if (input.Length - 1 - i < HexaDigits)
-                    {
-                        return true;
-                    }
-
-                    i++;
-
-                    for (int j = i + 1; j <= i + HexaDigits; j++)
-                    {
-                        if (!Hexa.Contains(input[j]))
-                        {
-                            return true;
-                        }
-                    }
+                    return false;
                 }
             }
 
-            return false;
+            return true;
+        }
+
+        public static bool ContainsUnallowedCharacters(string input)
+        {
+            return ContainsControlCharsOrIncorrectHexNum(input) || ContainsUnrecognizedEscapeCharacters(input);
         }
     }
 }

@@ -146,5 +146,11 @@ namespace Json.Facts
         {
             Assert.False(IsJsonNumber("22e3.3"));
         }
+
+        [Fact]
+        public void DoesNotContainOperatorsInsideTheNumber()
+        {
+            Assert.False(IsJsonNumber("22-4"));
+        }
     }
 }

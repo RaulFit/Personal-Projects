@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using System;
 using System.Linq;
 
@@ -5,35 +6,23 @@ namespace Json
 {
     public static class JsonNumber
     {
-        const string DigitsAndOperators = "0123456789Ee-+.";
-        const string UnfinishedExponent = "eE-+";
+        const string Digits = "0123456789.";
+        const string Operators = "+-";
+        const string IncompleteExponent = "Ee+-";
 
         public static bool IsJsonNumber(string input)
         {
-            return IsNumber(input) && CanStartWithZeroIfFraction(input) && !EndsWithDot(input) && !HasMultipleFractionsOrExponets(input) && ExponentIsComplete(input) && ExponentIsAfterFraction(input);
+            return HasContent(input) && !StartWithZero(input) && !EndsWithDot(input) && NumIsInCorrectFormat(input);
         }
 
-        public static bool IsNumber(string input)
+        public static bool HasContent(string input)
         {
-            if (string.IsNullOrEmpty(input))
-            {
-                return false;
-            }
-
-            for (int i = 0; i < input.Length; i++)
-            {
-                if (!DigitsAndOperators.Contains(input[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !string.IsNullOrEmpty(input);
         }
 
-        public static bool CanStartWithZeroIfFraction(string input)
+        public static bool StartWithZero(string input)
         {
-            return !(input[0] == '0' && input.Length > 1) || input.Contains(".");
+            return input[0] == '0' && input.Length > 1 && !input.Contains('.');
         }
 
         public static bool EndsWithDot(string input)
@@ -41,53 +30,79 @@ namespace Json
             return input.EndsWith(".");
         }
 
-        public static bool HasMultipleFractionsOrExponets(string input)
+        public static bool NumIsInCorrectFormat(string input)
         {
-            if (!input.Contains(".") && !input.Contains("e") && !input.Contains("E"))
+            return !ContainsWrongCharacters(input) && !HasMultipleExponentsOrFractions(input) && !ExponentIsIncomplete(input) && !ExponentIsBeforeFraction(input);
+        }
+
+        public static bool ContainsWrongCharacters(string input)
+        {
+            int i = 0;
+            if (input[i] == '-')
+            {
+                i++;
+            }
+
+            while (i < input.Length)
+            {
+                if (!Digits.Contains(input[i]) && input[i] != 'e' && input[i] != 'E' && !Operators.Contains(input[i]))
+                {
+                    return true;
+                }
+
+                if (Operators.Contains(input[i]) && input[i - 1] != 'e' && input[i - 1] != 'E')
+                {
+                    return true;
+                }
+
+                i++;
+            }
+
+            return false;
+        }
+
+        public static bool HasMultipleExponentsOrFractions(string input)
+        {
+            int exponents = 0;
+            int fractions = 0;
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (input[i] == 'e' || input[i] == 'E')
+                {
+                    exponents++;
+                }
+
+                if (input[i] == '.')
+                {
+                    fractions++;
+                }
+            }
+
+            return exponents > 1 || fractions > 1;
+        }
+
+        public static bool ExponentIsIncomplete(string input)
+        {
+            return IncompleteExponent.Contains(input[input.Length - 1]);
+        }
+
+        public static bool ExponentIsBeforeFraction(string input)
+        {
+            if (!input.Contains('.'))
             {
                 return false;
             }
 
-            int expCount = 0;
-            int dotCount = 0;
-            for (int i = 0; i < input.Length; ++i)
-            {
-                if (input[i] == '.')
-                {
-                    dotCount++;
-                }
-
-                if (input[i] == 'e' || input[i] == 'E')
-                {
-                    expCount++;
-                }
-            }
-
-            return dotCount > 1 || expCount > 1;
-        }
-
-        public static bool ExponentIsComplete(string input)
-        {
-            return !UnfinishedExponent.Contains(input[input.Length - 1]);
-        }
-
-        public static bool ExponentIsAfterFraction(string input)
-        {
-            for (int i = 0; i < input.Length - 1; i++)
+            int fractionStart = input.IndexOf('.');
+            for (int i = 0; i < fractionStart; ++i)
             {
                 if (input[i] == 'e' || input[i] == 'E')
                 {
-                    for (int j = i + 1; j < input.Length; j++)
-                    {
-                        if (input[j] == '.')
-                        {
-                            return false;
-                        }
-                    }
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
     }
 }

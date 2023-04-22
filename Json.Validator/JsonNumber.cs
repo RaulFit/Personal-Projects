@@ -6,7 +6,7 @@ namespace Json
 {
     public static class JsonNumber
     {
-        const string Exponent = "Ee";
+        const string Exponent = "e";
         const string Operators = "+-";
 
         public static bool IsJsonNumber(string input)
@@ -20,9 +20,7 @@ namespace Json
             int dotIndex = input.IndexOf('.');
             int exponentIndex = input.IndexOf('e');
 
-            return IsInteger(GetInteger(input, dotIndex, exponentIndex))
-    && IsFraction(GetFraction(input, dotIndex, exponentIndex))
-    && IsExponent(GetExponent(input, exponentIndex));
+            return IsInteger(GetInteger(input, dotIndex, exponentIndex)) && IsFraction(GetFraction(input, dotIndex, exponentIndex)) && IsExponent(GetExponent(input, exponentIndex));
         }
 
         public static bool HasValidDigits(string input)
@@ -67,11 +65,6 @@ namespace Json
 
         public static bool IsInteger(string input)
         {
-            if (input == "Wrong")
-            {
-                return false;
-            }
-
             int i = 0;
 
             if (input[i] == '-')
@@ -79,7 +72,7 @@ namespace Json
                 i++;
             }
 
-            if (input[i] == '0' && input.Length - 1 > 1 && !input.Contains('.'))
+            if (input[i] == '0' && input.Length - i > 1)
             {
                 return false;
             }
@@ -147,7 +140,7 @@ namespace Json
                 return true;
             }
 
-            if (input == "Wrong" || Exponent.Contains(input[input.Length - 1]) || Operators.Contains(input[input.Length - 1]))
+            if (Exponent.Contains(input[input.Length - 1]) || Operators.Contains(input[input.Length - 1]))
             {
                 return false;
             }

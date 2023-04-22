@@ -164,5 +164,11 @@ namespace Json.Facts
         {
             Assert.False(IsJsonNumber("+-12"));
         }
+
+        [Fact]
+        public void DoesNotContainNumberBeforeExponent()
+        {
+            Assert.False(IsJsonNumber("12.e9"));
+        }
     }
 }

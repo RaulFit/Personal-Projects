@@ -129,6 +129,11 @@ namespace Json
         {
             if (exponentIndex != -1)
             {
+                if (input[exponentIndex - 1] < '0' || input[exponentIndex - 1] > '9')
+                {
+                    return "Wrong";
+                }
+
                 return input.Substring(exponentIndex);
             }
 
@@ -142,7 +147,7 @@ namespace Json
                 return true;
             }
 
-            if (Exponent.Contains(input[input.Length - 1]) || Operators.Contains(input[input.Length - 1]))
+            if (input == "Wrong" || Exponent.Contains(input[input.Length - 1]) || Operators.Contains(input[input.Length - 1]))
             {
                 return false;
             }

@@ -166,7 +166,7 @@ namespace Json.Facts
         }
 
         [Fact]
-        public void DoesNotContainNumberBeforeExponent()
+        public void DoesNotContainDotBeforeExponent()
         {
             Assert.False(IsJsonNumber("12.e9"));
         }

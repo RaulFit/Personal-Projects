@@ -152,5 +152,17 @@ namespace Json.Facts
         {
             Assert.False(IsJsonNumber("22-4"));
         }
+
+        [Fact]
+        public void ContainsMultipleOperatorsAfterExponent()
+        {
+            Assert.False(IsJsonNumber("61e+-9"));
+        }
+
+        [Fact]
+        public void ContainsMultipleOperators()
+        {
+            Assert.False(IsJsonNumber("+-12"));
+        }
     }
 }

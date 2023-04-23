@@ -102,7 +102,7 @@ namespace Json
                 return false;
             }
 
-            if (!input.Contains('-') && !input.Contains('+'))
+            if (!input.Contains('e'))
             {
                 return HasValidDigits(input);
             }

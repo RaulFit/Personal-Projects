@@ -170,5 +170,11 @@ namespace Json.Facts
         {
             Assert.False(IsJsonNumber("12.e9"));
         }
+
+        [Fact]
+        public void FractionDoesNotContainOperators()
+        {
+            Assert.False(IsJsonNumber("12.4-2+21"));
+        }
     }
 }

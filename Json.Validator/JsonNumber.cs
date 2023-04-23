@@ -149,11 +149,6 @@ namespace Json
 
             for (int i = 1; i < input.Length; i++)
             {
-                if (input[i] == 'e')
-                {
-                    return false;
-                }
-
                 if ((input[i] < '0' || input[i] > '9') && !Operators.Contains(input[i]))
                 {
                     return false;

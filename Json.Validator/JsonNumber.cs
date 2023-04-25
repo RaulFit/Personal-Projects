@@ -7,8 +7,6 @@ namespace Json
     public static class JsonNumber
     {
         const string Operators = "+-";
-        const string UnfinishedExponent = "e+-";
-        const int ExponentHasOperatorStart = 2;
 
         public static bool IsJsonNumber(string input)
         {
@@ -106,17 +104,17 @@ namespace Json
                 return true;
             }
 
-            if (UnfinishedExponent.Contains(input[input.Length - 1]))
+            if (input.Length > 1)
             {
-                return false;
+                input = input[1..];
+
+                if (Operators.Contains(input[0]))
+                {
+                    input = input[1..];
+                }
             }
 
-            if (Operators.Contains(input[1]))
-            {
-                return HasValidDigits(input[ExponentHasOperatorStart..]);
-            }
-
-            return HasValidDigits(input[1..]);
+            return HasValidDigits(input);
         }
     }
 }

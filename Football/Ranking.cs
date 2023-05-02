@@ -76,9 +76,9 @@ namespace Football
 
         private void GenerateRanking()
         {
-            for(int i = 0; this.teams[i] != null; i++)
+            for(int i = 0; i < this.teams.Length - 1 && this.teams[i] != null; i++)
             {
-                for(int j = i + 1; this.teams[j] != null; j++)
+                for(int j = i + 1; j < this.teams.Length && this.teams[j] != null; j++)
                 {
                     if (teams[i].HasLessPoints(teams[j]))
                     {

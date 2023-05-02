@@ -17,11 +17,6 @@ namespace Football
             this.points = 0;
         }
 
-        public bool CompareNames(Team team)
-        {
-            return this.name.Equals(team.name);
-        }
-
         public bool HasLessPoints(Team team)
         {
             return this.points < team.points;

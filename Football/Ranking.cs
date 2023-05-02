@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,25 +9,30 @@ namespace Football
 {
     public class Ranking
     {
-        private List<Team> teams = new List<Team>();
+        private Team[] teams;
 
-        const int WinningPoints = 3;
-        const int DrawPoints = 1;
+        const int MaxTeams = 10;
 
-        public Ranking(List<Team> teams)
+        public Ranking()
         {
-            this.teams = teams;
+            this.teams = new Team[MaxTeams];
         }
         
         public void AddTeam(Team team)
         {
-            this.teams.Add(team);
+            int i = 0;
+            while (i < this.teams.Length && this.teams[i] != null)
+            {
+                i++;
+            }
+
+            this.teams[i] = team;
         }
 
         public Team GetTeam(int index)
         {
             index--;
-            if(index < 0 || index >= this.teams.Count)
+            if(index < 0 || index >= this.teams.Length)
             {
                 return null;
             }
@@ -36,32 +42,43 @@ namespace Football
 
         public int GetPosition(Team team)
         {
-            return this.teams.IndexOf(team) + 1;
+            if (this.teams.Contains(team))
+            {
+                return Array.IndexOf(teams, team) + 1;
+            }
+
+            return 0;
         }
 
         public void UpdateRanking(Game game)
         {
-            for(int i = 0; i < this.teams.Count; i++)
+            bool hasWinner = false;
+            bool hasLoser = false;
+            for(int i = 0; i < this.teams.Length; i++)
             {
-                if(game.IsDraw() && (game.IsWinner(teams[i]) || game.IsLoser(teams[i])))
-                {
-                    this.teams[i].AddPoints(DrawPoints);
-                }
-
                 if (game.IsWinner(teams[i]))
                 {
-                    this.teams[i].AddPoints(WinningPoints);
+                    hasWinner = true;
+                }
+
+                if (game.IsLoser(teams[i]))
+                {
+                    hasLoser = true;
                 }
             }
 
-            GenerateRanking();
+            if(hasWinner && hasLoser)
+            {
+                game.AwardPoints();
+                GenerateRanking();
+            }
         }
 
         private void GenerateRanking()
         {
-            for(int i = 0; i < this.teams.Count - 1; i++)
+            for(int i = 0; this.teams[i] != null; i++)
             {
-                for(int j = i + 1; j < this.teams.Count; j++)
+                for(int j = i + 1; this.teams[j] != null; j++)
                 {
                     if (teams[i].HasLessPoints(teams[j]))
                     {

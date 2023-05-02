@@ -11,8 +11,7 @@ namespace Football.Facts
         [Fact]
         public void GetTeam_InvalidPosition_ShouldReturnNull()
         {
-            List<Team> teams = new List<Team>();
-            Ranking ranking = new Ranking(teams);
+            Ranking ranking = new Ranking();
             ranking.AddTeam(new Team("France"));
             ranking.AddTeam(new Team("Italy"));
             ranking.AddTeam(new Team("Spain"));
@@ -22,8 +21,7 @@ namespace Football.Facts
         [Fact]
         public void GetTeam_ValidPosition_ShouldReturnTeam()
         {
-            List<Team> teams = new List<Team>();
-            Ranking ranking = new Ranking(teams);
+            Ranking ranking = new Ranking();
             Team france = new Team("France");
             ranking.AddTeam(france);
             ranking.AddTeam(new Team("Italy"));
@@ -34,8 +32,7 @@ namespace Football.Facts
         [Fact]
         public void CanGetPosition()
         {
-            List<Team> teams = new List<Team>();
-            Ranking ranking = new Ranking(teams);
+            Ranking ranking = new Ranking();
             Team france = new Team("France");
             ranking.AddTeam(france);
             ranking.AddTeam(new Team("Italy"));
@@ -46,8 +43,7 @@ namespace Football.Facts
         [Fact]
         public void CanUpdateRankingBasedOnOneGame()
         {
-            List<Team> teams = new List<Team>();
-            Ranking ranking = new Ranking(teams);
+            Ranking ranking = new Ranking();
             Team france = new Team("France");
             ranking.AddTeam(france);
             Team spain = new Team("Spain");
@@ -61,8 +57,7 @@ namespace Football.Facts
         [Fact]
         public void CanUpdateRankingBasedOnMultipleGame()
         {
-            List<Team> teams = new List<Team>();
-            Ranking ranking = new Ranking(teams);
+            Ranking ranking = new Ranking();
             Team france = new Team("France");
             ranking.AddTeam(france);
             Team spain = new Team("Spain");

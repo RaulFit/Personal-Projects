@@ -5,40 +5,34 @@ namespace Football.Facts
     public class GameFacts
     {
         [Fact]
-        public void IsWinner_ShouldReturnTrue()
-        {
-            Team france = new Team("France");
-            Team italy = new Team("Italy");
-            Game game = new Game(france, italy, false);
-            Assert.True(game.IsWinner(france));
-        }
-
-        [Fact]
-        public void IsNotWinner_ShouldReturnFalse()
+        public void AwardPoints_GameIsDraw_ShouldAwardOnePointToBothTeams()
         {
             Team france = new Team("France");
             Team spain = new Team("Spain");
-            Game game = new Game(france, spain, false);
-            Assert.False(game.IsWinner(spain));
+            Game game = new Game(france, spain, 10, 10);
+            game.AwardPoints();
+            Assert.False(france.HasLessPoints(spain));
+            Assert.False(spain.HasLessPoints(france));
         }
 
         [Fact]
-        public void IsLoser_ShouldReturnTrue()
+        public void AwardPoints_HomeTeamWon_ShouldAwardPointsToHomeTeam()
         {
             Team france = new Team("France");
-            Team italy = new Team("Italy");
-            Game game = new Game(france, italy, false);
-            Assert.True(game.IsLoser(italy));
+            Team spain = new Team("Spain");
+            Game game = new Game(france, spain, 20, 10);
+            game.AwardPoints();
+            Assert.True(spain.HasLessPoints(france));
         }
 
         [Fact]
-        public void IsNotLoser_ShouldReturnFalse()
+        public void AwardPoints_AwayTeamWon_ShouldAwardPointsToAwayTeam()
         {
             Team france = new Team("France");
-            Team italy = new Team("Italy");
-            Game game = new Game(france, italy, false);
-            Assert.False(game.IsLoser(france));
+            Team spain = new Team("Spain");
+            Game game = new Game(france, spain, 10, 20);
+            game.AwardPoints();
+            Assert.True(france.HasLessPoints(spain));
         }
-
     }
 }

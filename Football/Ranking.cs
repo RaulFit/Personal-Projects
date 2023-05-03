@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,22 +10,15 @@ namespace Football
     {
         private Team[] teams;
 
-        const int MaxTeams = 10;
-
         public Ranking()
         {
-            this.teams = new Team[MaxTeams];
+            this.teams = new Team[0];
         }
         
         public void AddTeam(Team team)
         {
-            int i = 0;
-            while (i < this.teams.Length && this.teams[i] != null)
-            {
-                i++;
-            }
-
-            this.teams[i] = team;
+            Array.Resize<Team>(ref this.teams, this.teams.Length + 1);
+            this.teams[this.teams.Length - 1] = team;
         }
 
         public Team GetTeam(int index)
@@ -52,40 +44,21 @@ namespace Football
 
         public void UpdateRanking(Game game)
         {
-            bool hasWinner = false;
-            bool hasLoser = false;
-            for(int i = 0; i < this.teams.Length; i++)
-            {
-                if (game.IsWinner(teams[i]))
-                {
-                    hasWinner = true;
-                }
-
-                if (game.IsLoser(teams[i]))
-                {
-                    hasLoser = true;
-                }
-            }
-
-            if(hasWinner && hasLoser)
-            {
-                game.AwardPoints();
-                GenerateRanking();
-            }
+            game.AwardPoints();
+            GenerateRanking();
         }
 
         private void GenerateRanking()
         {
-            for(int i = 0; i < this.teams.Length - 1 && this.teams[i] != null; i++)
+            for(int i = 1; i < this.teams.Length; i++)
             {
-                for(int j = i + 1; j < this.teams.Length && this.teams[j] != null; j++)
+                int p = i;
+                while(p > 0 && this.teams[p - 1].HasLessPoints(this.teams[p]))
                 {
-                    if (teams[i].HasLessPoints(teams[j]))
-                    {
-                        var aux = teams[i];
-                        teams[i] = teams[j];
-                        teams[j] = aux;
-                    }
+                    var aux = this.teams[p - 1];
+                    this.teams[p - 1] = this.teams[p];
+                    this.teams[p] = aux;
+                    p--;
                 }
             }
         }

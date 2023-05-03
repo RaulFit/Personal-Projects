@@ -48,7 +48,7 @@ namespace Football.Facts
             ranking.AddTeam(france);
             Team spain = new Team("Spain");
             ranking.AddTeam(spain);
-            Game game = new Game(ranking.GetTeam(2), ranking.GetTeam(1), false);
+            Game game = new Game(france, spain, 10, 15);
             ranking.UpdateRanking(game);
             Assert.Equal(1, ranking.GetPosition(spain));
             Assert.Equal(2, ranking.GetPosition(france));
@@ -64,9 +64,9 @@ namespace Football.Facts
             ranking.AddTeam(spain);
             Team italy = new Team("Italy");
             ranking.AddTeam(italy);
-            Game game1 = new Game(ranking.GetTeam(1), ranking.GetTeam(2), true);
-            Game game2 = new Game(ranking.GetTeam(2), ranking.GetTeam(3), false);
-            Game game3 = new Game(ranking.GetTeam(2), ranking.GetTeam(1), false);
+            Game game1 = new Game(france, spain, 10, 10);
+            Game game2 = new Game(spain, italy, 15, 10);
+            Game game3 = new Game(spain, france, 30, 20);
             ranking.UpdateRanking(game1);
             ranking.UpdateRanking(game2);
             ranking.UpdateRanking(game3);
@@ -74,7 +74,5 @@ namespace Football.Facts
             Assert.Equal(2, ranking.GetPosition(france));
             Assert.Equal(3, ranking.GetPosition(italy));
         }
-
-
     }
 }

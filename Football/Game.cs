@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,40 +7,38 @@ namespace Football
 {
     public class Game
     {
-        private Team winner;
-        private Team loser;
-        readonly private bool draw;
+        private Team homeTeam;
+        private Team awayTeam;
+        readonly private int homeTeamScore;
+        readonly private int awayTeamScore;
 
         const int WinningPoints = 3;
         const int DrawPoints = 1;
 
-        public Game(Team winner, Team loser, bool draw)
+        public Game(Team homeTeam, Team awayTeam, int homeTeamScore, int awayTeamScore)
         {
-            this.winner = winner;
-            this.loser = loser;
-            this.draw = draw;
-        }
-
-        public bool IsWinner(Team team)
-        {
-            return this.winner == team;
-        }
-
-        public bool IsLoser(Team team)
-        {
-            return this.loser == team;
+            this.homeTeam = homeTeam;
+            this.awayTeam = awayTeam;
+            this.homeTeamScore = homeTeamScore;
+            this.awayTeamScore = awayTeamScore;
         }
 
         public void AwardPoints()
         {
-            if(this.draw)
+            if(this.homeTeamScore > this.awayTeamScore)
             {
-                this.winner.AddPoints(DrawPoints);
-                this.loser.AddPoints(DrawPoints);
+                this.homeTeam.AddPoints(WinningPoints);
                 return;
             }
 
-            this.winner.AddPoints(WinningPoints);
+            if (this.homeTeamScore < this.awayTeamScore)
+            {
+                this.awayTeam.AddPoints(WinningPoints);
+                return;
+            }
+
+            this.homeTeam.AddPoints(DrawPoints);
+            this.awayTeam.AddPoints(DrawPoints);
         }
     }
 }

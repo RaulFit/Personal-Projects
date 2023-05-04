@@ -26,7 +26,7 @@ namespace Json.Facts
         }
 
         [Fact]
-        public void FirstCharacterIsNotInInterval()
+        public void FirstCharacterCannotBeOutsideTheInterval()
         {
             var digit = new Range('a', 'f');
             Assert.False(digit.Match("1ab"));

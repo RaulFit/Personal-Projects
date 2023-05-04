@@ -17,7 +17,7 @@ namespace Football
         
         public void AddTeam(Team team)
         {
-            Array.Resize<Team>(ref this.teams, this.teams.Length + 1);
+            Array.Resize(ref this.teams, this.teams.Length + 1);
             this.teams[this.teams.Length - 1] = team;
         }
 
@@ -34,12 +34,7 @@ namespace Football
 
         public int GetPosition(Team team)
         {
-            if (this.teams.Contains(team))
-            {
-                return Array.IndexOf(teams, team) + 1;
-            }
-
-            return 0;
+            return Array.IndexOf(teams, team) + 1;
         }
 
         public void UpdateRanking(Game game)
@@ -52,13 +47,9 @@ namespace Football
         {
             for(int i = 1; i < this.teams.Length; i++)
             {
-                int p = i;
-                while(p > 0 && this.teams[p - 1].HasLessPoints(this.teams[p]))
+                for(int p = i; p > 0 && this.teams[p - 1].HasLessPoints(this.teams[p]); p--)
                 {
-                    var aux = this.teams[p - 1];
-                    this.teams[p - 1] = this.teams[p];
-                    this.teams[p] = aux;
-                    p--;
+                    (this.teams[p - 1], this.teams[p]) = (this.teams[p], this.teams[p - 1]);
                 }
             }
         }

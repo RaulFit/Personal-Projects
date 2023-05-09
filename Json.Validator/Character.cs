@@ -14,14 +14,14 @@ namespace Json
             this.pattern = pattern;
         }
 
-        public bool Match(string text)
+        public IMatch Match(string text)
         {
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(text) || text[0] != pattern)
             {
-                return false;
+                return new Match(false, this.pattern.ToString());
             }
 
-            return text[0] == pattern;
+            return new Match(true, text[1..]);
         }
     }
 }

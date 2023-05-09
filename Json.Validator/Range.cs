@@ -16,9 +16,14 @@ namespace Json
             this.end = end;
         }
 
-        public bool Match(string text)
+        public IMatch Match(string text)
         {
-            return !string.IsNullOrEmpty(text) && text[0] >= this.start && text[0] <= this.end;
+            if (!string.IsNullOrEmpty(text) && text[0] >= this.start && text[0] <= this.end)
+            {
+                return new Match(true, text[1..]);
+            }
+
+            return new Match(false, text);
         }
     }
 }

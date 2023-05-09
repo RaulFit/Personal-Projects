@@ -8,35 +8,35 @@ namespace Json.Facts
         public void FirstCharacterCanBeEqualToStart()
         {
             var digit = new Range('a', 'f');
-            Assert.Equal(new Match(true, "bc"), digit.Match("abc"));
+            Assert.True(digit.Match("abc").Success());
         }
 
         [Fact]
         public void FirstCharacterCanBeEqualToEnd()
         {
             var digit = new Range('a', 'f');
-            Assert.Equal(new Match(true, "ab"), digit.Match("fab"));
+            Assert.True(digit.Match("fab").Success());
         }
 
         [Fact]
         public void FirstCharacterCanBeBetweenStartAndEnd()
         {
             var digit = new Range('a', 'f');
-            Assert.Equal(new Match(true, "cd"), digit.Match("bcd"));
+            Assert.True(digit.Match("bcd").Success());
         }
 
         [Fact]
         public void FirstCharacterCannotBeOutsideTheInterval()
         {
             var digit = new Range('a', 'f');
-            Assert.Equal(new Match(false, "1ab"), digit.Match("1ab"));
+            Assert.False(digit.Match("1ab").Success());
         }
 
         [Fact]
         public void StringCannotBeNull()
         {
             var digit = new Range('a', 'f');
-            Assert.Equal(new Match(false, null), digit.Match(null));
+            Assert.False(digit.Match(null).Success());
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Json
                 return new Match(false, text);
             }
 
-            return new Match(true, text);
+            return new Match(true, text[1..]);
         }
     }
 }

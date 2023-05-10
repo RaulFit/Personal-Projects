@@ -18,12 +18,12 @@ namespace Json
 
         public bool Success()
         {
-            return this.success;
+            return success;
         }
 
         public string RemainingText()
         {
-            return this.remainingText;
+            return remainingText;
         }
     }
 }

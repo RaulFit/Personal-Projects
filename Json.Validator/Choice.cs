@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,16 +18,18 @@ namespace Json
 
         public IMatch Match(string text)
         {
+            bool ok = false;
             foreach (var pattern in patterns)
             {
                 IMatch match = pattern.Match(text);
+                text = match.RemainingText();
                 if (match.Success())
                 {
-                    return match;
+                    ok = true;
                 }
             }
 
-            return new Match(false, text);
+            return new Match(ok, text);
         }
     }
 }

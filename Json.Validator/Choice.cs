@@ -18,18 +18,17 @@ namespace Json
 
         public IMatch Match(string text)
         {
-            bool ok = false;
             foreach (var pattern in patterns)
             {
                 IMatch match = pattern.Match(text);
                 text = match.RemainingText();
                 if (match.Success())
                 {
-                    ok = true;
+                    return new Match(true, text);
                 }
             }
 
-            return new Match(ok, text);
+            return new Match(false, text);
         }
     }
 }

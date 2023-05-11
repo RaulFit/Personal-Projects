@@ -21,10 +21,9 @@ namespace Json
             foreach (var pattern in patterns)
             {
                 IMatch match = pattern.Match(text);
-                text = match.RemainingText();
                 if (match.Success())
                 {
-                    return new Match(true, text);
+                    return match;
                 }
             }
 

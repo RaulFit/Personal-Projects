@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Many : IPattern
+    public class Optional : IPattern
     {
         private readonly IPattern pattern;
 
-        public Many(IPattern pattern)
+        public Optional(IPattern pattern)
         {
             this.pattern = pattern;
         }
@@ -22,9 +22,13 @@ namespace Json
                 return match;
             }
 
-            while (pattern.Match(match.RemainingText()[0].ToString()).Success())
+            for (int i = 0; i < text.Length; i++)
             {
-                match = pattern.Match(match.RemainingText());
+                if (pattern.Match(text[i].ToString()).Success())
+                {
+                    match = pattern.Match(match.RemainingText());
+                    return match;
+                }
             }
 
             return match;

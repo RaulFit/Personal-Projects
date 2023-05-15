@@ -17,20 +17,12 @@ namespace Json
         public IMatch Match(string text)
         {
             IMatch match = new Match(true, text);
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(text) || !pattern.Match(text).Success())
             {
                 return match;
             }
 
-            for (int i = 0; i < text.Length; i++)
-            {
-                if (pattern.Match(text[i].ToString()).Success())
-                {
-                    match = pattern.Match(match.RemainingText());
-                    return match;
-                }
-            }
-
+            match = pattern.Match(match.RemainingText());
             return match;
         }
     }

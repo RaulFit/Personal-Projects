@@ -17,11 +17,6 @@ namespace Json
         public IMatch Match(string text)
         {
             IMatch match = new Match(true, text);
-            if (!pattern.Match(text).Success())
-            {
-                return match;
-            }
-
             match = pattern.Match(match.RemainingText());
             return match;
         }

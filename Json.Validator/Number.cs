@@ -12,7 +12,7 @@ namespace Json
         public Number()
         {
             var minus = new Optional(new Character('-'));
-            var digit = new Choice(new Range('0', '9'));
+            var digit = new Range('0', '9');
             var digits = new OneOrMore(digit);
             var integer = new Sequence(minus, new Choice(new Character('0'), digits));
             var sign = new Optional(new Any("+-"));

@@ -12,11 +12,14 @@ namespace Json
         public Number()
         {
             var minus = new Optional(new Character('-'));
-            var exponent = new Sequence(new Any("eE"), new Optional(new Any("-+")), new Range('1', '9'));
-            var intNumber = new Sequence(minus, new Sequence(new Range('0', '9'), new Many(new Range('0', '9'))));
-            var floatNumber = new Sequence(intNumber, new Character('.'), new OneOrMore(new Range('0', '9')), new Optional(exponent), new Many(new Range('0', '9')));
-            var intNumberWithExponent = new Sequence(minus, intNumber, exponent, new Many(new Range('0', '9')));
-            pattern = new Choice(new Choice(intNumber, floatNumber, intNumberWithExponent));
+            var oneNine = new Range('1', '9');
+            var digit = new Choice(new Character('0'), oneNine);
+            var digits = new OneOrMore(digit);
+            var integer = new Choice(new Sequence(minus, digit), new Sequence(minus, oneNine, digits));
+            var sign = new Optional(new Any("+-"));
+            var exponent = new Choice(new Sequence(new Any("eE"), sign, digit), new Character((char)3));
+            var fraction = new Choice(new Sequence(new Character('.'), digits), new Character((char)3), exponent);
+            this.pattern = new Sequence(integer, fraction, exponent);
         }
 
         public IMatch Match(string text)

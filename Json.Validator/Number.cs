@@ -13,9 +13,9 @@ namespace Json
         {
             var minus = new Optional(new Character('-'));
             var oneNine = new Range('1', '9');
-            var digit = new Choice(new Character('0'), oneNine);
+            var digit = new Choice(new Range('0', '9'));
             var digits = new OneOrMore(digit);
-            var integer = new Choice(new Sequence(minus, digit), new Sequence(minus, oneNine, digits));
+            var integer = new Sequence(minus, new Choice(new Character('0'), digits));
             var sign = new Optional(new Any("+-"));
             var exponent = new Optional(new Sequence(new Any("eE"), sign, digit));
             var fraction = new Optional(new Sequence(new Character('.'), digits));

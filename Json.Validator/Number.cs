@@ -17,8 +17,8 @@ namespace Json
             var digits = new OneOrMore(digit);
             var integer = new Choice(new Sequence(minus, digit), new Sequence(minus, oneNine, digits));
             var sign = new Optional(new Any("+-"));
-            var exponent = new Choice(new Sequence(new Any("eE"), sign, digit), new Character((char)3));
-            var fraction = new Choice(new Sequence(new Character('.'), digits), new Character((char)3), exponent);
+            var exponent = new Optional(new Sequence(new Any("eE"), sign, digit));
+            var fraction = new Optional(new Sequence(new Character('.'), digits));
             this.pattern = new Sequence(integer, fraction, exponent);
         }
 

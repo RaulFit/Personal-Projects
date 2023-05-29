@@ -11,7 +11,6 @@ namespace Json.Facts
     {
         [Theory]
         [InlineData("abc", true)]
-        [InlineData(null, false)]
         [InlineData("\"\"", true)]
         [InlineData("a\nb\rc", false)]
         [InlineData(@"\""a\"" b", true)]
@@ -22,6 +21,13 @@ namespace Json.Facts
         {
             var num = new String();
             Assert.Equal(ok, num.Match(Quoted(input)).Success());
+        }
+
+        [Fact]
+        public void StringCannotBeNull()
+        {
+            var num = new String();
+            Assert.False(num.Match(null).Success());
         }
 
         public static string Quoted(string text)

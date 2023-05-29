@@ -12,7 +12,7 @@ namespace Json.Facts
         [Theory]
         [InlineData("abc", true)]
         [InlineData(null, false)]
-        [InlineData("", false)]
+        [InlineData("\"\"", true)]
         [InlineData("a\nb\rc", false)]
         [InlineData(@"\""a\"" b", true)]
         [InlineData(@"a \\ b", true)]

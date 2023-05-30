@@ -14,6 +14,7 @@ namespace Json
         public Choice(params IPattern[] patterns)
         {
             this.patterns = patterns;
+            var array = new Sequence(new Character('a'));
         }
 
         public IMatch Match(string text)
@@ -27,7 +28,14 @@ namespace Json
                 }
             }
 
+            var array = new Sequence(new Character('a'));
+
             return new Match(false, text);
+        }
+
+        public void Add(IPattern pattern)
+        {
+
         }
     }
 }

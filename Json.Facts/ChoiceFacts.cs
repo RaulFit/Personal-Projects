@@ -1,4 +1,5 @@
 ﻿using Xunit;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Json.Facts
 {
@@ -87,6 +88,21 @@ namespace Json.Facts
             );
 
             Assert.True(hex.Match("a9").Success());
+        }
+
+        [Fact]
+        public void MethodAddWorksCorrectly()
+        {
+            var c = new Choice(
+               new Character('0'),
+            new Character('a')
+        );
+
+            Assert.Equal("ba", c.Match("ba").RemainingText());
+
+            c.Add(new Character('b'));
+
+            Assert.Equal("a", c.Match("ba").RemainingText());
         }
     }
 }

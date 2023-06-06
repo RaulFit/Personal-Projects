@@ -21,20 +21,11 @@ namespace Json
             var array = new Sequence(new Character('['), ws, elements, ws, new Character(']'));
             var jsonValue = new Choice(value, obj, array);
             this.pattern = new Sequence(
-                new Text("[\n"),
-                ws,
-                new OneOrMore(new Sequence(
-                new Text("{\n"),
-                ws,
-                new List(
-                    new Sequence(
-                        new String(),
-                        new Character(':'),
-                        ws,
-                        jsonValue),
-                    new Text(",\n\t")),
-                new Sequence(new Text("\n\t}"), new Optional(new Text(",\n"))))),
-                new Text("\n]"));
+                new Character('{'),
+                new Many(ws),
+                new List(new Sequence(new String(), new Text(": "), new Choice(value, obj, array)), new Sequence(new Text(",\n"), new Many(ws))),
+                new Many(ws),
+                new Character('}'));
         }
 
         public IMatch Match(string text)

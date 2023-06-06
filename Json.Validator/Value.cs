@@ -19,7 +19,6 @@ namespace Json
             var members = new List(member, new Character(','));
             var obj = new Sequence(new Character('{'), ws, members, ws, new Character('}'));
             var array = new Sequence(new Character('['), ws, elements, ws, new Character(']'));
-            var jsonValue = new Choice(value, obj, array);
             this.pattern = new Sequence(
                 new Character('{'),
                 new Many(ws),

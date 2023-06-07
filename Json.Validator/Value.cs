@@ -21,7 +21,7 @@ namespace Json
             var array = new Sequence(new Character('['), ws, elements, ws, new Character(']'));
             value.Add(array);
             value.Add(obj);
-            this.pattern = value;
+            this.pattern = element;
         }
 
         public IMatch Match(string text)

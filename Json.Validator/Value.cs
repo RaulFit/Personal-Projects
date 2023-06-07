@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Json
 {
@@ -20,15 +19,9 @@ namespace Json
             var members = new List(member, new Character(','));
             var obj = new Sequence(new Character('{'), ws, members, ws, new Character('}'));
             var array = new Sequence(new Character('['), ws, elements, ws, new Character(']'));
-            var val = new Choice(new String(), new Number(), new Text("true"), new Text("false"), new Text("null"));
-            val.Add(array);
-            val.Add(obj);
-            this.pattern = new Sequence(
-                new Character('{'),
-                ws,
-                new List(new Sequence(new String(), new Character(':'), ws, val), new Sequence(new Character(','), ws)),
-                ws,
-                new Character('}'));
+            value.Add(array);
+            value.Add(obj);
+            this.pattern = value;
         }
 
         public IMatch Match(string text)

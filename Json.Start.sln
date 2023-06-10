@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Json", "Json.Validator\Json
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Json.Facts", "Json.Facts\Json.Facts.csproj", "{6229320D-ADEC-41E1-8474-74710774B871}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Football", "Football\Football.csproj", "{11E6A199-E124-43DC-B9AC-318F0701CB55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Football", "Football\Football.csproj", "{11E6A199-E124-43DC-B9AC-318F0701CB55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Football.Facts", "Football.Facts\Football.Facts.csproj", "{3F371E66-A41B-4048-9FD9-C6D534E20FF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Football.Facts", "Football.Facts\Football.Facts.csproj", "{3F371E66-A41B-4048-9FD9-C6D534E20FF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

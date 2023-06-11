@@ -1,16 +1,36 @@
-﻿using System;
+﻿using Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
-namespace Json
+class JSONValidator
 {
-    public class JSONValidator
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
+        if (args.Length == 0)
         {
-            Console.WriteLine("hello");
+            return;
         }
+
+        string filePath = args[0];
+
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine("Path does not exist");
+        }
+
+        string fileContent = File.ReadAllText(filePath);
+
+        var value = new Value();
+
+        if (value.Match(fileContent).Success())
+        {
+            Console.WriteLine("Valid JSON");
+            return;
+        }
+
+        Console.WriteLine("Invalid JSON");
     }
 }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class String : IPattern
+    public class Str : IPattern
     {
         private readonly IPattern pattern;
 
-        public String()
+        public Str()
         {
             var digit = new Range('0', '9');
             var hex = new Choice(digit, new Range('A', 'F'), new Range('a', 'f'));

@@ -19,6 +19,7 @@ class JSONValidator
         if (!File.Exists(filePath))
         {
             Console.WriteLine("Path does not exist");
+            return;
         }
 
         string fileContent = File.ReadAllText(filePath);

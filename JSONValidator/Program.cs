@@ -29,7 +29,9 @@ namespace Json
 
             var value = new Value();
 
-            if (value.Match(fileContent).Success() && string.IsNullOrEmpty(value.Match(fileContent).RemainingText()))
+            var validJson = value.Match(fileContent);
+
+            if (validJson.Success() && string.IsNullOrEmpty(validJson.RemainingText()))
             {
                 Console.WriteLine("Valid JSON");
                 return;

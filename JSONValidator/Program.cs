@@ -13,6 +13,7 @@ namespace Json
         {
             if (args.Length == 0)
             {
+                Console.WriteLine("The specified path does not exist. Please provide a correct path");
                 return;
             }
 
@@ -20,7 +21,7 @@ namespace Json
 
             if (!File.Exists(filePath))
             {
-                Console.WriteLine("Path does not exist");
+                Console.WriteLine("The specified path is incorrect or does not exist. Please provide a correct path");
                 return;
             }
 
@@ -28,7 +29,7 @@ namespace Json
 
             var value = new Value();
 
-            if (value.Match(fileContent).Success())
+            if (value.Match(fileContent).Success() && string.IsNullOrEmpty(value.Match(fileContent).RemainingText()))
             {
                 Console.WriteLine("Valid JSON");
                 return;

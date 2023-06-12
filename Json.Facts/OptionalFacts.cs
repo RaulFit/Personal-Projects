@@ -16,7 +16,7 @@ namespace Json.Facts
         [InlineData(null, null)]
         public void OptionalWorksOnLetters(string input, string expected)
         {
-            var a = new Opt(new Character('a'));
+            var a = new Optional(new Character('a'));
             Assert.Equal(expected, a.Match(input).RemainingText());
         }
 
@@ -25,7 +25,7 @@ namespace Json.Facts
         [InlineData("-123", "123")]
         public void OptionalWorksOnOperators(string input, string expected)
         {
-            var sign = new Opt(new Character('-'));
+            var sign = new Optional(new Character('-'));
             Assert.Equal(expected, sign.Match(input).RemainingText());
         }
     }

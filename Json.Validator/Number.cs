@@ -11,13 +11,13 @@ namespace Json
 
         public Number()
         {
-            var minus = new Opt(new Character('-'));
+            var minus = new Optional(new Character('-'));
             var digit = new Range('0', '9');
             var digits = new OneOrMore(digit);
             var integer = new Sequence(minus, new Choice(new Character('0'), digits));
-            var sign = new Opt(new Any("+-"));
-            var exponent = new Opt(new Sequence(new Any("eE"), sign, digit));
-            var fraction = new Opt(new Sequence(new Character('.'), digits));
+            var sign = new Optional(new Any("+-"));
+            var exponent = new Optional(new Sequence(new Any("eE"), sign, digit));
+            var fraction = new Optional(new Sequence(new Character('.'), digits));
             this.pattern = new Sequence(integer, fraction, exponent);
         }
 

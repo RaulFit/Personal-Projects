@@ -24,7 +24,7 @@ namespace Json.Facts
 
         public void CheckIfTextStartsWithPrefix(string prefix, string text, string result)
         {
-            var pref = new Txt(prefix);
+            var pref = new Text(prefix);
             Assert.Equal(result, pref.Match(text).RemainingText());
         }
     }

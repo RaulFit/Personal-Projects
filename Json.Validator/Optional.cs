@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Opt : IPattern
+    public class Optional : IPattern
     {
         private readonly IPattern pattern;
 
-        public Opt(IPattern pattern)
+        public Optional(IPattern pattern)
         {
             this.pattern = pattern;
         }

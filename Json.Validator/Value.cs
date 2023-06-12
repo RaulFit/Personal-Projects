@@ -12,10 +12,10 @@ namespace Json
         public Value()
         {
             var ws = new Many(new Any(" \n\r\t"));
-            var value = new Choice(new Str(), new Number(), new Txt("true"), new Txt("false"), new Txt("null"));
+            var value = new Choice(new String(), new Number(), new Text("true"), new Text("false"), new Text("null"));
             var element = new Sequence(ws, value, ws);
             var elements = new List(element, new Character(','));
-            var member = new Sequence(ws, new Str(), ws, new Character(':'), element);
+            var member = new Sequence(ws, new String(), ws, new Character(':'), element);
             var members = new List(member, new Character(','));
             var obj = new Sequence(new Character('{'), ws, members, ws, new Character('}'));
             var array = new Sequence(new Character('['), ws, elements, ws, new Character(']'));

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Str : IPattern
+    public class String : IPattern
     {
         private readonly IPattern pattern;
 
-        public Str()
+        public String()
         {
             var digit = new Range('0', '9');
             var hex = new Choice(digit, new Range('A', 'F'), new Range('a', 'f'));

@@ -38,6 +38,23 @@ namespace Json
             }
 
             Console.WriteLine("Invalid JSON");
+
+            string[] lines = validJson.RemainingText().Split('\n');
+            int errorLine = 0;
+            int errorColumn = 0;
+
+            for (int i = 1; i < lines.Length; i++)
+            {
+                var lineResult = value.Match(lines[i]);
+                if (!lineResult.Success())
+                {
+                    errorLine = i + 1;
+                    errorColumn = lines[i].IndexOf(lineResult.RemainingText()) + 1;
+                    break;
+                }
+            }
+
+            Console.WriteLine($"Error on line {errorLine}, column {errorColumn}");
         }
     }
 }

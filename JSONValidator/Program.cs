@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace Json
 {
@@ -39,22 +38,46 @@ namespace Json
 
             Console.WriteLine("Invalid JSON");
 
-            string[] lines = validJson.RemainingText().Split('\n');
-            int errorLine = 0;
-            int errorColumn = 0;
+            string[] lines = fileContent.Split('\n');
 
-            for (int i = 1; i < lines.Length; i++)
+            var validLine = new ValidLine();
+
+            var validName = new ValidName();
+
+            var validObject = new ValidObject();
+
+            var parentheses = new OneOrMore(new Any("[{"));
+
+            int errorLine = 0;
+           
+            for(int i = 1; i < lines.Length; i++)
             {
-                var lineResult = value.Match(lines[i]);
-                if (!lineResult.Success())
+                var line = validLine.Match(lines[i]);
+                if (line.Success())
                 {
-                    errorLine = i + 1;
-                    errorColumn = lines[i].IndexOf(lineResult.RemainingText()) + 1;
-                    break;
+                    continue;
                 }
+
+                line = validObject.Match(lines[i]);
+                if(line.Success())
+                {
+                    continue;
+                }
+
+                line = parentheses.Match(lines[i]);
+                if(line.Success())
+                {
+                    continue;
+                }
+
+                errorLine = i + 1;
+                break;
             }
 
-            Console.WriteLine($"Error on line {errorLine}, column {errorColumn}");
+            Console.WriteLine($"Error on line {errorLine}");
         }
     }
 }
+
+
+    

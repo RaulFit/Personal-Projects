@@ -1,4 +1,5 @@
 ﻿using Json;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -38,43 +39,46 @@ namespace Json
 
             Console.WriteLine("Invalid JSON");
 
-            string[] lines = fileContent.Split('\n');
-
-            var validLine = new ValidLine();
-
-            var validName = new ValidName();
-
-            var validObject = new ValidObject();
-
-            var parentheses = new OneOrMore(new Any("[{"));
-
             int errorLine = 0;
-           
-            for(int i = 1; i < lines.Length; i++)
+
+            var ws = new Many(new Any(" \n\r\t"));
+
+            var objectValues = new ObjectValues();
+
+            var objectBegining = new ObjectBegining();
+
+            var comma = new Sequence(ws, new Character(','), ws);
+
+            fileContent = fileContent.TrimStart();
+
+            fileContent = fileContent.TrimEnd();
+
+            fileContent = fileContent.Remove(0, 1);
+
+            fileContent = fileContent.Remove(fileContent.Length - 1);
+
+            IMatch match = new Match(true, fileContent);
+
+            while (match.Success())
             {
-                var line = validLine.Match(lines[i]);
-                if (line.Success())
-                {
-                    continue;
-                }
+                match = objectValues.Match(match.RemainingText());
 
-                line = validObject.Match(lines[i]);
-                if(line.Success())
-                {
-                    continue;
-                }
+                match = comma.Match(match.RemainingText());
 
-                line = parentheses.Match(lines[i]);
-                if(line.Success())
-                {
-                    continue;
-                }
+                match = objectBegining.Match(match.RemainingText());
 
-                errorLine = i + 1;
-                break;
+
             }
 
-            Console.WriteLine($"Error on line {errorLine}");
+            for(int i = 0; i < fileContent.IndexOf(match.RemainingText()); i++)
+            {
+                if (fileContent[i] == '\n')
+                {
+                    errorLine++;
+                }
+            }
+
+            Console.WriteLine($"Error on line {errorLine + 1}");
         }
     }
 }

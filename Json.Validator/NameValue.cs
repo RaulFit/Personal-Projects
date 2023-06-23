@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class ValidLine : IPattern
+    public class NameValue : IPattern
     {
         private readonly IPattern pattern;
 
-        public ValidLine()
+        public NameValue()
         {
-            this.pattern = new Sequence(new ValidName(), new Value(), new Optional(new Character(',')));
+            var name = new Sequence(new String(), new Character(':'));
+            this.pattern = new Sequence(name, new Value());
         }
 
         public IMatch Match(string text)

@@ -39,38 +39,13 @@ namespace Json
 
             Console.WriteLine("Invalid JSON");
 
+            var invalidValue = new InvalidValue();
+
+            var match = invalidValue.Match(fileContent);
+
             int errorLine = 0;
 
-            var ws = new Many(new Any(" \n\r\t"));
-
-            var objectValues = new ObjectValues();
-
-            var objectBegining = new ObjectBegining();
-
-            var comma = new Sequence(ws, new Character(','), ws);
-
-            fileContent = fileContent.TrimStart();
-
-            fileContent = fileContent.TrimEnd();
-
-            fileContent = fileContent.Remove(0, 1);
-
-            fileContent = fileContent.Remove(fileContent.Length - 1);
-
-            IMatch match = new Match(true, fileContent);
-
-            while (match.Success())
-            {
-                match = objectValues.Match(match.RemainingText());
-
-                match = comma.Match(match.RemainingText());
-
-                match = objectBegining.Match(match.RemainingText());
-
-
-            }
-
-            for(int i = 0; i < fileContent.IndexOf(match.RemainingText()); i++)
+            for (int i = 0; i < fileContent.IndexOf(match.RemainingText()); i++)
             {
                 if (fileContent[i] == '\n')
                 {

@@ -16,17 +16,8 @@ namespace Json
 
         public IMatch Match(string text)
         {
-            IMatch match = new Match(true, text);
-            foreach (var pattern in patterns)
-            {
-                match = pattern.Match(match.RemainingText());
-                if (!match.Success())
-                {
-                    return new Match(false, match.RemainingText());
-                }
-            }
-
-            return match;
+            var match = new Match(true, text);
+            return match.PatternsMatch(patterns, text);
         }
     }
 }

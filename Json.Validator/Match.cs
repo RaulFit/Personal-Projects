@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Json
 {
@@ -24,6 +25,21 @@ namespace Json
         public string RemainingText()
         {
             return remainingText;
+        }
+
+        public IMatch PatternsMatch(IPattern[] patterns, string remainingText)
+        {
+            IMatch match = new Match(true, remainingText);
+            foreach (var pattern in patterns)
+            {
+                match = pattern.Match(match.RemainingText());
+                if (!match.Success())
+                {
+                    return match;
+                }
+            }
+
+            return match;
         }
     }
 }

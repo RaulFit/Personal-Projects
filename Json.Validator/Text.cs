@@ -18,10 +18,10 @@ namespace Json
         {
             if (string.IsNullOrEmpty(text) || !text.StartsWith(prefix))
             {
-                return new Match(false, text);
+                return new Match(false, text, text);
             }
 
-            return new Match(true, text[prefix.Length..]);
+            return new Match(true, text[prefix.Length..], text[prefix.Length..]);
         }
     }
 }

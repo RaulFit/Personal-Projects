@@ -20,10 +20,10 @@ namespace Json
         {
             if (!string.IsNullOrEmpty(text) && text[0] >= this.start && text[0] <= this.end)
             {
-                return new Match(true, text[1..]);
+                return new Match(true, text[1..], text[1..]);
             }
 
-            return new Match(false, text);
+            return new Match(false, text, text);
         }
     }
 }

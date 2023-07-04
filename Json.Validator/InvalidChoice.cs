@@ -24,13 +24,13 @@ namespace Json
                     return match;
                 }
 
-                if (text != match.RemainingText())
+                if (text != match.ModifiedText())
                 {
-                    return new Match(false, match.RemainingText());
+                    return new Match(false, match.ModifiedText(), match.ModifiedText());
                 }
             }
 
-            return new Match(false, text);
+            return new Match(false, text, text);
         }
 
         public void Add(IPattern pattern)

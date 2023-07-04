@@ -14,7 +14,7 @@
         "templatePath": "templates",
         "templateOverridePath": "",
         "defaultListTemplate": "listTemplate.htm",
-        "defaultFileTemplate": "articleTemplate.htm",
+        "defaultFileTemplate" "articleTemplate.htm",
         "useJSP": false,
         "jspListTemplate": "listTemplate.jsp",
         "jspFileTemplate": "articleTemplate.jsp",
@@ -71,7 +71,7 @@
         "dataLogLocation": "/usr/local/tomcat/logs/dataLog.log",
         "dataLogMaxSize": "",
         "removePageCache": "/content/admin/remove?cache=pages&id=",
-        "removeTemplateCache": "/content/admin/remove?cache=templates&id="
+        "removeTemplateCache": "/content/admin/remove?cache=templates&id=",
         "fileTransferFolder": "/usr/local/tomcat/webapps/content/fileTransferFolder",
         "lookInContext": 1,
         "adminGroupID": 4,

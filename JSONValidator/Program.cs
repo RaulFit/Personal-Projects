@@ -45,7 +45,7 @@ namespace Json
 
             int errorLine = 0;
 
-            for (int i = 0; i < fileContent.IndexOf(match.RemainingText()); i++)
+            for (int i = 0; i < fileContent.IndexOf(match.ModifiedText()); i++)
             {
                 if (fileContent[i] == '\n')
                 {

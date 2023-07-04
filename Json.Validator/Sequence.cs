@@ -17,13 +17,13 @@ namespace Json
 
         public IMatch Match(string text)
         {
-            IMatch match = new Match(true, text);
+            IMatch match = new Match(true, text, text);
             foreach (var pattern in patterns)
             {
-                match = pattern.Match(match.RemainingText());
+                match = pattern.Match(match.ModifiedText());
                 if (!match.Success())
                 {
-                    return new Match(false, text);
+                    return new Match(false, text, match.ModifiedText());
                 }
             }
 

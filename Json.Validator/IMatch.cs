@@ -10,5 +10,7 @@ namespace Json
         bool Success();
 
         string RemainingText();
+
+        string ModifiedText();
     }
 }

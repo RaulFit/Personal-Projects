@@ -18,7 +18,7 @@ namespace Json
             this.pattern = new Sequence(new Character('\"'), new Many(character), new Character('\"'));
         }
 
-        public IMatch Match(string? text)
+        public IMatch Match(string text)
         {
             return pattern.Match(text);
         }

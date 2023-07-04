@@ -27,7 +27,7 @@ namespace Json
                 }
             }
 
-            return new Match(false, text);
+            return new Match(false, text, text);
         }
 
         public void Add(IPattern pattern)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Json
 {
@@ -10,11 +9,13 @@ namespace Json
     {
         private readonly bool success;
         private readonly string remainingText;
+        private readonly string modifiedText;
 
-        public Match(bool success, string remainingText)
+        public Match(bool success, string remainingText, string modifiedText)
         {
             this.success = success;
             this.remainingText = remainingText;
+            this.modifiedText = modifiedText;
         }
 
         public bool Success()
@@ -27,19 +28,9 @@ namespace Json
             return remainingText;
         }
 
-        public IMatch PatternsMatch(IPattern[] patterns, string remainingText)
+        public string ModifiedText()
         {
-            IMatch match = new Match(true, remainingText);
-            foreach (var pattern in patterns)
-            {
-                match = pattern.Match(match.RemainingText());
-                if (!match.Success())
-                {
-                    return match;
-                }
-            }
-
-            return match;
+            return modifiedText;
         }
     }
 }

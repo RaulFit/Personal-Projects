@@ -19,6 +19,8 @@ namespace Json
 
         public IMatch Match(string text)
         {
+            IMatch modifiedText = new Match(false, text, text);
+
             foreach (var pattern in patterns)
             {
                 IMatch match = pattern.Match(text);
@@ -26,18 +28,14 @@ namespace Json
                 {
                     return match;
                 }
-            }
 
-            foreach (var pattern in patterns)
-            {
-                IMatch match = pattern.Match(text);
                 if (text != match.ModifiedText())
                 {
-                    return new Match(false, text, match.ModifiedText());
+                    modifiedText = match;
                 }
             }
 
-            return new Match(false, text, text);
+            return modifiedText;
         }
 
         public void Add(IPattern pattern)

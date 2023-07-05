@@ -20,6 +20,7 @@ namespace Json
         public IMatch Match(string text)
         {
             IMatch modifiedText = new Match(false, text, text);
+            int ok = 0;
 
             foreach (var pattern in patterns)
             {
@@ -29,9 +30,10 @@ namespace Json
                     return match;
                 }
 
-                if (text != match.ModifiedText())
+                if (text != match.ModifiedText() && ok == 0)
                 {
                     modifiedText = match;
+                    ok = 1;
                 }
             }
 

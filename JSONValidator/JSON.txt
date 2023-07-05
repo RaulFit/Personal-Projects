@@ -14,7 +14,7 @@
         "templatePath": "templates",
         "templateOverridePath": "",
         "defaultListTemplate": "listTemplate.htm",
-        "defaultFileTemplate" "articleTemplate.htm",
+        "defaultFileTemplate": "articleTemplate.htm",
         "useJSP": false,
         "jspListTemplate": "listTemplate.jsp",
         "jspFileTemplate": "articleTemplate.jsp",

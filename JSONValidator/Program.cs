@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Json
 {
@@ -39,13 +38,9 @@ namespace Json
 
             Console.WriteLine("Invalid JSON");
 
-            var invalidValue = new InvalidValue();
-
-            var match = invalidValue.Match(fileContent);
-
             int errorLine = 0;
 
-            for (int i = 0; i < fileContent.IndexOf(match.ModifiedText()); i++)
+            for (int i = 0; i < fileContent.IndexOf(validJson.ModifiedText()); i++)
             {
                 if (fileContent[i] == '\n')
                 {

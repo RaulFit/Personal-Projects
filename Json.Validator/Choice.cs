@@ -25,6 +25,11 @@ namespace Json
                 {
                     return match;
                 }
+
+                if (text != match.ModifiedText())
+                {
+                    return new Match(false, text, match.ModifiedText());
+                }
             }
 
             return new Match(false, text, text);

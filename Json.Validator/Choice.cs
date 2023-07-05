@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Json
@@ -25,7 +26,11 @@ namespace Json
                 {
                     return match;
                 }
+            }
 
+            foreach (var pattern in patterns)
+            {
+                IMatch match = pattern.Match(text);
                 if (text != match.ModifiedText())
                 {
                     return new Match(false, text, match.ModifiedText());

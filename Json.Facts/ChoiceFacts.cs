@@ -104,5 +104,16 @@ namespace Json.Facts
 
             Assert.Equal("a", c.Match("ba").RemainingText());
         }
+
+        [Fact]
+        public void ChoiceConsumesTheLongestPattern()
+        {
+            var c = new Choice(new Sequence(new Character('a'), new Character('b'), new Character('c'), new Character('1'), new Character('6')), 
+                new Sequence(new Character('a'), new Character('b'), new Character('c'), new Character('1'), new Character('2'), new Character('3'), new Character('4')));
+
+            string text = "abc123text";
+
+            Assert.Equal("text", c.Match(text).ModifiedText());
+        }
     }
 }

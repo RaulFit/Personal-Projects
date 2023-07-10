@@ -40,15 +40,19 @@ namespace Json
 
             int errorLine = 0;
 
+            int errorColumn = 0;
+
             for (int i = 0; i < fileContent.IndexOf(validJson.ModifiedText()); i++)
             {
+                errorColumn++;
                 if (fileContent[i] == '\n')
                 {
                     errorLine++;
+                    errorColumn = 0;
                 }
             }
 
-            Console.WriteLine($"Error on line {errorLine + 1}");
+            Console.WriteLine($"Error on line {errorLine + 1}, column {errorColumn}");
         }
     }
 }

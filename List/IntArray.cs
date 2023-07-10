@@ -4,13 +4,6 @@ namespace List
 {
     public class IntArray
     {
-        static void Main(string[] args)
-        {
-            IntArray a = new IntArray();
-            a.Add(1);
-            Console.WriteLine(a.Element(3));
-        }
-
         private int[] array;
 
 	    public IntArray()
@@ -31,11 +24,21 @@ namespace List
 
         public int Element(int index)
         {
+            if(index < 0 || index >= array.Length)
+            {
+                return -1;
+            }
+
             return array[index];
         }
 
         public void SetElement(int index, int element)
         {
+            if (index < 0 || index >= array.Length)
+            {
+                return;
+            }
+
             array[index] = element;
         }
 
@@ -67,6 +70,11 @@ namespace List
 
         public void Insert(int index, int element)
         {
+            if (index < 0 || index >= array.Length)
+            {
+                return;
+            }
+
             Array.Resize(ref array, array.Length + 1);
             for(int i = array.Length - 1; i > index; i--)
             {
@@ -102,7 +110,12 @@ namespace List
 
         public void RemoveAt(int index)
         {
-            for(int j = index; j < array.Length - 1; j++)
+            if (index < 0 || index >= array.Length)
+            {
+                return;
+            }
+
+            for (int j = index; j < array.Length - 1; j++)
             {
                 array[j] = array[j + 1];
             }

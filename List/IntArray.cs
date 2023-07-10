@@ -4,6 +4,13 @@ namespace List
 {
     public class IntArray
     {
+        static void Main(string[] args)
+        {
+            IntArray a = new IntArray();
+            a.Add(1);
+            Console.WriteLine(a.Element(3));
+        }
+
         private int[] array;
 
 	    public IntArray()

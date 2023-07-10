@@ -4,31 +4,6 @@ namespace List
 {
     public class IntArray
     {
-        static void Main(string[] args)
-        {
-            IntArray a = new IntArray();
-            a.Add(1);
-            a.Add(2);
-            a.Add(3);
-            a.Add(4);
-            a.Add(5);
-            for(int i = 0; i < a.Count(); i++)
-            {
-                Console.Write(a.Element(i) + " ");
-            }
-
-            Console.WriteLine();    
-
-
-            a.RemoveAt(1);
-
-            for (int i = 0; i < a.Count(); i++)
-            {
-                Console.Write(a.Element(i) + " ");
-            }
-
-        }
-
         private int[] array;
 
 	    public IntArray()

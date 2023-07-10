@@ -6,7 +6,7 @@ namespace List
     {
         private int[] array;
 
-	public IntArray()
+	    public IntArray()
         {
             this.array = new int[0];
         }

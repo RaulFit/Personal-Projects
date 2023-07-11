@@ -78,9 +78,7 @@
 
         public void Remove(int element)
         {
-            ShiftLeft(IndexOf(element));
-
-            Array.Resize(ref array, array.Length - 1);
+            RemoveAt(IndexOf(element));
         }
 
         public void RemoveAt(int index)

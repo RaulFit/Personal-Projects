@@ -2,11 +2,6 @@
 {
     public class IntArray
     {
-        static void Main(string[] args)
-        {
-
-        }
-
         private int[] array;
 
         public IntArray()
@@ -21,8 +16,8 @@
 
         public void Add(int element)
         {
-            Array.Resize(ref array, array.Count() + 1);
-            array[array.Count() - 1] = element;
+            Array.Resize(ref array, array.Length + 1);
+            array[^1] = element;
         }
 
         public int Element(int index)
@@ -47,15 +42,7 @@
 
         public bool Contains(int element)
         {
-            for(int i = 0; i < array.Length; i++)
-            {
-                if (array[i] == element)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return IndexOf(element) != -1;
         }
 
         public int IndexOf(int element)
@@ -79,10 +66,7 @@
             }
 
             Array.Resize(ref array, array.Length + 1);
-            for(int i = array.Length - 1; i > index; i--)
-            {
-                array[i] = array[i - 1];
-            }
+            ShiftRight(index);
 
             array[index] = element;
         }
@@ -94,23 +78,7 @@
 
         public void Remove(int element)
         {
-            if (!array.Contains(element))
-            {
-                return;
-            }
-
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (array[i] == element)
-                {
-                    for (int j = i; j < array.Length - 1; j++)
-                    {
-                        array[j] = array[j + 1];
-                    }
-
-                    break;
-                }
-            }
+            ShiftLeft(IndexOf(element));
 
             Array.Resize(ref array, array.Length - 1);
         }
@@ -122,12 +90,25 @@
                 return;
             }
 
+            ShiftLeft(index);
+
+            Array.Resize(ref array, array.Length - 1);
+        }
+
+        private void ShiftLeft(int index)
+        {
             for (int j = index; j < array.Length - 1; j++)
             {
                 array[j] = array[j + 1];
             }
+        }
 
-            Array.Resize(ref array, array.Length - 1);
+        private void ShiftRight(int index)
+        {
+            for (int i = array.Length - 1; i > index; i--)
+            {
+                array[i] = array[i - 1];
+            }
         }
     }
 }

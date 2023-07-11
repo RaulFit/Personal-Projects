@@ -1,25 +1,28 @@
-﻿using System.Xml.Linq;
-
-namespace List
+﻿namespace List
 {
     public class IntArray
     {
-        private int[] array;
-
-	    public IntArray()
+        static void Main(string[] args)
         {
-            this.array = new int[0];
+
         }
 
-        public void Add(int element)
+        private int[] array;
+
+        public IntArray()
         {
-            Array.Resize(ref array, array.Length + 1);
-            array[array.Length - 1] = element;
+            this.array = new int[0];
         }
 
         public int Count()
         {
             return array.Length;
+        }
+
+        public void Add(int element)
+        {
+            Array.Resize(ref array, array.Count() + 1);
+            array[array.Count() - 1] = element;
         }
 
         public int Element(int index)
@@ -57,7 +60,7 @@ namespace List
 
         public int IndexOf(int element)
         {
-            for (int i = 0; i < array.Length; i++)
+            for(int i = 0; i < array.Length; i++)
             {
                 if (array[i] == element)
                 {
@@ -70,7 +73,7 @@ namespace List
 
         public void Insert(int index, int element)
         {
-            if (index < 0 || index >= array.Length)
+            if(index < 0 || index >= array.Length)
             {
                 return;
             }
@@ -82,7 +85,6 @@ namespace List
             }
 
             array[index] = element;
-            
         }
 
         public void Clear()
@@ -92,11 +94,16 @@ namespace List
 
         public void Remove(int element)
         {
-            for(int i = 0; i < array.Length; i++)
+            if (!array.Contains(element))
+            {
+                return;
+            }
+
+            for (int i = 0; i < array.Length; i++)
             {
                 if (array[i] == element)
                 {
-                    for(int j = i; j < array.Length - 1; j++)
+                    for (int j = i; j < array.Length - 1; j++)
                     {
                         array[j] = array[j + 1];
                     }
@@ -110,7 +117,7 @@ namespace List
 
         public void RemoveAt(int index)
         {
-            if (index < 0 || index >= array.Length)
+            if(index < 0 || index >= array.Length)
             {
                 return;
             }
@@ -122,6 +129,5 @@ namespace List
 
             Array.Resize(ref array, array.Length - 1);
         }
-
     }
 }

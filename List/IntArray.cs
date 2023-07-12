@@ -3,26 +3,29 @@
     public class IntArray
     {
         private int[] array;
+        private int validPos;
 
         public IntArray()
         {
             this.array = new int[4];
+            this.validPos = 0;
         }
 
         public int Count()
         {
-            return FirstAvailablePosition();
+            return validPos;
         }
 
         public void Add(int element)
         {
             Realocate();
-            array[FirstAvailablePosition()] = element;
+            array[validPos] = element;
+            validPos++;
         }
 
         public int Element(int index)
         {
-            if(index < 0 || index >= array.Length)
+            if (index < 0 || index >= array.Length)
             {
                 return -1;
             }
@@ -47,7 +50,7 @@
 
         public int IndexOf(int element)
         {
-            for(int i = 0; i < array.Length; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 if (array[i] == element)
                 {
@@ -60,20 +63,21 @@
 
         public void Insert(int index, int element)
         {
-            if(index < 0 || index >= array.Length)
+            if (index < 0 || index >= array.Length)
             {
                 return;
             }
 
             Realocate();
             ShiftRight(index);
-
             array[index] = element;
+            validPos++;
         }
 
         public void Clear()
         {
             Array.Resize(ref array, 0);
+            validPos = 0;
         }
 
         public void Remove(int element)
@@ -83,13 +87,13 @@
 
         public void RemoveAt(int index)
         {
-            if(index < 0 || index >= array.Length)
+            if (index < 0 || index >= array.Length)
             {
                 return;
             }
 
             ShiftLeft(index);
-            array[FirstAvailablePosition() - 1] = 0;
+            validPos--;
         }
 
         private void ShiftLeft(int index)
@@ -108,38 +112,9 @@
             }
         }
 
-        private int FirstAvailablePosition()
-        {
-            for(int i = 0; i < array.Length; i++)
-            {
-                if (array[i] == 0)
-                {
-                    if (AllElementsAreZero(i))
-                    {
-                        return i;
-                    }
-                }
-            }
-
-            return array.Length;
-        }
-
-        private bool AllElementsAreZero(int index)
-        {
-            for (int i = index; i < array.Length; i++)
-            {
-                if (array[i] != 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         private void Realocate()
         {
-            if (FirstAvailablePosition() == array.Length)
+            if (validPos == array.Length)
             {
                 Array.Resize(ref array, array.Length * 2);
             }

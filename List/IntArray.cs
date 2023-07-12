@@ -2,8 +2,8 @@
 {
     public class IntArray
     {
-        private int[] array;
-        private int count;
+        protected int[] array;
+        protected int count;
 
         public IntArray()
         {
@@ -17,14 +17,14 @@
             private set => this.count = value;
         }
 
-        public void Add(int element)
+        public virtual void Add(int element)
         {
             Realocate();
             array[count] = element;
             count++;
         }
 
-        public int this[int index]
+        public virtual int this[int index]
         {
             get => (index < 0 || index >= array.Length) ? -1 : array[index];
             set
@@ -56,7 +56,7 @@
             return -1;
         }
 
-        public void Insert(int index, int element)
+        public virtual void Insert(int index, int element)
         {
             if (index < 0 || index >= array.Length)
             {
@@ -91,7 +91,7 @@
             count--;
         }
 
-        private void ShiftLeft(int index)
+        protected void ShiftLeft(int index)
         {
             for (int j = index; j < array.Length - 1; j++)
             {
@@ -99,7 +99,7 @@
             }
         }
 
-        private void ShiftRight(int index)
+        protected void ShiftRight(int index)
         {
             for (int i = array.Length - 1; i > index; i--)
             {
@@ -107,7 +107,7 @@
             }
         }
 
-        private void Realocate()
+        protected void Realocate()
         {
             if (count == array.Length)
             {

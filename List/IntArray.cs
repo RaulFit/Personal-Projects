@@ -3,24 +3,24 @@
     public class IntArray
     {
         private int[] array;
-        private int validPos;
+        private int count;
 
         public IntArray()
         {
             this.array = new int[4];
-            this.validPos = 0;
+            this.count = 0;
         }
 
         public int Count()
         {
-            return validPos;
+            return count;
         }
 
         public void Add(int element)
         {
             Realocate();
-            array[validPos] = element;
-            validPos++;
+            array[count] = element;
+            count++;
         }
 
         public int Element(int index)
@@ -71,13 +71,13 @@
             Realocate();
             ShiftRight(index);
             array[index] = element;
-            validPos++;
+            count++;
         }
 
         public void Clear()
         {
             Array.Resize(ref array, 0);
-            validPos = 0;
+            count = 0;
         }
 
         public void Remove(int element)
@@ -93,7 +93,7 @@
             }
 
             ShiftLeft(index);
-            validPos--;
+            count--;
         }
 
         private void ShiftLeft(int index)
@@ -114,7 +114,7 @@
 
         private void Realocate()
         {
-            if (validPos == array.Length)
+            if (count == array.Length)
             {
                 Array.Resize(ref array, array.Length * 2);
             }

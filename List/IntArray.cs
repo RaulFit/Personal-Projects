@@ -6,18 +6,18 @@
 
         public IntArray()
         {
-            this.array = new int[0];
+            this.array = new int[4];
         }
 
         public int Count()
         {
-            return array.Length;
+            return FirstAvailablePosition();
         }
 
         public void Add(int element)
         {
-            Array.Resize(ref array, array.Length + 1);
-            array[^1] = element;
+            Realocate();
+            array[FirstAvailablePosition()] = element;
         }
 
         public int Element(int index)
@@ -65,7 +65,7 @@
                 return;
             }
 
-            Array.Resize(ref array, array.Length + 1);
+            Realocate();
             ShiftRight(index);
 
             array[index] = element;
@@ -89,8 +89,7 @@
             }
 
             ShiftLeft(index);
-
-            Array.Resize(ref array, array.Length - 1);
+            array[FirstAvailablePosition() - 1] = 0;
         }
 
         private void ShiftLeft(int index)
@@ -106,6 +105,43 @@
             for (int i = array.Length - 1; i > index; i--)
             {
                 array[i] = array[i - 1];
+            }
+        }
+
+        private int FirstAvailablePosition()
+        {
+            for(int i = 0; i < array.Length; i++)
+            {
+                if (array[i] == 0)
+                {
+                    if (AllElementsAreZero(i))
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return array.Length;
+        }
+
+        private bool AllElementsAreZero(int index)
+        {
+            for (int i = index; i < array.Length; i++)
+            {
+                if (array[i] != 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void Realocate()
+        {
+            if (FirstAvailablePosition() == array.Length)
+            {
+                Array.Resize(ref array, array.Length + 4);
             }
         }
     }

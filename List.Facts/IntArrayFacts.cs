@@ -6,7 +6,7 @@ namespace List.Facts
         public void MethodCountReturnsZeroForAnEmptyArray()
         {
             IntArray arr = new IntArray();
-            Assert.Equal(0, arr.Count());
+            Assert.Equal(0, arr.Count);
         }
 
         [Fact]
@@ -16,7 +16,7 @@ namespace List.Facts
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            Assert.Equal(3, arr.Count());
+            Assert.Equal(3, arr.Count);
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace List.Facts
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            Assert.Equal(3, arr.Count());
+            Assert.Equal(3, arr.Count);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace List.Facts
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            Assert.Equal(2, arr.Element(1));
+            Assert.Equal(2, arr[1]);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace List.Facts
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            Assert.Equal(-1, arr.Element(6));
+            Assert.Equal(-1, arr[6]);
         }
 
         [Fact]
@@ -56,8 +56,8 @@ namespace List.Facts
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            arr.SetElement(0, 5);
-            Assert.Equal(5, arr.Element(0));
+            arr[0] = 5;
+            Assert.Equal(5, arr[0]);
         }
 
         [Fact]
@@ -67,8 +67,8 @@ namespace List.Facts
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            arr.SetElement(6, 5);
-            Assert.Equal(-1, arr.Element(6));
+            arr[6] = 5;
+            Assert.Equal(-1, arr[6]);
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace List.Facts
             arr.Add(2);
             arr.Add(3);
             arr.Insert(5, 8);
-            Assert.Equal(-1, arr.Element(5));
+            Assert.Equal(-1, arr[5]);
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace List.Facts
             arr.Add(2);
             arr.Add(3);
             arr.Insert(0, 3);
-            Assert.Equal(4, arr.Count());
+            Assert.Equal(4, arr.Count);
         }
 
         [Fact]
@@ -141,7 +141,7 @@ namespace List.Facts
             arr.Add(2);
             arr.Add(3);
             arr.Insert(0, 9);
-            Assert.Equal(9, arr.Element(0));
+            Assert.Equal(9, arr[0]);
         }
 
         [Fact]
@@ -152,9 +152,9 @@ namespace List.Facts
             arr.Add(2);
             arr.Add(3);
             arr.Insert(0, 9);
-            Assert.Equal(1, arr.Element(1));
-            Assert.Equal(2, arr.Element(2));
-            Assert.Equal(3, arr.Element(3));
+            Assert.Equal(1, arr[1]);
+            Assert.Equal(2, arr[2]);
+            Assert.Equal(3, arr[3]);
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace List.Facts
             arr.Add(2);
             arr.Add(3);
             arr.Clear();
-            Assert.Equal(0, arr.Count());
+            Assert.Equal(0, arr.Count);
         }
 
         [Fact]
@@ -177,7 +177,7 @@ namespace List.Facts
             arr.Add(3);
             arr.Add(1);
             arr.Remove(1);
-            Assert.Equal(3, arr.Count());
+            Assert.Equal(3, arr.Count);
         }
 
         [Fact]
@@ -189,9 +189,9 @@ namespace List.Facts
             arr.Add(3);
             arr.Add(1);
             arr.Remove(1);
-            Assert.Equal(2, arr.Element(0));
-            Assert.Equal(3, arr.Element(1));
-            Assert.Equal(1, arr.Element(2));
+            Assert.Equal(2, arr[0]);
+            Assert.Equal(3, arr[1]);
+            Assert.Equal(1, arr[2]);
         }
 
         [Fact]
@@ -203,7 +203,7 @@ namespace List.Facts
             arr.Add(3);
             arr.Add(1);
             arr.RemoveAt(6);
-            Assert.Equal(4, arr.Count());
+            Assert.Equal(4, arr.Count);
         }
 
         [Fact]
@@ -215,9 +215,9 @@ namespace List.Facts
             arr.Add(3);
             arr.Add(1);
             arr.RemoveAt(1);
-            Assert.Equal(1, arr.Element(0));
-            Assert.Equal(3, arr.Element(1));
-            Assert.Equal(1, arr.Element(2));
+            Assert.Equal(1, arr[0]);
+            Assert.Equal(3, arr[1]);
+            Assert.Equal(1, arr[2]);
         }
     }
 }

@@ -11,9 +11,10 @@
             this.count = 0;
         }
 
-        public int Count()
+        public int Count
         {
-            return count;
+            get => this.count;
+            private set => this.count = value;
         }
 
         public void Add(int element)
@@ -23,24 +24,18 @@
             count++;
         }
 
-        public int Element(int index)
+        public int this[int index]
         {
-            if (index < 0 || index >= array.Length)
+            get => (index < 0 || index >= array.Length) ? -1 : array[index];
+            set
             {
-                return -1;
+                if (index < 0 || index >= array.Length)
+                {
+                    return;
+                }
+
+                array[index] = value;
             }
-
-            return array[index];
-        }
-
-        public void SetElement(int index, int element)
-        {
-            if (index < 0 || index >= array.Length)
-            {
-                return;
-            }
-
-            array[index] = element;
         }
 
         public bool Contains(int element)

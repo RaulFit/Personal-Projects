@@ -141,7 +141,7 @@
         {
             if (FirstAvailablePosition() == array.Length)
             {
-                Array.Resize(ref array, array.Length + 4);
+                Array.Resize(ref array, array.Length * 2);
             }
         }
     }

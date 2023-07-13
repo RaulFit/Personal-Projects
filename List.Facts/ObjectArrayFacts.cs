@@ -1,38 +1,38 @@
-namespace List.Facts
+﻿namespace List.Facts
 {
-    public class IntArrayFacts
+    public class ObjectArrayFacts
     {
         [Fact]
         public void MethodCountReturnsZeroForAnEmptyArray()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             Assert.Equal(0, arr.Count);
         }
 
         [Fact]
         public void MethodCountReturnsNumberOfElements()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
+            arr.Add(true);
+            arr.Add("text");
             Assert.Equal(3, arr.Count);
         }
 
         [Fact]
         public void MethodElementReturnsTheElementFromSpecifiedIndex()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
-            arr.Add(2);
+            arr.Add("hello");
             arr.Add(3);
-            Assert.Equal(2, arr[1]);
+            Assert.Equal("hello", arr[1]);
         }
 
         [Fact]
         public void MethodElementWorksWhenArrayDoesNotContainIndex()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -42,18 +42,18 @@ namespace List.Facts
         [Fact]
         public void MethodSetElementModifiesElementAtSpecifiedIndex()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            arr[0] = 5;
-            Assert.Equal(5, arr[0]);
+            arr[0] = true;
+            Assert.Equal(true, arr[0]);
         }
 
         [Fact]
         public void MethodSetElementWorksWhenArrayDoesNotContainIndex()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -64,84 +64,75 @@ namespace List.Facts
         [Fact]
         public void MethodContainsReturnsTrueWhenElementIsInArray()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
-            Assert.True(arr.Contains(3));
+            arr.Add("text");
+            arr.Add(3.21);
+            Assert.True(arr.Contains("text"));
         }
 
         [Fact]
         public void MethodContainsReturnsFalseWhenElementIsNotInArray()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
-            Assert.False(arr.Contains(5));
-        }
-
-        [Fact]
-        public void MethodIndexOfReturnsNegativeOneWhenElementIsNotInArray()
-        {
-            IntArray arr = new IntArray();
-            arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
-            Assert.Equal(-1, arr.IndexOf(5));
+            arr.Add("text");
+            arr.Add(6.12);
+            Assert.False(arr.Contains(6.10));
         }
 
         [Fact]
         public void MethodIndexOfReturnsIndexOfElement()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
-            Assert.Equal(2, arr.IndexOf(3));
+            arr.Add(2.01);
+            arr.Add(true);
+            Assert.Equal(2, arr.IndexOf(true));
         }
 
         [Fact]
         public void MethodInsertDoesNotModifyArrayWhenIndexDoesNotExist()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            arr.Insert(5, 8);
+            arr.Insert(5, "hello");
             Assert.Equal(-1, arr[5]);
         }
 
         [Fact]
         public void MethodInsertModifiesArraySize()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            arr.Insert(0, 3);
+            arr.Insert(0, "element");
             Assert.Equal(4, arr.Count);
         }
 
         [Fact]
         public void MethodInsertModifiesElementAtSpecifiedIndex()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            arr.Insert(0, 9);
-            Assert.Equal(9, arr[0]);
+            arr.Insert(0, 2.17);
+            Assert.Equal(2.17, arr[0]);
         }
 
         [Fact]
         public void MethodInsertShiftsElementsFromSpecidiedIndexToTheRightWithOnePosition()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            arr.Insert(0, 9);
+            arr.Insert(0, "firstElement");
+            Assert.Equal("firstElement", arr[0]);
             Assert.Equal(1, arr[1]);
             Assert.Equal(2, arr[2]);
             Assert.Equal(3, arr[3]);
@@ -150,10 +141,10 @@ namespace List.Facts
         [Fact]
         public void MethodClearEmptiesTheArray()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
+            arr.Add(true);
+            arr.Add(false);
             arr.Clear();
             Assert.Equal(0, arr.Count);
         }
@@ -161,53 +152,53 @@ namespace List.Facts
         [Fact]
         public void MethodRemoveModifiesArraySize()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
-            arr.Add(2);
+            arr.Add(true);
             arr.Add(3);
             arr.Add(1);
-            arr.Remove(1);
+            arr.Remove(true);
             Assert.Equal(3, arr.Count);
         }
 
         [Fact]
         public void MethodRemoveDeletesFirstAparitionOfElement()
         {
-            IntArray arr = new IntArray();
-            arr.Add(1);
+            ObjectArray arr = new ObjectArray();
+            arr.Add(true);
             arr.Add(2);
             arr.Add(3);
-            arr.Add(1);
-            arr.Remove(1);
+            arr.Add(true);
+            arr.Remove(true);
             Assert.Equal(2, arr[0]);
             Assert.Equal(3, arr[1]);
-            Assert.Equal(1, arr[2]);
+            Assert.Equal(true, arr[2]);
         }
 
         [Fact]
         public void MethodRemoveAtDoesNotModifiyArrayIfSpecifiedIndexDoesNotExist()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            arr.Add(1);
+            arr.Add("four");
             arr.RemoveAt(6);
             Assert.Equal(4, arr.Count);
         }
 
         [Fact]
-        public void MethodRemoveRemovesElementAtSpecifiedIndex()
+        public void MethodRemoveAtRemovesElementAtSpecifiedIndex()
         {
-            IntArray arr = new IntArray();
+            ObjectArray arr = new ObjectArray();
             arr.Add(1);
-            arr.Add(2);
+            arr.Add("two");
             arr.Add(3);
-            arr.Add(1);
+            arr.Add(true);
             arr.RemoveAt(1);
             Assert.Equal(1, arr[0]);
             Assert.Equal(3, arr[1]);
-            Assert.Equal(1, arr[2]);
+            Assert.Equal(true, arr[2]);
         }
     }
 }

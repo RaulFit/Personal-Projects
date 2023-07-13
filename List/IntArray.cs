@@ -11,31 +11,19 @@
             this.count = 0;
         }
 
-        public int Count
-        {
-            get => this.count;
-            private set => this.count = value;
-        }
+        public int Count { get; protected set; }
 
         public virtual void Add(int element)
         {
             Realocate();
-            array[count] = element;
-            count++;
+            array[Count] = element;
+            Count++;
         }
 
         public virtual int this[int index]
         {
-            get => (index < 0 || index >= array.Length) ? -1 : array[index];
-            set
-            {
-                if (index < 0 || index >= array.Length)
-                {
-                    return;
-                }
-
-                array[index] = value;
-            }
+            get => array[index]; 
+            set => array[index] = value;
         }
 
         public bool Contains(int element)
@@ -66,13 +54,13 @@
             Realocate();
             ShiftRight(index);
             array[index] = element;
-            count++;
+            Count++;
         }
 
         public void Clear()
         {
             Array.Resize(ref array, 0);
-            count = 0;
+            Count = 0;
         }
 
         public void Remove(int element)
@@ -88,7 +76,7 @@
             }
 
             ShiftLeft(index);
-            count--;
+            Count--;
         }
 
         protected void ShiftLeft(int index)
@@ -109,7 +97,7 @@
 
         protected void Realocate()
         {
-            if (count == array.Length)
+            if (Count == array.Length)
             {
                 Array.Resize(ref array, array.Length * 2);
             }

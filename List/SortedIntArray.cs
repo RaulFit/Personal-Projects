@@ -5,9 +5,9 @@
         public override void Add(int element)
         {
             Realocate();
-            array[count] = element;
-            count++;
-            Array.Sort(array, 0, count);
+            array[Count] = element;
+            Count++;
+            Array.Sort(array, 0, Count);
         }
 
         public override void Insert(int index, int element)
@@ -20,22 +20,17 @@
             Realocate();
             ShiftRight(index);
             array[index] = element;
-            count++;
-            Array.Sort(array, 0, count);
+            Count++;
+            Array.Sort(array, 0, Count);
         }
 
-        public override int this[int index]
+        public virtual int this[int index]
         {
-            get => (index < 0 || index >= array.Length) ? -1 : array[index];
+            get => array[index];
             set
             {
-                if (index < 0 || index >= array.Length)
-                {
-                    return;
-                }
-
                 array[index] = value;
-                Array.Sort(array, 0, count);
+                Array.Sort(array, 0, Count);
             }
         }
 

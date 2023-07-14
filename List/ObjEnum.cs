@@ -20,7 +20,7 @@ namespace List
         public bool MoveNext()
         {
             position++;
-            return array[position] != null && position < array.Length;
+            return position < array.Length;
         }
 
         public void Reset()

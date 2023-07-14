@@ -4,6 +4,15 @@ namespace List
 {
     public class ObjectArray : IEnumerable
     {
+        static void Main(string[] args)
+        {
+            ObjectArray arr = new ObjectArray { 1, true, "text", 2.1, 5.5};
+            foreach(object o in arr)
+            {
+                Console.WriteLine(o);
+            }
+        }
+
         private object[] array;
         protected int count;
 
@@ -107,7 +116,14 @@ namespace List
 
         public IEnumerator GetEnumerator()
         {
-            return new ObjEnum(array);
+            object[] valuesArray = new object[Count];
+
+            for(int i = 0; i < Count; i++)
+            {
+                valuesArray[i] = array[i];
+            }
+
+            return new ObjEnum(valuesArray);
         }
     }
 }

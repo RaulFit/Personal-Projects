@@ -1,14 +1,14 @@
-﻿namespace List
+﻿using System.Collections;
+
+namespace List
 {
-    public class ObjectArray
+    public class ObjectArray : IEnumerable
     {
         private object[] array;
-        private int count;
 
         public ObjectArray()
         {
             this.array = new object[4];
-            this.count = 0;
         }
 
         public int Count { get; protected set; }
@@ -102,5 +102,17 @@
                 Array.Resize(ref array, array.Length * 2);
             }
         }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public ObjEnum GetEnumerator()
+        {
+            return new ObjEnum(array);
+        }
+
+
     }
 }

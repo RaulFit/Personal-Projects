@@ -24,7 +24,7 @@
             Array.Sort(array, 0, Count);
         }
 
-        public virtual int this[int index]
+        public override int this[int index]
         {
             get => array[index];
             set

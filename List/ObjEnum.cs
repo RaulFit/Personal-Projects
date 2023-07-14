@@ -9,30 +9,25 @@ namespace List
     public class ObjEnum : IEnumerator
     {
         public object[] array;
-        int count;
+        int position;
 
         public ObjEnum(object[] arr)
         {
             this.array = arr;
-            this.count = -1;
+            this.position = -1;
         }
 
         public bool MoveNext()
         {
-            count++;
-            return count < array.Length;
+            position++;
+            return array[position] != null && position < array.Length;
         }
 
         public void Reset()
         {
-            count = -1;
+            position = -1;
         }
 
-        object IEnumerator.Current { get; }
-
-        public object Current
-        {
-           get => array[count];
-        }
+        public object Current { get => array[position]; }
     }
 }

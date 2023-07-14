@@ -5,10 +5,12 @@ namespace List
     public class ObjectArray : IEnumerable
     {
         private object[] array;
+        protected int count;
 
         public ObjectArray()
         {
             this.array = new object[4];
+            this.count = 0;
         }
 
         public int Count { get; protected set; }
@@ -103,16 +105,9 @@ namespace List
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public ObjEnum GetEnumerator()
+        public IEnumerator GetEnumerator()
         {
             return new ObjEnum(array);
         }
-
-
     }
 }

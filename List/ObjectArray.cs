@@ -4,13 +4,11 @@ namespace List
 {
     public class ObjectArray : IEnumerable
     {
-        private object[] array;
-        protected int count;
+        protected object[] array;
 
         public ObjectArray()
         {
             this.array = new object[4];
-            this.count = 0;
         }
 
         public int Count { get; protected set; }
@@ -107,14 +105,7 @@ namespace List
 
         public IEnumerator GetEnumerator()
         {
-            object[] valuesArray = new object[Count];
-
-            for(int i = 0; i < Count; i++)
-            {
-                valuesArray[i] = array[i];
-            }
-
-            return new ObjEnum(valuesArray);
+            return new ObjEnum(array, Count);
         }
     }
 }

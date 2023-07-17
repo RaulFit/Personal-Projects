@@ -28,7 +28,7 @@ namespace List
 
         public bool Contains(object element)
         {
-            return array.Contains(element);
+            return IndexOf(element) >= 0;
         }
 
         public int IndexOf(object element)
@@ -101,11 +101,6 @@ namespace List
             {
                 Array.Resize(ref array, array.Length * 2);
             }
-        }
-
-        public IEnumerator GetEnumerator()
-        {
-            return new ObjEnum(this);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

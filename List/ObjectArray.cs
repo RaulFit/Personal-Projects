@@ -103,7 +103,7 @@ namespace List
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public IEnumerator GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
             {

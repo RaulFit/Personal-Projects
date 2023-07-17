@@ -8,21 +8,28 @@ namespace List
 {
     public class ObjEnum : IEnumerator
     {
-        readonly protected object[] array;
-        int count;
+        static void Main(string[] args)
+        {
+            ObjectArray a = new ObjectArray() { 1, 2, 3, true, false };
+            foreach (object o in a)
+            {
+                Console.WriteLine(o);
+            }
+        }
+
+        ObjectArray array;
         int position;
 
-        public ObjEnum(object[] arr, int c) 
+        public ObjEnum(ObjectArray arr)
         {
-            this.array = arr;
-            this.count = c;
+            array = arr;
             this.position = -1;
         }
 
         public bool MoveNext()
         {
             position++;
-            return position < this.count;
+            return position < array.Count;
         }
 
         public void Reset()

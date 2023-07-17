@@ -11,7 +11,7 @@ namespace List
             this.array = new object[4];
         }
 
-        public int Count { get; protected set; }
+        public int Count { get; set; }
 
         public void Add(object element)
         {
@@ -105,7 +105,7 @@ namespace List
 
         public IEnumerator GetEnumerator()
         {
-            return new ObjEnum(array, Count);
+            return new ObjEnum(this);
         }
     }
 }

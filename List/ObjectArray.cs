@@ -28,7 +28,7 @@ namespace List
 
         public bool Contains(object element)
         {
-            return IndexOf(element) >= 0;
+            return IndexOf(element) != -1;
         }
 
         public int IndexOf(object element)

@@ -4,15 +4,6 @@ namespace List
 {
     public class ObjectArray : IEnumerable
     {
-        static void Main(string[] args)
-        {
-            ObjectArray a = new ObjectArray() { 1, 2,3, 4, true };
-            foreach (object o in a)
-            {
-                Console.WriteLine(o);
-            }
-        }
-
         protected object[] array;
 
         public ObjectArray()

@@ -8,15 +8,6 @@ namespace List
 {
     public class ObjEnum : IEnumerator
     {
-        static void Main(string[] args)
-        {
-            ObjectArray a = new ObjectArray() { 1, 2, 3, true, false };
-            foreach (object o in a)
-            {
-                Console.WriteLine(o);
-            }
-        }
-
         ObjectArray array;
         int position;
 

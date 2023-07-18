@@ -162,6 +162,17 @@
         }
 
         [Fact]
+        public void MethodRemoveReturnsTrueIfElementIsInArray()
+        {
+            var arr = new List<object>();
+            arr.Add(1);
+            arr.Add(true);
+            arr.Add(3);
+            arr.Add(1);
+            Assert.True(arr.Remove(3));
+        }
+
+        [Fact]
         public void MethodRemoveDeletesFirstAparitionOfElement()
         {
             var arr = new List<object>();
@@ -199,6 +210,19 @@
             Assert.Equal(1, arr[0]);
             Assert.Equal(3, arr[1]);
             Assert.Equal(true, arr[2]);
+        }
+
+        [Fact]
+        public void MethodCopyToCopiesListElementsIntoSpecifiedArray()
+        {
+            var originalArr = new List<int>() { 3, 4, 5 };
+            int[] specifiedArr = new int[5];
+            specifiedArr[0] = 1;
+            specifiedArr[1] = 2;
+            originalArr.CopyTo(specifiedArr, 2);
+            Assert.Equal(3, specifiedArr[2]);
+            Assert.Equal(4, specifiedArr[3]);
+            Assert.Equal(5, specifiedArr[4]);
         }
     }
 }

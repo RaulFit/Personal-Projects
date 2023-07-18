@@ -1,8 +1,9 @@
 ﻿using System.Collections;
+using System.Xml.Linq;
 
 namespace GenericList
 {
-    public class List<T> : IEnumerable<T>
+    public class List<T> : IList<T>
     {
         protected T[] array;
 
@@ -12,6 +13,8 @@ namespace GenericList
         }
 
         public int Count { get; set; }
+
+        public bool IsReadOnly { get; }
 
         public void Add(T element)
         {
@@ -63,9 +66,23 @@ namespace GenericList
             Count = 0;
         }
 
-        public void Remove(T element)
+        public void CopyTo(T[] array, int arrayIndex)
         {
-            RemoveAt(IndexOf(element));
+            for (int i = 0; i < Count; i++)
+            {
+                array[i + arrayIndex] = this[i];
+            }
+        }
+
+        public bool Remove(T item)
+        {
+            if (IndexOf(item) != -1)
+            {
+                RemoveAt(IndexOf(item));
+                return true;
+            }
+
+            return false;
         }
 
         public void RemoveAt(int index)

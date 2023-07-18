@@ -33,7 +33,7 @@ namespace GenericList
 
         public int IndexOf(T element)
         {
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (array[i].Equals(element))
                 {
@@ -105,15 +105,15 @@ namespace GenericList
 
         public IEnumerator<T> GetEnumerator()
         {
-            return GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
             for (int i = 0; i < Count; i++)
             {
                 yield return array[i];
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

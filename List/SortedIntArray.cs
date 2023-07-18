@@ -1,4 +1,4 @@
-﻿namespace List
+﻿namespace GenericList
 {
     public class SortedIntArray : IntArray
     {

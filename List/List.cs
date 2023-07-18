@@ -1,37 +1,37 @@
 ﻿using System.Collections;
 
-namespace List
+namespace GenericList
 {
-    public class ObjectArray : IEnumerable
+    public class List<T> : IEnumerable<T>
     {
-        protected object[] array;
+        protected T[] array;
 
-        public ObjectArray()
+        public List()
         {
-            this.array = new object[4];
+            this.array = new T[4];
         }
 
         public int Count { get; set; }
 
-        public void Add(object element)
+        public void Add(T element)
         {
             Realocate();
             array[Count] = element;
             Count++;
         }
 
-        public object this[int index]
+        public T this[int index]
         {
             get => array[index];
             set => array[index] = value;
         }
 
-        public bool Contains(object element)
+        public bool Contains(T element)
         {
             return IndexOf(element) != -1;
         }
 
-        public int IndexOf(object element)
+        public int IndexOf(T element)
         {
             for (int i = 0; i < array.Length; i++)
             {
@@ -44,7 +44,7 @@ namespace List
             return -1;
         }
 
-        public void Insert(int index, object element)
+        public void Insert(int index, T element)
         {
             if (index < 0 || index >= array.Length)
             {
@@ -63,7 +63,7 @@ namespace List
             Count = 0;
         }
 
-        public void Remove(object element)
+        public void Remove(T element)
         {
             RemoveAt(IndexOf(element));
         }
@@ -103,7 +103,12 @@ namespace List
             }
         }
 
-        public IEnumerator GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
             {

@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace List
+namespace GenericList
 {
-    public class ObjEnum : IEnumerator
+    public class ObjEnum<T> : IEnumerator<T>
     {
-        ObjectArray array;
+        List<T> array;
         int position;
 
-        public ObjEnum(ObjectArray arr)
+        public ObjEnum(List<T> arr)
         {
             array = arr;
             this.position = -1;
@@ -28,6 +28,12 @@ namespace List
             position = -1;
         }
 
-        public object Current { get => array[position]; }
+        public T Current { get => array[position]; }
+
+        object IEnumerator.Current => Current;
+
+        public void Dispose()
+        {
+        }
     }
 }

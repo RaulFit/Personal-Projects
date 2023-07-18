@@ -1,18 +1,18 @@
-﻿namespace List.Facts
+﻿namespace GenericList.Facts
 {
-    public class ObjectArrayFacts
+    public class ListFacts
     {
         [Fact]
         public void MethodCountReturnsZeroForAnEmptyArray()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             Assert.Equal(0, arr.Count);
         }
 
         [Fact]
         public void MethodCountReturnsNumberOfElements()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(true);
             arr.Add("text");
@@ -22,7 +22,7 @@
         [Fact]
         public void MethodElementReturnsTheElementFromSpecifiedIndex()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add("hello");
             arr.Add(3);
@@ -32,7 +32,7 @@
         [Fact]
         public void MethodElementWorksWhenArrayDoesNotContainIndex()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -42,7 +42,7 @@
         [Fact]
         public void MethodSetElementModifiesElementAtSpecifiedIndex()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -53,7 +53,7 @@
         [Fact]
         public void MethodSetElementWorksWhenArrayDoesNotContainIndex()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -64,7 +64,7 @@
         [Fact]
         public void MethodContainsReturnsTrueWhenElementIsInArray()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add("text");
             arr.Add(3.21);
@@ -74,7 +74,7 @@
         [Fact]
         public void MethodContainsReturnsFalseWhenElementIsNotInArray()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add("text");
             arr.Add(6.12);
@@ -84,7 +84,7 @@
         [Fact]
         public void MethodIndexOfReturnsIndexOfElement()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(2.01);
             arr.Add(true);
@@ -94,7 +94,7 @@
         [Fact]
         public void MethodInsertDoesNotModifyArrayWhenIndexDoesNotExist()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -105,7 +105,7 @@
         [Fact]
         public void MethodInsertModifiesArraySize()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -116,7 +116,7 @@
         [Fact]
         public void MethodInsertModifiesElementAtSpecifiedIndex()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -127,7 +127,7 @@
         [Fact]
         public void MethodInsertShiftsElementsFromSpecidiedIndexToTheRightWithOnePosition()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -141,7 +141,7 @@
         [Fact]
         public void MethodClearEmptiesTheArray()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(true);
             arr.Add(false);
@@ -152,7 +152,7 @@
         [Fact]
         public void MethodRemoveModifiesArraySize()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(true);
             arr.Add(3);
@@ -164,7 +164,7 @@
         [Fact]
         public void MethodRemoveDeletesFirstAparitionOfElement()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(true);
             arr.Add(2);
             arr.Add(3);
@@ -178,7 +178,7 @@
         [Fact]
         public void MethodRemoveAtDoesNotModifiyArrayIfSpecifiedIndexDoesNotExist()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
@@ -190,7 +190,7 @@
         [Fact]
         public void MethodRemoveAtRemovesElementAtSpecifiedIndex()
         {
-            ObjectArray arr = new ObjectArray();
+            var arr = new List<object>();
             arr.Add(1);
             arr.Add("two");
             arr.Add(3);

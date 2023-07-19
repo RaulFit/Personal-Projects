@@ -105,7 +105,6 @@ namespace GenericList
 
         public bool Remove(T item)
         {
-            
             try
             {
                 RemoveAt(IndexOf(item));

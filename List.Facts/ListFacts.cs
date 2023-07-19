@@ -30,16 +30,6 @@
         }
 
         [Fact]
-        public void MethodElementWorksWhenArrayDoesNotContainIndex()
-        {
-            var arr = new List<object>();
-            arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
-            Assert.Equal(-1, arr[6]);
-        }
-
-        [Fact]
         public void MethodSetElementModifiesElementAtSpecifiedIndex()
         {
             var arr = new List<object>();
@@ -48,17 +38,6 @@
             arr.Add(3);
             arr[0] = true;
             Assert.Equal(true, arr[0]);
-        }
-
-        [Fact]
-        public void MethodSetElementWorksWhenArrayDoesNotContainIndex()
-        {
-            var arr = new List<object>();
-            arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
-            arr[6] = 5;
-            Assert.Equal(-1, arr[6]);
         }
 
         [Fact]
@@ -89,17 +68,6 @@
             arr.Add(2.01);
             arr.Add(true);
             Assert.Equal(2, arr.IndexOf(true));
-        }
-
-        [Fact]
-        public void MethodInsertDoesNotModifyArrayWhenIndexDoesNotExist()
-        {
-            var arr = new List<object>();
-            arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
-            arr.Insert(5, "hello");
-            Assert.Equal(-1, arr[5]);
         }
 
         [Fact]
@@ -194,8 +162,7 @@
             arr.Add(2);
             arr.Add(3);
             arr.Add("four");
-            arr.RemoveAt(6);
-            Assert.Equal(4, arr.Count);
+            Assert.Throws<ArgumentOutOfRangeException>(() => arr.RemoveAt(6));
         }
 
         [Fact]

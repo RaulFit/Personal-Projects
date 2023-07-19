@@ -36,7 +36,7 @@ namespace GenericList.Facts
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            Assert.Equal(-1, arr[6]);
+            Assert.Throws<IndexOutOfRangeException>(() => arr[6]);
         }
 
         [Fact]
@@ -57,8 +57,7 @@ namespace GenericList.Facts
             arr.Add(1);
             arr.Add(2);
             arr.Add(3);
-            arr[6] = 5;
-            Assert.Equal(-1, arr[6]);
+            Assert.Throws<IndexOutOfRangeException>(() => arr[6] = 5);
         }
 
         [Fact]
@@ -99,17 +98,6 @@ namespace GenericList.Facts
             arr.Add(2);
             arr.Add(3);
             Assert.Equal(2, arr.IndexOf(3));
-        }
-
-        [Fact]
-        public void MethodInsertDoesNotModifyArrayWhenIndexDoesNotExist()
-        {
-            IntArray arr = new IntArray();
-            arr.Add(1);
-            arr.Add(2);
-            arr.Add(3);
-            arr.Insert(5, 8);
-            Assert.Equal(-1, arr[5]);
         }
 
         [Fact]

@@ -17,6 +17,11 @@ namespace GenericList
 
         public void Add(T element)
         {
+            if (IsReadOnly)
+            {
+                throw new NotSupportedException("The collection is read-only");
+            }
+
             Realocate();
             array[Count] = element;
             Count++;
@@ -48,9 +53,14 @@ namespace GenericList
 
         public void Insert(int index, T element)
         {
-            if (index < 0 || index >= array.Length)
+            if (IsReadOnly)
             {
-                return;
+                throw new NotSupportedException("The collection is read-only");
+            }
+
+            if(index < 0 || index > Count)
+            {
+                throw new ArgumentOutOfRangeException("index is not a valid index in the list");
             }
 
             Realocate();
@@ -61,12 +71,32 @@ namespace GenericList
 
         public void Clear()
         {
+            if (IsReadOnly)
+            {
+                throw new NotSupportedException("The collection is read-only");
+            }
+
             Array.Resize(ref array, 0);
             Count = 0;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException("The specified array is null");
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("The arrayIndex is less than 0");
+            }
+
+            if(Count > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("The number of elements in the source collection is greater than the available space from arrayIndex to the end of the destination array.");
+            }
+
             for (int i = 0; i < Count; i++)
             {
                 array[i + arrayIndex] = this[i];
@@ -75,15 +105,29 @@ namespace GenericList
 
         public bool Remove(T item)
         {
-            RemoveAt(IndexOf(item));
-            return true;
+            
+            try
+            {
+                RemoveAt(IndexOf(item));
+                return true;
+            }
+
+            catch (ArgumentOutOfRangeException)
+            {
+                return false;
+            }
         }
 
         public void RemoveAt(int index)
         {
-            if (index < 0 || index >= array.Length)
+            if (IsReadOnly)
             {
-                return;
+                throw new NotSupportedException("The collection is read-only");
+            }
+
+            if (index < 0 || index > Count)
+            {
+                throw new ArgumentOutOfRangeException("Index is not a valid in index in the list");
             }
 
             ShiftLeft(index);

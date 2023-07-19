@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Xml.Linq;
 
 namespace GenericList
 {
@@ -76,13 +75,8 @@ namespace GenericList
 
         public bool Remove(T item)
         {
-            if (IndexOf(item) != -1)
-            {
-                RemoveAt(IndexOf(item));
-                return true;
-            }
-
-            return false;
+            RemoveAt(IndexOf(item));
+            return true;
         }
 
         public void RemoveAt(int index)

@@ -11,7 +11,7 @@ namespace GenericList
             this.array = new T[4];
         }
 
-        public int Count { get; set; }
+        public int Count { get; private set; }
 
         public bool IsReadOnly { get; }
 

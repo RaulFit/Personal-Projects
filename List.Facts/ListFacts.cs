@@ -191,5 +191,83 @@
             Assert.Equal(4, specifiedArr[3]);
             Assert.Equal(5, specifiedArr[4]);
         }
+
+        [Fact]
+        public void MethodInsertThrowsExceptionIfIndexIsInvalid()
+        {
+            var arr = new List<object>();
+            arr.Add(1);
+            arr.Add(2);
+            arr.Add(3);
+            arr.Add("four");
+            Assert.Throws<ArgumentOutOfRangeException>(() => arr.Insert(5, 7));
+        }
+
+        [Fact]
+        public void MethodCopyToThrowsExceptionIfArrayIsNull()
+        {
+            var arr = new List<object>();
+            arr.Add(1);
+            arr.Add(2);
+            arr.Add(3);
+            arr.Add("four");
+            Assert.Throws<ArgumentNullException>(() => arr.CopyTo(null, 3));
+        }
+
+        [Fact]
+        public void MethodCopyToThrowsExceptionIfIndexIsNegative()
+        {
+            var arr = new List<object>();
+            arr.Add(1);
+            arr.Add(2);
+            arr.Add(3);
+            arr.Add("four");
+            object[] copyArr = new object[10];
+            Assert.Throws<ArgumentOutOfRangeException>(() => arr.CopyTo(copyArr, -2));
+        }
+
+        [Fact]
+        public void MethodCopyToThrowsExceptionIfArrayLengthIsTooSmall()
+        {
+            var arr = new List<object>();
+            arr.Add(1);
+            arr.Add(2);
+            arr.Add(3);
+            arr.Add("four");
+            object[] copyArr = new object[3];
+            Assert.Throws<ArgumentException>(() => arr.CopyTo(copyArr, 0));
+        }
+
+        [Fact]
+        public void MethodRemoveReturnsTrueIfItemIsInArray()
+        {
+            var arr = new List<object>();
+            arr.Add(1);
+            arr.Add(2);
+            arr.Add(3);
+            Assert.True(arr.Remove(2));
+        }
+
+        [Fact]
+        public void MethodRemoveReturnsFalseIfIndexIsNotInArray()
+        {
+            var arr = new List<object>();
+            arr.Add(1);
+            arr.Add(2);
+            arr.Add(3);
+            Assert.False(arr.Remove(4));
+        }
+
+        [Fact]
+        public void MethodRemoveAtThrowsExceptionIfIndexIsInvalid()
+        {
+            var arr = new List<object>();
+            arr.Add(1);
+            arr.Add(2);
+            arr.Add(3);
+            Assert.Throws<ArgumentOutOfRangeException>(() => arr.RemoveAt(5));
+        }
+
+
     }
 }

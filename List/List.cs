@@ -15,13 +15,13 @@ namespace GenericList
 
         public bool IsReadOnly { get; }
 
+        int ICollection<T>.Count { get; }
+
+        bool ICollection<T>.IsReadOnly { get => true; }
+
         public void Add(T element)
         {
-            if (IsReadOnly)
-            {
-                throw new NotSupportedException("The collection is read-only");
-            }
-
+            ListIsReadOnly();
             Realocate();
             array[Count] = element;
             Count++;
@@ -53,16 +53,8 @@ namespace GenericList
 
         public void Insert(int index, T element)
         {
-            if (IsReadOnly)
-            {
-                throw new NotSupportedException("The collection is read-only");
-            }
-
-            if(index < 0 || index > Count)
-            {
-                throw new ArgumentOutOfRangeException("index is not a valid index in the list");
-            }
-
+            ListIsReadOnly();
+            IndexIsInvalid(index);
             Realocate();
             ShiftRight(index);
             array[index] = element;
@@ -71,11 +63,7 @@ namespace GenericList
 
         public void Clear()
         {
-            if (IsReadOnly)
-            {
-                throw new NotSupportedException("The collection is read-only");
-            }
-
+            ListIsReadOnly();
             Array.Resize(ref array, 0);
             Count = 0;
         }
@@ -119,16 +107,8 @@ namespace GenericList
 
         public void RemoveAt(int index)
         {
-            if (IsReadOnly)
-            {
-                throw new NotSupportedException("The collection is read-only");
-            }
-
-            if (index < 0 || index > Count)
-            {
-                throw new ArgumentOutOfRangeException("Index is not a valid in index in the list");
-            }
-
+            ListIsReadOnly();
+            IndexIsInvalid(index);
             ShiftLeft(index);
             Count--;
         }
@@ -157,6 +137,22 @@ namespace GenericList
             }
         }
 
+        protected void ListIsReadOnly()
+        {
+            if (IsReadOnly)
+            {
+                throw new NotSupportedException("The collection is read-only");
+            }
+        }
+
+        protected void IndexIsInvalid(int index)
+        {
+            if (index < 0 || index > Count)
+            {
+                throw new ArgumentOutOfRangeException("Index is not a valid in index in the list");
+            }
+        }
+        
         public IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < Count; i++)

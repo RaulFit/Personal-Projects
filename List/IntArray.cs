@@ -1,4 +1,6 @@
-﻿namespace GenericList
+﻿using List;
+
+namespace GenericList
 {
     public class IntArray
     {

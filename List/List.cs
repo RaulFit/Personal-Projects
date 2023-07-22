@@ -15,13 +15,8 @@ namespace GenericList
 
         public bool IsReadOnly { get; }
 
-        int ICollection<T>.Count { get; }
-
-        bool ICollection<T>.IsReadOnly { get => true; }
-
         public void Add(T element)
         {
-            ListIsReadOnly();
             Realocate();
             array[Count] = element;
             Count++;
@@ -53,7 +48,6 @@ namespace GenericList
 
         public void Insert(int index, T element)
         {
-            ListIsReadOnly();
             IndexIsInvalid(index);
             Realocate();
             ShiftRight(index);
@@ -63,7 +57,6 @@ namespace GenericList
 
         public void Clear()
         {
-            ListIsReadOnly();
             Array.Resize(ref array, 0);
             Count = 0;
         }
@@ -107,7 +100,6 @@ namespace GenericList
 
         public void RemoveAt(int index)
         {
-            ListIsReadOnly();
             IndexIsInvalid(index);
             ShiftLeft(index);
             Count--;
@@ -134,14 +126,6 @@ namespace GenericList
             if (Count == array.Length)
             {
                 Array.Resize(ref array, array.Length * 2);
-            }
-        }
-
-        protected void ListIsReadOnly()
-        {
-            if (IsReadOnly)
-            {
-                throw new NotSupportedException("The collection is read-only");
             }
         }
 

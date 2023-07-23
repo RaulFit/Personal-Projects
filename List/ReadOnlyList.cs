@@ -33,20 +33,11 @@ namespace GenericList
             throw new NotSupportedException("The list is read-only");
         }
 
-        public bool Contains(T item)
-        {
-            return list.Contains(item);
-        }
+        public bool Contains(T item) => list.Contains(item);
+       
+        public void CopyTo(T[] array, int arrayIndex) => list.CopyTo(array, arrayIndex);
 
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            list.CopyTo(array, arrayIndex);
-        }
-
-        public int IndexOf(T item)
-        {
-            return list.IndexOf(item);
-        }
+        public int IndexOf(T item) => list.IndexOf(item);
 
         public void Insert(int index, T item)
         {

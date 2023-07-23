@@ -73,6 +73,5 @@ namespace GenericList.Facts
             var readOnlyList = new ReadOnlyList<int>(list);
             Assert.Throws<NotSupportedException>(() => readOnlyList.RemoveAt(1));
         }
-
     }
 }

@@ -133,7 +133,7 @@ namespace GenericList
         {
             if (index < 0 || index > Count)
             {
-                throw new ArgumentOutOfRangeException("Index is not a valid in index in the list");
+                throw new ArgumentOutOfRangeException("Index is not a valid index in the list");
             }
         }
         

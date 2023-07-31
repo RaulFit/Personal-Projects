@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace List
+namespace GenericList
 {
     public class SortedList<T> where T : IComparable<T>
     {

@@ -1,6 +1,6 @@
 ﻿using List;
 
-namespace GenericList
+namespace List
 {
     public class IntArray
     {

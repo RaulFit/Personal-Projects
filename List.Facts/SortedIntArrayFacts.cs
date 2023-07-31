@@ -1,4 +1,4 @@
-﻿namespace GenericList.Facts
+﻿namespace List.Facts
 {
     public class SortedIntArrayFacts
     {

@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace GenericList
+namespace StreamDecorator
 {
     public class StreamDecorator
     {
@@ -15,9 +15,11 @@ namespace GenericList
                 throw new ArgumentNullException("Stream cannot be null.");
             }
 
-            byte[] bytes = Encoding.UTF8.GetBytes(text);
+            var writer = new StreamWriter(stream);
 
-            stream.Write(bytes, 0, bytes.Length);
+            writer.Write(text);
+
+            writer.Flush();
         }
 
         public string ReadFromStream(Stream stream, bool gzip = false, bool encrypt = false)
@@ -29,13 +31,9 @@ namespace GenericList
 
             stream.Position = 0;
 
-            string text;
-
             var reader = new StreamReader(stream);
 
-            text = reader.ReadToEnd();
-
-            return text;
+            return reader.ReadToEnd();
         }
     }
 }

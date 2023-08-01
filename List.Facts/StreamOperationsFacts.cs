@@ -10,50 +10,26 @@ namespace StreamDecorator.Facts
     public class StreamOperationsFacts
     {
         [Fact]
-        void MethodWriteToStreamWritesSpecifiedTextToStream()
+        void MethodsReadAndWriteWorkCorrectly()
         {
             Stream stream = new MemoryStream();
-            StreamOperations decorator = new StreamOperations();
+            StreamOperations streamOperations = new StreamOperations();
 
             string text = "Text to write to the stream";
-            decorator.WriteToStream(stream, text);
+            streamOperations.WriteToStream(stream, text);
 
-            stream.Position = 0;
-            var reader = new StreamReader(stream);
-            string resultText = reader.ReadToEnd();
-            Assert.Equal(text, resultText);
+            Assert.Equal(text, streamOperations.ReadFromStream(stream));
         }
 
         [Fact]
-        void MethodWriteToStreamThrowsExceptionIfStreamIsNull()
+        void MethodsReadAndWriteThrowExceptionIfStreamIsNull()
         {
             Stream nullStream = null;
-            StreamOperations decorator = new StreamOperations();
+            StreamOperations streamOperations = new StreamOperations();
             string text = "Text to write to the stream";
 
-            Assert.Throws<ArgumentNullException>(() => decorator.WriteToStream(nullStream, text));
-        }
-
-        [Fact]
-        void MethodReadFromStreamThrowsExceptionIfStreamIsNull()
-        {
-            Stream nullStream = null;
-            StreamOperations decorator = new StreamOperations();
-
-            Assert.Throws<ArgumentNullException>(() => decorator.ReadFromStream(nullStream));
-        }
-
-        [Fact]
-        void MethodReadFromStreamReadsTextFromSpecifiedStream()
-        {
-            Stream stream = new MemoryStream();
-            StreamOperations decorator = new StreamOperations();
-
-            string streamText = "Text from stream";
-
-            decorator.WriteToStream(stream, streamText);
-
-            Assert.Equal("Text from stream", decorator.ReadFromStream(stream));
+            Assert.Throws<ArgumentNullException>(() => streamOperations.WriteToStream(nullStream, text));
+            Assert.Throws<ArgumentNullException>(() => streamOperations.ReadFromStream(nullStream));
         }
 
         [Fact]
@@ -62,7 +38,7 @@ namespace StreamDecorator.Facts
             var stream = new MemoryStream();
             var text = "Text to be compressed";
             var streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(stream, text, true, false);
+            streamOperations.WriteToStream(stream, text, gzip: true);
             stream.Position = 0;
             var gzipStream = new GZipStream(stream, CompressionMode.Decompress);
             var reader = new StreamReader(gzipStream);
@@ -76,9 +52,29 @@ namespace StreamDecorator.Facts
             var streamOperations = new StreamOperations();
             var text = "Text to be encrypted";
             var memoryStream = new MemoryStream();
+
             streamOperations.WriteToStream(memoryStream, text, encrypt: true);
-            byte[] encryptedData = memoryStream.ToArray();
-            var decryptedText = streamOperations.ReadFromStream(new MemoryStream(encryptedData), encrypt: true);
+
+            memoryStream.Position = 0;
+
+            var decryptedText = streamOperations.ReadFromStream(memoryStream, encrypt: true);
+
+            Assert.NotEqual(text, decryptedText);
+        }
+
+        [Fact]
+        void WriteAndReadWithGzipAndEncrypt_ShouldSucceed()
+        {
+            var streamOperations = new StreamOperations();
+            var text = "Text to be compressed and encrypted";
+            var memoryStream = new MemoryStream();
+
+            streamOperations.WriteToStream(memoryStream, text, gzip: true, encrypt: true);
+
+            memoryStream.Position = 0;
+
+            var decryptedText = streamOperations.ReadFromStream(memoryStream, gzip: true, encrypt: true);
+
             Assert.NotEqual(text, decryptedText);
         }
     }

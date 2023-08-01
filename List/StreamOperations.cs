@@ -24,6 +24,7 @@ namespace StreamDecorator
             writer.Write(text);
 
             writer.Flush();
+
         }
 
         public string ReadFromStream(Stream stream, bool gzip = false, bool encrypt = false)
@@ -33,11 +34,11 @@ namespace StreamDecorator
                 throw new ArgumentNullException("Stream cannot be null.");
             }
 
-            DecorateStream(stream, gzip, encrypt);
-
             stream.Position = 0;
 
             var reader = new StreamReader(stream);
+
+            stream = DecorateStream(stream, gzip, encrypt);
 
             return reader.ReadToEnd();
         }

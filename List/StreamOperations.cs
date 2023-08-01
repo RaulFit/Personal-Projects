@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 
 namespace StreamDecorator
 {
-    public class StreamDecorator
+    public class StreamOperations
     {
         public void WriteToStream(Stream stream, string text, bool gzip = false, bool encrypt = false)
         {
@@ -17,7 +17,7 @@ namespace StreamDecorator
                 throw new ArgumentNullException("Stream cannot be null.");
             }
 
-            DecorateStream(stream, gzip, encrypt);
+            stream = DecorateStream(stream, gzip, encrypt);
 
             var writer = new StreamWriter(stream);
 
@@ -42,24 +42,25 @@ namespace StreamDecorator
             return reader.ReadToEnd();
         }
 
-        static void DecorateStream(Stream stream, bool gzip, bool encrypt)
+        static Stream DecorateStream(Stream stream, bool gzip, bool encrypt)
         {
             if (gzip)
             {
-                stream = new GZipStream(stream, CompressionMode.Compress);
+                return new GZipStream(stream, CompressionMode.Compress);
             }
 
             if (encrypt)
             {
                 byte[] key = new byte[32];
-                var rng = new RNGCryptoServiceProvider();
+                RandomNumberGenerator rng = RandomNumberGenerator.Create();
                 rng.GetBytes(key);
                 Aes aes = Aes.Create();
                 aes.Key = key;
-                aes.GenerateIV();
                 ICryptoTransform encryptor = aes.CreateEncryptor();
-                stream = new CryptoStream(stream, encryptor, CryptoStreamMode.Write);
+                return new CryptoStream(stream, encryptor, CryptoStreamMode.Write);
             }
+
+            return stream;
         }
     }
 }

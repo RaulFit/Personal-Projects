@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,7 +13,7 @@ namespace StreamDecorator.Facts
         [Fact]
         void MethodsReadAndWriteWorkCorrectly()
         {
-            Stream stream = new MemoryStream();
+            MemoryStream stream = new MemoryStream();
             StreamOperations streamOperations = new StreamOperations();
 
             string text = "Text to write to the stream";
@@ -24,7 +25,7 @@ namespace StreamDecorator.Facts
         [Fact]
         void MethodsReadAndWriteThrowExceptionIfStreamIsNull()
         {
-            Stream nullStream = null;
+            MemoryStream nullStream = null;
             StreamOperations streamOperations = new StreamOperations();
             string text = "Text to write to the stream";
 
@@ -33,49 +34,49 @@ namespace StreamDecorator.Facts
         }
 
         [Fact]
-        void GzipParamIsTrue_ShouldCompressStream()
+        void WriteGzipParamIsTrue_ShouldCompressStream()
         {
             var stream = new MemoryStream();
             var text = "Text to be compressed";
             var streamOperations = new StreamOperations();
             streamOperations.WriteToStream(stream, text, gzip: true);
-            stream.Position = 0;
-            var gzipStream = new GZipStream(stream, CompressionMode.Decompress);
-            var reader = new StreamReader(gzipStream);
-            var decompressedText = reader.ReadToEnd();
-            Assert.Equal(text, decompressedText);
+            Assert.NotEqual(text, streamOperations.ReadFromStream(stream));
         }
 
         [Fact]
-        void EncryptParamIsTrue_ShouldEncryptStream()
+        void ReadGzipParamIsTrue_ShouldDecompressStream()
         {
+            var stream = new MemoryStream();
+            var text = "Text to be compressed";
             var streamOperations = new StreamOperations();
-            var text = "Text to be encrypted";
-            var memoryStream = new MemoryStream();
+            streamOperations.WriteToStream(stream, text, gzip: true);
+            byte[] compressed = stream.ToArray();
+            Assert.Equal(text, streamOperations.ReadFromStream(stream, gzip: true, bytes: compressed));
+        }
 
-            streamOperations.WriteToStream(memoryStream, text, encrypt: true);
 
-            memoryStream.Position = 0;
 
-            var decryptedText = streamOperations.ReadFromStream(memoryStream, encrypt: true);
-
-            Assert.NotEqual(text, decryptedText);
+        [Fact]
+        void WriteEncryptParamIsTrue_ShouldEncryptStream()
+        {
+            string text = "Text to encrypt";
+            const string passPhrase = "Sup3rS3curePass!";
+            MemoryStream memoryStream = new MemoryStream();
+            StreamOperations streamOperations = new StreamOperations();
+            streamOperations.WriteToStream(memoryStream, text, encrypt: true, passPhrase: passPhrase);
+            Assert.NotEqual(text, streamOperations.ReadFromStream(memoryStream));
         }
 
         [Fact]
-        void WriteAndReadWithGzipAndEncrypt_ShouldSucceed()
+        void ReadEncryptParamIsTrue_ShouldDecryptStream()
         {
-            var streamOperations = new StreamOperations();
-            var text = "Text to be compressed and encrypted";
-            var memoryStream = new MemoryStream();
-
-            streamOperations.WriteToStream(memoryStream, text, gzip: true, encrypt: true);
-
-            memoryStream.Position = 0;
-
-            var decryptedText = streamOperations.ReadFromStream(memoryStream, gzip: true, encrypt: true);
-
-            Assert.NotEqual(text, decryptedText);
+            string text = "Text to encrypt";
+            const string passPhrase = "Sup3rS3curePass!";
+            MemoryStream memoryStream = new MemoryStream();
+            StreamOperations streamOperations = new StreamOperations();
+            streamOperations.WriteToStream(memoryStream, text, encrypt: true, passPhrase: passPhrase);
+            byte[] encrypted = memoryStream.ToArray();
+            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, encrypt: true, passPhrase: passPhrase, bytes: encrypted));
         }
     }
 }

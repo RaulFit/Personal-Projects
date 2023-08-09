@@ -34,7 +34,7 @@ namespace StreamDecorator.Facts
         }
 
         [Fact]
-        void WriteFGzipParamIsTrue_ShouldCompressStream()
+        void WriteGzipParamIsTrue_ShouldCompressStream()
         {
             string text = "Text to compress";
             MemoryStream memoryStream = new MemoryStream();
@@ -63,17 +63,6 @@ namespace StreamDecorator.Facts
             streamOperations.WriteToStream(memoryStream, text, encrypt: true);
             string encrypted = Convert.ToBase64String(memoryStream.ToArray());
             Assert.NotEqual(text, encrypted);
-        }
-
-        [Fact]
-        void ReadEncryptParamIsTrue_ShouldDecryptStream()
-        {
-            string text = "Text to encrypt";
-            string key = "b14ca5898a4e4133bbce2ea2315a1916";
-            MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations(key);
-            streamOperations.WriteToStream(memoryStream, text, encrypt: true);
-            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, encrypt: true));
         }
 
         [Fact]

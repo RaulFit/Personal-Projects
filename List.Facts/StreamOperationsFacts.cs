@@ -34,49 +34,57 @@ namespace StreamDecorator.Facts
         }
 
         [Fact]
-        void WriteGzipParamIsTrue_ShouldCompressStream()
+        void WriteFGzipParamIsTrue_ShouldCompressStream()
         {
-            var stream = new MemoryStream();
-            var text = "Text to be compressed";
-            var streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(stream, text, gzip: true);
-            Assert.NotEqual(text, streamOperations.ReadFromStream(stream));
+            string text = "Text to compress";
+            MemoryStream memoryStream = new MemoryStream();
+            StreamOperations streamOperations = new StreamOperations();
+            streamOperations.WriteToStream(memoryStream, text, gzip: true);
+            Assert.NotEqual(text, streamOperations.ReadFromStream(memoryStream));
         }
 
         [Fact]
-        void ReadGzipParamIsTrue_ShouldDecompressStream()
+        void ReadFGzipParamIsTrue_ShouldDecompressStream()
         {
-            var stream = new MemoryStream();
-            var text = "Text to be compressed";
-            var streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(stream, text, gzip: true);
-            byte[] compressed = stream.ToArray();
-            Assert.Equal(text, streamOperations.ReadFromStream(stream, gzip: true, bytes: compressed));
+            string text = "Text to compress";
+            MemoryStream memoryStream = new MemoryStream();
+            StreamOperations streamOperations = new StreamOperations();
+            streamOperations.WriteToStream(memoryStream, text, gzip: true);
+            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, gzip: true));
         }
-
-
 
         [Fact]
         void WriteEncryptParamIsTrue_ShouldEncryptStream()
         {
             string text = "Text to encrypt";
-            const string passPhrase = "Sup3rS3curePass!";
+            string key = "b14ca5898a4e4133bbce2ea2315a1916";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(memoryStream, text, encrypt: true, passPhrase: passPhrase);
-            Assert.NotEqual(text, streamOperations.ReadFromStream(memoryStream));
+            StreamOperations streamOperations = new StreamOperations(key);
+            streamOperations.WriteToStream(memoryStream, text, encrypt: true);
+            string encrypted = Convert.ToBase64String(memoryStream.ToArray());
+            Assert.NotEqual(text, encrypted);
         }
 
         [Fact]
         void ReadEncryptParamIsTrue_ShouldDecryptStream()
         {
             string text = "Text to encrypt";
-            const string passPhrase = "Sup3rS3curePass!";
+            string key = "b14ca5898a4e4133bbce2ea2315a1916";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(memoryStream, text, encrypt: true, passPhrase: passPhrase);
-            byte[] encrypted = memoryStream.ToArray();
-            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, encrypt: true, passPhrase: passPhrase, bytes: encrypted));
+            StreamOperations streamOperations = new StreamOperations(key);
+            streamOperations.WriteToStream(memoryStream, text, encrypt: true);
+            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, encrypt: true));
+        }
+
+        [Fact]
+        void GzipAndEncryptParamsSetOnTrue_ShouldCompressAndEncryptStream()
+        {
+            string text = "Text to encrypt";
+            string key = "b14ca5898a4e4133bbce2ea2315a1916";
+            MemoryStream memoryStream = new MemoryStream();
+            StreamOperations streamOperations = new StreamOperations(key);
+            streamOperations.WriteToStream(memoryStream, text, gzip:true, encrypt: true);
+            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, gzip:true, encrypt: true));
         }
     }
 }

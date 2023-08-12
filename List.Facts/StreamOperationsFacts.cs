@@ -34,17 +34,7 @@ namespace StreamDecorator.Facts
         }
 
         [Fact]
-        void WriteGzipParamIsTrue_ShouldCompressStream()
-        {
-            string text = "Text to compress";
-            MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(memoryStream, text, gzip: true);
-            Assert.NotEqual(text, streamOperations.ReadFromStream(memoryStream));
-        }
-
-        [Fact]
-        void ReadFGzipParamIsTrue_ShouldDecompressStream()
+        void GzipParamIsTrue_ShouldCompressAndDecompressStream()
         {
             string text = "Text to compress";
             MemoryStream memoryStream = new MemoryStream();
@@ -54,22 +44,21 @@ namespace StreamDecorator.Facts
         }
 
         [Fact]
-        void WriteEncryptParamIsTrue_ShouldEncryptStream()
+        void EncryptParamIsTrue_ShouldEncryptAndDecryptStream()
         {
             string text = "Text to encrypt";
-            string key = "b14ca5898a4e4133bbce2ea2315a1916";
+            var key = "b14ca5898a4e4133bbce2ea2315a1916";
             MemoryStream memoryStream = new MemoryStream();
             StreamOperations streamOperations = new StreamOperations(key);
             streamOperations.WriteToStream(memoryStream, text, encrypt: true);
-            string encrypted = Convert.ToBase64String(memoryStream.ToArray());
-            Assert.NotEqual(text, encrypted);
+            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, true));
         }
 
         [Fact]
         void GzipAndEncryptParamsSetOnTrue_ShouldCompressAndEncryptStream()
         {
             string text = "Text to encrypt";
-            string key = "b14ca5898a4e4133bbce2ea2315a1916";
+            var key = "b14ca5898a4e4133bbce2ea2315a1916";
             MemoryStream memoryStream = new MemoryStream();
             StreamOperations streamOperations = new StreamOperations(key);
             streamOperations.WriteToStream(memoryStream, text, gzip:true, encrypt: true);

@@ -10,16 +10,17 @@ namespace StreamDecorator
 {
     public class StreamOperations
     {
-        private readonly string key;
-        private byte[] bytes;
-        private byte[] iv;
+        private MemoryStream outputStream;
+        private byte[] encrypted;
+        private readonly byte[] key;
 
         public StreamOperations(string key = "")
         {
-            this.key = key;
+            this.outputStream = new MemoryStream();
+            this.key = Encoding.UTF8.GetBytes(key);
         }
 
-        public void WriteToStream(MemoryStream stream, string text, bool gzip = false, bool encrypt = false)
+        public void WriteToStream(Stream stream, string text, bool gzip = false, bool encrypt = false)
         {
             if (stream == null)
             {
@@ -28,43 +29,30 @@ namespace StreamDecorator
 
             if (gzip)
             {
-                using (var gZipStream = new GZipStream(stream, CompressionMode.Compress, true))
-                using (var writer = new StreamWriter(gZipStream, Encoding.UTF8))
-                {
-                    writer.Write(text);
-                }
-
-                stream.Position = 0;
+                stream = new GZipStream(this.outputStream, CompressionMode.Compress);
             }
 
             if (encrypt)
             {
-                using (Aes aes = Aes.Create())
-                {
-                    this.bytes = Encoding.UTF8.GetBytes(this.key);
-                    aes.Key = this.bytes;
-                    aes.GenerateIV();
-                    this.iv = aes.IV;
-
-                    var encryptor = aes.CreateEncryptor();
-                    var cryptoStream = new CryptoStream(stream, encryptor, CryptoStreamMode.Write);
-                    var writer = new StreamWriter(cryptoStream, Encoding.UTF8);
-                    
-                    writer.Write(text);
-                }
+                Aes aes = Aes.Create();
+                byte[] iv = new byte[16];
+                aes.Key = this.key;
+                aes.IV = iv;
+                var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+                stream = new CryptoStream(this.outputStream, encryptor, CryptoStreamMode.Write);
             }
 
-            if (!gzip && !encrypt)
-            {
-                var writer = new StreamWriter(stream);
+            var writer = new StreamWriter(stream);
 
-                writer.Write(text);
+            writer.Write(text);
 
-                writer.Flush();
-            }
+            writer.Flush();
+
+            this.encrypted = outputStream.ToArray();
+
         }
 
-        public string ReadFromStream(MemoryStream stream, bool gzip = false, bool encrypt = false)
+        public string ReadFromStream(Stream stream, bool gzip = false, bool encrypt = false)
         {
             if (stream == null)
             {
@@ -73,31 +61,39 @@ namespace StreamDecorator
 
             if (gzip)
             {
-                using (var gZipStream = new GZipStream(stream, CompressionMode.Decompress))
-                using (var reader = new StreamReader(gZipStream, Encoding.UTF8))
+                using (var gZipStream = new GZipStream(this.outputStream, CompressionMode.Decompress))
+                using (var outputStream = new MemoryStream())
                 {
-                    return reader.ReadToEnd();
-                }
-            }
+                    this.outputStream.Position = 0;
+                    gZipStream.CopyTo(outputStream);
+                    var outputBytes = outputStream.ToArray();
 
-            if (encrypt)
-            {
-                using (Aes aes = Aes.Create())
-                {
-                    aes.Key = this.bytes;
-                    aes.IV = this.iv;
-                    using (var decryptor = aes.CreateDecryptor())
-                    using (var cryptoStream = new CryptoStream(stream, decryptor, CryptoStreamMode.Read))
-                    using (var reader = new StreamReader(cryptoStream, Encoding.UTF8))
+                    string decompressed = Encoding.UTF8.GetString(outputBytes);
+                    if (!encrypt)
                     {
-                        return reader.ReadToEnd();
+                        return decompressed;
                     }
                 }
             }
 
+            if (encrypt)
+            {
+                using Aes aes = Aes.Create();
+                byte[] iv = new byte[16];
+                aes.Key = this.key;
+                aes.IV = iv;
+                using MemoryStream input = new(encrypted);
+                var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                using CryptoStream cryptoStream = new(input, decryptor, CryptoStreamMode.Read);
+                using MemoryStream output = new();
+                cryptoStream.CopyTo(output);
+                return Encoding.Unicode.GetString(output.ToArray());
+            }
+            
+
             stream.Position = 0;
 
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
+            using (var reader = new StreamReader(stream))
             {
                 return reader.ReadToEnd();
             }

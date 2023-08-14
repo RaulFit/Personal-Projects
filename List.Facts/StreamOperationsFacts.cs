@@ -14,9 +14,10 @@ namespace StreamDecorator.Facts
         void MethodsReadAndWriteWorkCorrectly()
         {
             MemoryStream stream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations();
+            
 
             string text = "Text to write to the stream";
+            StreamOperations streamOperations = new StreamOperations();
             streamOperations.WriteToStream(stream, text);
 
             Assert.Equal(text, streamOperations.ReadFromStream(stream));
@@ -26,15 +27,25 @@ namespace StreamDecorator.Facts
         void MethodsReadAndWriteThrowExceptionIfStreamIsNull()
         {
             MemoryStream nullStream = null;
-            StreamOperations streamOperations = new StreamOperations();
             string text = "Text to write to the stream";
+            StreamOperations streamOperations = new StreamOperations();
 
             Assert.Throws<ArgumentNullException>(() => streamOperations.WriteToStream(nullStream, text));
             Assert.Throws<ArgumentNullException>(() => streamOperations.ReadFromStream(nullStream));
         }
 
         [Fact]
-        void GzipParamIsTrue_ShouldCompressAndDecompressStream()
+        void WriteGziParamIsTrue_ShouldCompressString()
+        {
+            string text = "Text to compress";
+            MemoryStream memoryStream = new MemoryStream();
+            StreamOperations streamOperations = new StreamOperations();
+            streamOperations.WriteToStream(memoryStream, text, gzip: true);
+            Assert.NotEqual(text, streamOperations.ReadFromStream(memoryStream));
+        }
+
+        [Fact]
+        void ReadGzipParamIsTrue_ShouldCompressAndDecompressString()
         {
             string text = "Text to compress";
             MemoryStream memoryStream = new MemoryStream();
@@ -44,25 +55,36 @@ namespace StreamDecorator.Facts
         }
 
         [Fact]
-        void EncryptParamIsTrue_ShouldEncryptAndDecryptStream()
+        void WriteEncryptParamIsTrue_ShouldEncryptString()
         {
             string text = "Text to encrypt";
             var key = "b14ca5898a4e4133bbce2ea2315a1916";
             MemoryStream memoryStream = new MemoryStream();
             StreamOperations streamOperations = new StreamOperations(key);
             streamOperations.WriteToStream(memoryStream, text, encrypt: true);
-            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, true));
+            Assert.NotEqual(text, streamOperations.ReadFromStream(memoryStream));
         }
 
         [Fact]
-        void GzipAndEncryptParamsSetOnTrue_ShouldCompressAndEncryptStream()
+        void ReadEncryptParamIsTrue_ShouldEncryptAndDecryptString()
         {
             string text = "Text to encrypt";
             var key = "b14ca5898a4e4133bbce2ea2315a1916";
             MemoryStream memoryStream = new MemoryStream();
             StreamOperations streamOperations = new StreamOperations(key);
-            streamOperations.WriteToStream(memoryStream, text, gzip:true, encrypt: true);
-            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, gzip:true, encrypt: true));
+            streamOperations.WriteToStream(memoryStream, text, encrypt: true);
+            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, encrypt: true));
+        }
+
+        [Fact]
+        void StreamOperationsWorksIfBothParamsAreTrue()
+        {
+            string text = "Text to encrypt";
+            var key = "b14ca5898a4e4133bbce2ea2315a1916";
+            MemoryStream memoryStream = new MemoryStream();
+            StreamOperations streamOperations = new StreamOperations(key);
+            streamOperations.WriteToStream(memoryStream, text, gzip: true, encrypt: true);
+            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, gzip: true, encrypt: true));
         }
     }
 }

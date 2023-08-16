@@ -7,4 +7,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="IntArray.cs" />
+    <Compile Remove="List.cs" />
+    <Compile Remove="ObjEnum.cs" />
+    <Compile Remove="ReadOnlyList.cs" />
+    <Compile Remove="SortedIntArray.cs" />
+    <Compile Remove="SortedList.cs" />
+  </ItemGroup>
+
 </Project>

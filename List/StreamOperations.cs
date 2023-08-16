@@ -10,8 +10,6 @@ namespace StreamDecorator
 {
     public class StreamOperations
     {
-        byte[] emptySalt = Array.Empty<byte>();
-        private byte[] compressed;
         private string key;
         private readonly byte[] iv = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
 
@@ -20,7 +18,7 @@ namespace StreamDecorator
             this.key = key;
         }
 
-        public void WriteToStream(MemoryStream stream, string text, bool gzip = false, bool encrypt = false)
+        public void WriteToStream(Stream stream, string text, bool gzip = false, bool encrypt = false)
         {
             if (stream == null)
             {
@@ -30,15 +28,12 @@ namespace StreamDecorator
             if (gzip && !encrypt)
             {
                 var bytes = Encoding.UTF8.GetBytes(text);
-
                 using (var msi = new MemoryStream(bytes))
                 {
                     using (var gs = new GZipStream(stream, CompressionMode.Compress, true))
                     {
                         msi.CopyTo(gs);
                     }
-
-                    this.compressed = stream.ToArray();
                 }
                 return;
             }
@@ -46,7 +41,7 @@ namespace StreamDecorator
             if (encrypt)
             {
                 using Aes aes = Aes.Create();
-                aes.Key = Rfc2898DeriveBytes.Pbkdf2(Encoding.Unicode.GetBytes(this.key), emptySalt, 1000, HashAlgorithmName.SHA384, 16);
+                aes.Key = Rfc2898DeriveBytes.Pbkdf2(Encoding.Unicode.GetBytes(this.key), Array.Empty<byte>(), 1000, HashAlgorithmName.SHA384, 16);
                 aes.IV = iv;
                 using CryptoStream cryptoStream = new(stream, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
                 cryptoStream.Write(Encoding.Unicode.GetBytes(text));
@@ -68,11 +63,11 @@ namespace StreamDecorator
 
             if (gzip && !encrypt)
             {
-                using (var msi = new MemoryStream(compressed))
                 using (var mso = new MemoryStream())
                 {
-                    using (var gs = new GZipStream(msi, CompressionMode.Decompress))
+                    using (var gs = new GZipStream(stream, CompressionMode.Decompress))
                     {
+                        stream.Position = 0;
                         gs.CopyTo(mso);
                     }
 
@@ -83,7 +78,7 @@ namespace StreamDecorator
             if (encrypt)
             {
                 using Aes aes = Aes.Create();
-                aes.Key = Rfc2898DeriveBytes.Pbkdf2(Encoding.Unicode.GetBytes(this.key), emptySalt, 1000, HashAlgorithmName.SHA384, 16);
+                aes.Key = Rfc2898DeriveBytes.Pbkdf2(Encoding.Unicode.GetBytes(this.key), Array.Empty<byte>(), 1000, HashAlgorithmName.SHA384, 16);
                 aes.IV = iv;
                 using CryptoStream cryptoStream = new(stream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
                 using MemoryStream output = new();

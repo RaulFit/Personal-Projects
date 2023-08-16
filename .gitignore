@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /Json.Validator
 /List/StreamOperations.cs
 /List.Facts/StreamOperationsFacts.cs
+/List/StreamOperations.cs
+/List.Facts/StreamOperationsFacts.cs

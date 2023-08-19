@@ -20,14 +20,8 @@ namespace StreamDecorator
 
             if (gzip && !encrypt)
             {
-                var bytes = Encoding.UTF8.GetBytes(text);
-                using (var msi = new MemoryStream(bytes))
-                {
-                    using (var gs = new GZipStream(stream, CompressionMode.Compress, true))
-                    {
-                        msi.CopyTo(gs);
-                    }
-                }
+                using GZipStream gs = new GZipStream(stream, CompressionMode.Compress, true);
+                gs.Write(Encoding.Unicode.GetBytes(text));
                 return;
             }
 
@@ -56,15 +50,12 @@ namespace StreamDecorator
 
             if (gzip && !encrypt)
             {
-                using (var mso = new MemoryStream())
-                {
-                    using (var gs = new GZipStream(stream, CompressionMode.Decompress))
-                    {
-                        stream.Position = 0;
-                        gs.CopyTo(mso);
-                    }
-                    return Encoding.UTF8.GetString(mso.ToArray());
-                }
+                var output = new MemoryStream();
+                using GZipStream gs = new GZipStream(stream, CompressionMode.Decompress);
+                stream.Position = 0;
+                gs.CopyTo(output);
+                return Encoding.Unicode.GetString(output.ToArray());
+                
             }
 
             if (encrypt)

@@ -58,9 +58,8 @@ namespace StreamDecorator.Facts
         void WriteEncryptParamIsTrue_ShouldEncryptString()
         {
             string text = "Text to encrypt";
-            var key = "b14ca5898a4e4133bbce2ea2315a1916";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations(key);
+            StreamOperations streamOperations = new StreamOperations();
             streamOperations.WriteToStream(memoryStream, text, encrypt: true);
             Assert.NotEqual(text, streamOperations.ReadFromStream(memoryStream));
         }
@@ -69,9 +68,8 @@ namespace StreamDecorator.Facts
         void ReadEncryptParamIsTrue_ShouldEncryptAndDecryptString()
         {
             string text = "Text to encrypt";
-            var key = "b14ca5898a4e4133bbce2ea2315a1916";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations(key);
+            StreamOperations streamOperations = new StreamOperations();
             streamOperations.WriteToStream(memoryStream, text, encrypt: true);
             Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, encrypt: true));
         }
@@ -80,9 +78,8 @@ namespace StreamDecorator.Facts
         void StreamOperationsWorksIfBothParamsAreTrue()
         {
             string text = "Text to encrypt";
-            var key = "b14ca5898a4e4133bbce2ea2315a1916";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations(key);
+            StreamOperations streamOperations = new StreamOperations();
             streamOperations.WriteToStream(memoryStream, text, gzip: true, encrypt: true);
             Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, gzip: true, encrypt: true));
         }

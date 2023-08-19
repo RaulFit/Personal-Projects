@@ -10,12 +10,6 @@ namespace StreamDecorator
 {
     public class StreamOperations
     {
-        private readonly string key;
-
-        public StreamOperations(string key = "")
-        {
-            this.key = key;
-        }
 
         public void WriteToStream(Stream stream, string text, bool gzip = false, bool encrypt = false)
         {
@@ -40,7 +34,7 @@ namespace StreamDecorator
             if (encrypt)
             {
                 using Aes aes = Aes.Create();
-                aes.Key = Rfc2898DeriveBytes.Pbkdf2(Encoding.Unicode.GetBytes(this.key), Array.Empty<byte>(), 1000, HashAlgorithmName.SHA384, 16);
+                aes.Key = new byte[32];
                 aes.IV = new byte[16];
                 using CryptoStream cryptoStream = new(stream, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
                 cryptoStream.Write(Encoding.Unicode.GetBytes(text));
@@ -76,7 +70,7 @@ namespace StreamDecorator
             if (encrypt)
             {
                 using Aes aes = Aes.Create();
-                aes.Key = Rfc2898DeriveBytes.Pbkdf2(Encoding.Unicode.GetBytes(this.key), Array.Empty<byte>(), 1000, HashAlgorithmName.SHA384, 16);
+                aes.Key = new byte[32];
                 aes.IV = new byte[16];
                 using CryptoStream cryptoStream = new(stream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
                 using MemoryStream output = new();

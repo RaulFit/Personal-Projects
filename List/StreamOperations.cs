@@ -10,8 +10,7 @@ namespace StreamDecorator
 {
     public class StreamOperations
     {
-        private string key;
-        private readonly byte[] iv = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
+        private readonly string key;
 
         public StreamOperations(string key = "")
         {
@@ -42,7 +41,7 @@ namespace StreamDecorator
             {
                 using Aes aes = Aes.Create();
                 aes.Key = Rfc2898DeriveBytes.Pbkdf2(Encoding.Unicode.GetBytes(this.key), Array.Empty<byte>(), 1000, HashAlgorithmName.SHA384, 16);
-                aes.IV = iv;
+                aes.IV = new byte[16];
                 using CryptoStream cryptoStream = new(stream, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
                 cryptoStream.Write(Encoding.Unicode.GetBytes(text));
                 cryptoStream.FlushFinalBlock();
@@ -70,7 +69,6 @@ namespace StreamDecorator
                         stream.Position = 0;
                         gs.CopyTo(mso);
                     }
-
                     return Encoding.UTF8.GetString(mso.ToArray());
                 }
             }
@@ -79,7 +77,7 @@ namespace StreamDecorator
             {
                 using Aes aes = Aes.Create();
                 aes.Key = Rfc2898DeriveBytes.Pbkdf2(Encoding.Unicode.GetBytes(this.key), Array.Empty<byte>(), 1000, HashAlgorithmName.SHA384, 16);
-                aes.IV = iv;
+                aes.IV = new byte[16];
                 using CryptoStream cryptoStream = new(stream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
                 using MemoryStream output = new();
                 stream.Position = 0;

@@ -10,6 +10,7 @@ namespace StreamDecorator
 {
     public class StreamOperations
     {
+        private Aes aes = Aes.Create();
 
         public void WriteToStream(Stream stream, string text, bool gzip = false, bool encrypt = false)
         {
@@ -18,7 +19,7 @@ namespace StreamDecorator
                 throw new ArgumentNullException("Stream cannot be null.");
             }
 
-            if (gzip && !encrypt)
+            if (gzip)
             {
                 using GZipStream gs = new GZipStream(stream, CompressionMode.Compress, true);
                 gs.Write(Encoding.Unicode.GetBytes(text));
@@ -27,9 +28,6 @@ namespace StreamDecorator
 
             if (encrypt)
             {
-                using Aes aes = Aes.Create();
-                aes.Key = new byte[32];
-                aes.IV = new byte[16];
                 using CryptoStream cryptoStream = new(stream, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
                 cryptoStream.Write(Encoding.Unicode.GetBytes(text));
                 cryptoStream.FlushFinalBlock();
@@ -48,21 +46,17 @@ namespace StreamDecorator
                 throw new ArgumentNullException("Stream cannot be null.");
             }
 
-            if (gzip && !encrypt)
+            if (gzip)
             {
                 var output = new MemoryStream();
                 using GZipStream gs = new GZipStream(stream, CompressionMode.Decompress);
                 stream.Position = 0;
                 gs.CopyTo(output);
                 return Encoding.Unicode.GetString(output.ToArray());
-                
             }
 
             if (encrypt)
             {
-                using Aes aes = Aes.Create();
-                aes.Key = new byte[32];
-                aes.IV = new byte[16];
                 using CryptoStream cryptoStream = new(stream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
                 using MemoryStream output = new();
                 stream.Position = 0;

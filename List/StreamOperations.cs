@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace StreamDecorator
 {
@@ -17,6 +18,20 @@ namespace StreamDecorator
             if (stream == null)
             {
                 throw new ArgumentNullException("Stream cannot be null.");
+            }
+
+            if (gzip && encrypt)
+            {
+                using (GZipStream gs = new GZipStream(stream, CompressionMode.Compress, true))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream(gs, aes.CreateEncryptor(), CryptoStreamMode.Write, true))
+                    {
+                       cryptoStream.Write(Encoding.Unicode.GetBytes(text));
+                       cryptoStream.FlushFinalBlock();
+                    }
+                }
+
+                return;
             }
 
             if (gzip)
@@ -44,6 +59,21 @@ namespace StreamDecorator
             if (stream == null)
             {
                 throw new ArgumentNullException("Stream cannot be null.");
+            }
+
+            if (gzip && encrypt)
+            {
+                var output = new MemoryStream();
+                using (GZipStream gs = new GZipStream(stream, CompressionMode.Decompress))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream(gs, aes.CreateDecryptor(), CryptoStreamMode.Read))
+                    {
+                        stream.Position = 0;
+                        cryptoStream.CopyTo(output);
+                    }
+                }
+
+                return Encoding.Unicode.GetString(output.ToArray());
             }
 
             if (gzip)

@@ -14,8 +14,6 @@ namespace StreamDecorator.Facts
         void MethodsReadAndWriteWorkCorrectly()
         {
             MemoryStream stream = new MemoryStream();
-            
-
             string text = "Text to write to the stream";
             StreamOperations streamOperations = new StreamOperations();
             streamOperations.WriteToStream(stream, text);

@@ -11,8 +11,6 @@ namespace StreamDecorator
     public class StreamOperations
     {
         private Aes aes = Aes.Create();
-        private GZipStream gs;
-        private CryptoStream cs;
 
         public void WriteToStream(Stream stream, string text, bool gzip = false, bool encrypt = false)
         {

@@ -14,8 +14,6 @@ namespace StreamDecorator
 
         public void WriteToStream(Stream stream, string text, bool gzip = false, bool encrypt = false)
         {
-            byte[] bytes = Encoding.UTF8.GetBytes(text);
-
             if (stream == null)
             {
                 throw new ArgumentNullException("Stream cannot be null.");

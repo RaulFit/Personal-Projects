@@ -14,6 +14,8 @@ namespace StreamDecorator
 
         public void WriteToStream(Stream stream, string text, bool gzip = false, bool encrypt = false)
         {
+            byte[] bytes = Encoding.UTF8.GetBytes(text);
+
             if (stream == null)
             {
                 throw new ArgumentNullException("Stream cannot be null.");
@@ -32,6 +34,11 @@ namespace StreamDecorator
             var writer = new StreamWriter(stream);
             writer.Write(text);
             writer.Flush();
+
+            if(stream is CryptoStream cryptoStream)
+            {
+                cryptoStream.FlushFinalBlock();
+            }
         }
 
         public string ReadFromStream(Stream stream, bool gzip = false, bool encrypt = false)
@@ -41,17 +48,18 @@ namespace StreamDecorator
                 throw new ArgumentNullException("Stream cannot be null.");
             }
 
+            stream.Position = 0;
+
             if (gzip)
             {
-                stream = new GZipStream(stream, CompressionMode.Decompress);
+                stream = new GZipStream(stream, CompressionMode.Decompress, true);
             }
 
             if (encrypt)
             {
-                stream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                stream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
             }
 
-            stream.Position = 0;
             var reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }

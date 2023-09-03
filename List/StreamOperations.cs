@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
+using List;
 
 namespace StreamDecorator
 {
-    public class StreamOperations
+    public class StreamOperations : IStreamOperations
     {
         private Aes aes = Aes.Create();
 

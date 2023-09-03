@@ -1,4 +1,5 @@
-﻿using System;
+﻿using List;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -15,10 +16,10 @@ namespace StreamDecorator.Facts
         {
             MemoryStream stream = new MemoryStream();
             string text = "Text to write to the stream";
-            StreamOperations streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(stream, text);
+            StreamLogic streamLogic = new StreamLogic(new StreamOperations());
+            streamLogic.WriteToStream(stream, text);
 
-            Assert.Equal(text, streamOperations.ReadFromStream(stream));
+            Assert.Equal(text, streamLogic.ReadFromStream(stream));
         }
 
         [Fact]
@@ -26,10 +27,10 @@ namespace StreamDecorator.Facts
         {
             MemoryStream nullStream = null;
             string text = "Text to write to the stream";
-            StreamOperations streamOperations = new StreamOperations();
+            StreamLogic streamLogic = new StreamLogic(new StreamOperations());
 
-            Assert.Throws<ArgumentNullException>(() => streamOperations.WriteToStream(nullStream, text));
-            Assert.Throws<ArgumentNullException>(() => streamOperations.ReadFromStream(nullStream));
+            Assert.Throws<ArgumentNullException>(() => streamLogic.WriteToStream(nullStream, text));
+            Assert.Throws<ArgumentNullException>(() => streamLogic.ReadFromStream(nullStream));
         }
 
         [Fact]
@@ -37,9 +38,9 @@ namespace StreamDecorator.Facts
         {
             string text = "Text to compress";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(memoryStream, text, gzip: true);
-            Assert.NotEqual(text, streamOperations.ReadFromStream(memoryStream));
+            StreamLogic streamLogic = new StreamLogic(new StreamOperations());
+            streamLogic.WriteToStream(memoryStream, text, gzip: true);
+            Assert.NotEqual(text, streamLogic.ReadFromStream(memoryStream));
         }
 
         [Fact]
@@ -47,9 +48,9 @@ namespace StreamDecorator.Facts
         {
             string text = "Text to compress";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(memoryStream, text, gzip: true);
-            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, gzip: true));
+            StreamLogic streamLogic = new StreamLogic(new StreamOperations());
+            streamLogic.WriteToStream(memoryStream, text, gzip: true);
+            Assert.Equal(text, streamLogic.ReadFromStream(memoryStream, gzip: true));
         }
 
         [Fact]
@@ -57,9 +58,9 @@ namespace StreamDecorator.Facts
         {
             string text = "Text to encrypt";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(memoryStream, text, encrypt: true);
-            Assert.NotEqual(text, streamOperations.ReadFromStream(memoryStream));
+            StreamLogic streamLogic = new StreamLogic(new StreamOperations());
+            streamLogic.WriteToStream(memoryStream, text, encrypt: true);
+            Assert.NotEqual(text, streamLogic.ReadFromStream(memoryStream));
         }
 
         [Fact]
@@ -67,9 +68,9 @@ namespace StreamDecorator.Facts
         {
             string text = "Text to encrypt";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(memoryStream, text, encrypt: true);
-            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, encrypt: true));
+            StreamLogic streamLogic = new StreamLogic(new StreamOperations());
+            streamLogic.WriteToStream(memoryStream, text, encrypt: true);
+            Assert.Equal(text, streamLogic.ReadFromStream(memoryStream, encrypt: true));
         }
 
         [Fact]
@@ -77,9 +78,9 @@ namespace StreamDecorator.Facts
         {
             string text = "Text to encrypt";
             MemoryStream memoryStream = new MemoryStream();
-            StreamOperations streamOperations = new StreamOperations();
-            streamOperations.WriteToStream(memoryStream, text, gzip: true, encrypt: true);
-            Assert.Equal(text, streamOperations.ReadFromStream(memoryStream, gzip: true, encrypt: true));
+            StreamLogic streamLogic = new StreamLogic(new StreamOperations());
+            streamLogic.WriteToStream(memoryStream, text, gzip: true, encrypt: true);
+            Assert.Equal(text, streamLogic.ReadFromStream(memoryStream, gzip: true, encrypt: true));
         }
     }
 }

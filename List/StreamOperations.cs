@@ -5,61 +5,68 @@ using System.Threading.Tasks;
 using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
-using List;
 
 namespace StreamDecorator
 {
-    public class StreamOperations : IStreamOperations
+    public class StreamOperations
     {
         private Aes aes = Aes.Create();
+        private Stream writeStream;
+        private Stream readStream;
 
-        public void WriteToStream(Stream stream, string text, bool gzip = false, bool encrypt = false)
+        public StreamOperations(Stream writeStream)
         {
-            if (stream == null)
+            this.writeStream = writeStream;
+            this.readStream = this.writeStream;
+        }
+
+        public void WriteToStream(string text, bool gzip = false, bool encrypt = false)
+        {
+            if (writeStream == null)
             {
-                throw new ArgumentNullException("Stream cannot be null.");
+                throw new ArgumentNullException("WriteStream cannot be null.");
             }
 
             if (gzip)
             {
-                stream = new GZipStream(stream, CompressionMode.Compress, true);
+                writeStream = new GZipStream(writeStream, CompressionMode.Compress, true);
             }
 
             if (encrypt)
             {
-                stream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
+                writeStream = new CryptoStream(writeStream, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
             }
 
-            var writer = new StreamWriter(stream);
+            var writer = new StreamWriter(writeStream);
             writer.Write(text);
             writer.Flush();
 
-            if(stream is CryptoStream cryptoStream)
+            if (writeStream is CryptoStream cryptoStream)
             {
                 cryptoStream.FlushFinalBlock();
             }
         }
 
-        public string ReadFromStream(Stream stream, bool gzip = false, bool encrypt = false)
+        public string ReadFromStream(bool gzip = false, bool encrypt = false)
         {
-            if (stream == null)
+            if (readStream == null)
             {
-                throw new ArgumentNullException("Stream cannot be null.");
+                throw new ArgumentNullException("ReadStream cannot be null.");
             }
 
-            stream.Position = 0;
+            readStream.Position = 0;
 
             if (gzip)
             {
-                stream = new GZipStream(stream, CompressionMode.Decompress, true);
+                readStream = new GZipStream(readStream, CompressionMode.Decompress, true);
             }
 
             if (encrypt)
             {
-                stream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
+                readStream = new CryptoStream(readStream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
             }
 
-            var reader = new StreamReader(stream);
+            var reader = new StreamReader(readStream);
             return reader.ReadToEnd();
         }
     }

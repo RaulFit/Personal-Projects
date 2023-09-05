@@ -14,19 +14,14 @@ namespace StreamDecorator
         private Stream writeStream;
         private Stream readStream;
 
-        public StreamOperations(Stream writeStream)
+        public StreamOperations()
         {
-            this.writeStream = writeStream;
+            this.writeStream = new MemoryStream();
             this.readStream = this.writeStream;
         }
 
         public void WriteToStream(string text, bool gzip = false, bool encrypt = false)
         {
-            if (writeStream == null)
-            {
-                throw new ArgumentNullException("WriteStream cannot be null.");
-            }
-
             if (gzip)
             {
                 writeStream = new GZipStream(writeStream, CompressionMode.Compress, true);
@@ -49,11 +44,6 @@ namespace StreamDecorator
 
         public string ReadFromStream(bool gzip = false, bool encrypt = false)
         {
-            if (readStream == null)
-            {
-                throw new ArgumentNullException("ReadStream cannot be null.");
-            }
-
             readStream.Position = 0;
 
             if (gzip)

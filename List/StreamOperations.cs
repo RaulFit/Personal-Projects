@@ -10,53 +10,21 @@ namespace StreamDecorator
 {
     public class StreamOperations
     {
-        private Aes aes = Aes.Create();
-        private Stream writeStream;
-        private Stream readStream;
-
-        public StreamOperations()
+        public void WriteToStream(Stream stream, string text)
         {
-            this.writeStream = new MemoryStream();
-            this.readStream = this.writeStream;
-        }
-
-        public void WriteToStream(string text, bool gzip = false, bool encrypt = false)
-        {
-            if (gzip)
-            {
-                writeStream = new GZipStream(writeStream, CompressionMode.Compress, true);
-            }
-
-            if (encrypt)
-            {
-                writeStream = new CryptoStream(writeStream, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
-            }
-
-            var writer = new StreamWriter(writeStream);
+            var writer = new StreamWriter(stream);
             writer.Write(text);
             writer.Flush();
 
-            if (writeStream is CryptoStream cryptoStream)
+            if (stream is CryptoStream cryptoStream)
             {
                 cryptoStream.FlushFinalBlock();
             }
         }
 
-        public string ReadFromStream(bool gzip = false, bool encrypt = false)
+        public string ReadFromStream(Stream stream)
         {
-            readStream.Position = 0;
-
-            if (gzip)
-            {
-                readStream = new GZipStream(readStream, CompressionMode.Decompress, true);
-            }
-
-            if (encrypt)
-            {
-                readStream = new CryptoStream(readStream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
-            }
-
-            var reader = new StreamReader(readStream);
+            var reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
     }

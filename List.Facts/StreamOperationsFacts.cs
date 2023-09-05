@@ -4,81 +4,88 @@ using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace StreamDecorator.Facts
 {
     public class StreamOperationsFacts
     {
-        private StreamOperations streamOperations;
-
-        public StreamOperationsFacts()
-        {
-            this.streamOperations = new StreamOperations();
-        }
-
-        public void WriteToStream(string text, bool gzip = false, bool encrypt = false)
-        {
-            streamOperations.WriteToStream(text, gzip, encrypt);
-        }
-
-        public string ReadFromStream(bool gzip = false, bool encrypt = false)
-        {
-            return streamOperations.ReadFromStream(gzip, encrypt);
-        }
-
         [Fact]
         void MethodsReadAndWriteWorkCorrectly()
         {
             string text = "Text to write to the stream";
-            StreamOperationsFacts streamOperations = new StreamOperationsFacts();
-            streamOperations.WriteToStream(text);
-            Assert.Equal(text, streamOperations.ReadFromStream());
+            StreamOperations streamOperations = new StreamOperations();
+            var ms = new MemoryStream();
+            streamOperations.WriteToStream(ms, text);
+            ms.Position = 0;
+            Assert.Equal(text, streamOperations.ReadFromStream(ms));
         }
 
         [Fact]
         void WriteGziParamIsTrue_ShouldCompressString()
         {
             string text = "Text to compress";
-            StreamOperationsFacts streamOperations = new StreamOperationsFacts();
-            streamOperations.WriteToStream(text, gzip: true);
-            Assert.NotEqual(text, streamOperations.ReadFromStream());
+            StreamOperations streamOperations = new StreamOperations();
+            var ms = new MemoryStream();
+            var gs = new GZipStream(ms, CompressionMode.Compress, true);
+            streamOperations.WriteToStream(gs, text);
+            ms.Position = 0;
+            Assert.NotEqual(text, streamOperations.ReadFromStream(ms));
         }
 
         [Fact]
         void ReadGzipParamIsTrue_ShouldCompressAndDecompressString()
         {
             string text = "Text to compress";
-            StreamOperationsFacts streamOperations = new StreamOperationsFacts();
-            streamOperations.WriteToStream(text, gzip: true);
-            Assert.Equal(text, streamOperations.ReadFromStream(gzip: true));
+            StreamOperations streamOperations = new StreamOperations();
+            var ms = new MemoryStream();
+            var gs = new GZipStream(ms, CompressionMode.Compress, true);
+            streamOperations.WriteToStream(gs, text);
+            gs = new GZipStream(ms, CompressionMode.Decompress, true);
+            ms.Position = 0;
+            Assert.Equal(text, streamOperations.ReadFromStream(gs));
         }
 
         [Fact]
         void WriteEncryptParamIsTrue_ShouldEncryptString()
         {
             string text = "Text to encrypt";
-            StreamOperationsFacts streamOperations = new StreamOperationsFacts();
-            streamOperations.WriteToStream(text, encrypt: true);
-            Assert.NotEqual(text, streamOperations.ReadFromStream());
+            StreamOperations streamOperations = new StreamOperations();
+            var ms = new MemoryStream();
+            Aes aes = Aes.Create();
+            var cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
+            streamOperations.WriteToStream(cs, text);
+            ms.Position = 0;
+            Assert.NotEqual(text, streamOperations.ReadFromStream(ms));
         }
 
         [Fact]
         void ReadEncryptParamIsTrue_ShouldEncryptAndDecryptString()
         {
             string text = "Text to encrypt";
-            StreamOperationsFacts streamOperations = new StreamOperationsFacts();
-            streamOperations.WriteToStream(text, encrypt: true);
-            Assert.Equal(text, streamOperations.ReadFromStream(encrypt: true));
+            StreamOperations streamOperations = new StreamOperations();
+            var ms = new MemoryStream();
+            Aes aes = Aes.Create();
+            var cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
+            streamOperations.WriteToStream(cs, text);
+            cs = new CryptoStream(ms, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
+            ms.Position = 0;
+            Assert.Equal(text, streamOperations.ReadFromStream(cs));
         }
 
         [Fact]
         void StreamOperationsWorksIfBothParamsAreTrue()
         {
-            string text = "Text to encrypt";
-            StreamOperationsFacts streamOperations = new StreamOperationsFacts();
-            streamOperations.WriteToStream(text, gzip: true, encrypt: true);
-            Assert.Equal(text, streamOperations.ReadFromStream(gzip: true, encrypt: true));
+            string text = "Text to compress and encrypt";
+            StreamOperations streamOperations = new StreamOperations();
+            var ms = new MemoryStream();
+            var gs = new GZipStream(ms, CompressionMode.Compress, true);
+            Aes aes = Aes.Create();
+            var cs = new CryptoStream(gs, aes.CreateEncryptor(), CryptoStreamMode.Write, true);
+            streamOperations.WriteToStream(cs, text);
+            gs = new GZipStream(ms, CompressionMode.Decompress, true);
+            cs = new CryptoStream(gs, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
+            ms.Position = 0;
+            Assert.Equal(text, streamOperations.ReadFromStream(cs));
         }
     }
 }

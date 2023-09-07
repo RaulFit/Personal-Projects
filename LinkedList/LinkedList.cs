@@ -6,7 +6,6 @@ namespace MyLinkedList
     {
         public Node<T>? First { get; private set; }
         public int Count { get; private set; }
-
         public bool IsReadOnly { get; private set; }
 
         public void Add(Node<T> item)

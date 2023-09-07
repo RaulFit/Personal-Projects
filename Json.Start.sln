@@ -15,7 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONValidator", "JSONValida
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "List", "List\List.csproj", "{095319A8-7096-4E9E-B0D5-9FF449D3E8B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "List.Facts", "List.Facts\List.Facts.csproj", "{B2D94E34-631A-4F96-A6C7-15D7C81DA835}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "List.Facts", "List.Facts\List.Facts.csproj", "{B2D94E34-631A-4F96-A6C7-15D7C81DA835}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkedList", "LinkedList\LinkedList.csproj", "{180AE029-A3AD-4122-B4EC-A412EF3FDB98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkedList.Facts", "LinkedList.Facts\LinkedList.Facts.csproj", "{F95FE0A9-49AF-412B-BADA-A4610606DA34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,14 @@ Global
 		{B2D94E34-631A-4F96-A6C7-15D7C81DA835}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2D94E34-631A-4F96-A6C7-15D7C81DA835}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2D94E34-631A-4F96-A6C7-15D7C81DA835}.Release|Any CPU.Build.0 = Release|Any CPU
+		{180AE029-A3AD-4122-B4EC-A412EF3FDB98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{180AE029-A3AD-4122-B4EC-A412EF3FDB98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{180AE029-A3AD-4122-B4EC-A412EF3FDB98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{180AE029-A3AD-4122-B4EC-A412EF3FDB98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F95FE0A9-49AF-412B-BADA-A4610606DA34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F95FE0A9-49AF-412B-BADA-A4610606DA34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F95FE0A9-49AF-412B-BADA-A4610606DA34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F95FE0A9-49AF-412B-BADA-A4610606DA34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

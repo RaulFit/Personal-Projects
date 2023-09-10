@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.Intrinsics.X86;
 
 namespace MyLinkedList
 {
@@ -12,64 +14,69 @@ namespace MyLinkedList
         {
             if (First == null)
             {
-                item.Prev = null;
+                item.Next = item.Prev = item;
                 First = item;
                 return;
             }
-            Node<T> lastNode = GetLastNode();
-            lastNode.Next = item;
-            item.Prev = lastNode;
+
+            Node<T>? last = First.Prev;
+            item.Next = First;
+            First.Prev = item;
+            item.Prev = last;
+            last.Next = item;
             Count++;
         }
 
         public void AddFirst(Node<T> nodeToAdd)
         {
-            if (First is null)
+            if(First == null)
             {
+                nodeToAdd.Next = nodeToAdd.Prev = nodeToAdd;
                 First = nodeToAdd;
+                return;
             }
-            else
-            {
-                nodeToAdd.Next = First;
-                First.Prev = nodeToAdd;
-                First = nodeToAdd;
-            }
-            Count++;
-        }
 
-        public Node<T> GetLastNode()
-        {
-            Node<T>? temp = First;
-            while (temp.Next != null)
-            {
-                temp = temp.Next;
-            }
-            return temp;
+            Node<T>? last = First.Prev;
+            nodeToAdd.Next = First;
+            nodeToAdd.Prev = last;
+            last.Next = First.Prev = nodeToAdd;
+            First = nodeToAdd;
+            Count++;
         }
 
         public void Clear()
         {
-            Node<T>? temp;
-            while(First != null)
+            if(First != null)
             {
-                temp = First;
-                First = First.Next;
-                temp = null;
-            }
+                Node<T>? temp;
+                Node<T>? current = First.Next;
+                while(current != First)
+                {
+                    temp = current.Next;
+                    current = null;
+                    current = temp;
+                }
 
-            Count = 0;
+                First = null;
+                Count = 0;
+            }
         }
 
         public bool Contains(Node<T> item)
         {
             Node<T>? current = First;
-            while(current != null)
+            while(current.Next != First)
             {
                 if (EqualityComparer<T>.Default.Equals(current.Value, item.Value))
                 {
                     return true;
                 }
                 current = current.Next;
+            }
+
+            if (EqualityComparer<T>.Default.Equals(current.Value, item.Value))
+            {
+                return true;
             }
 
             return false;
@@ -103,7 +110,7 @@ namespace MyLinkedList
         public Node<T>? Find(T valueToFind)
         {
             var aux = First;
-            while (aux is not null)
+            while (aux.Next != First)
             {
                 if (EqualityComparer<T>.Default.Equals(aux.Value, valueToFind))
                 {
@@ -112,27 +119,61 @@ namespace MyLinkedList
                 aux = aux.Next;
             }
 
+            if (EqualityComparer<T>.Default.Equals(aux.Value, valueToFind))
+            {
+                return aux;
+            }
+
             return null;
         }
 
         public bool Remove(Node<T> item)
         {
-            var find = Find(item.Value);
-            if (find is null)
+            if(First == null)
             {
                 return false;
             }
 
-            var next = find.Next;
-            var prev = find.Prev;
-            if (prev is not null)
+            Node<T>? current = First;
+            Node<T>? prev1 = null;
+            while(!EqualityComparer<T>.Default.Equals(current.Value, item.Value))
             {
-                prev.Next = next;
+                if(current.Next == First)
+                {
+                    return false;
+                }
+                prev1 = current;
+                current = current.Next;
             }
-            if (next is not null)
+
+            if(current.Next == First && prev1 == null)
             {
-                next.Prev = prev;
+                First = null;
+                Count--;
+                return true;
             }
+
+            if(current == First)
+            {
+                prev1 = First.Prev;
+                First = First.Next;
+                prev1.Next = First;
+                First.Prev = prev1;
+            }
+
+            else if(current.Next == First)
+            {
+                prev1.Next = First;
+                First.Prev = prev1;
+            }
+
+            else
+            {
+                Node<T>? temp = current.Next;
+                prev1.Next = temp;
+                temp.Prev = prev1;
+            }
+
             Count--;
             return true;
         }
@@ -143,19 +184,31 @@ namespace MyLinkedList
             {
                 throw new ArgumentNullException("The given previous node cannot be null");
             }
-            insertNode.Next = prev_node.Next;
-            prev_node.Next = insertNode;
-            insertNode.Prev = prev_node;
-            if(insertNode.Next != null)
+
+            Node<T>? temp = First;
+            while(!EqualityComparer<T>.Default.Equals(temp.Value, prev_node.Value))
             {
-                insertNode.Next.Prev = insertNode;
+                temp = temp.Next;
             }
+
+            Node<T>? next = temp.Next;
+            temp.Next = insertNode;
+            insertNode.Prev = temp;
+            insertNode.Next = next;
+            next.Prev = insertNode;
+            Count++;
         }
 
         public IEnumerator<Node<T>> GetEnumerator()
         {
             Node<T>? currentNode = First;
-            while (currentNode is not null)
+
+            if(currentNode== null)
+            {
+                yield return null;
+            }
+
+            while (currentNode.Next != First)
             {
                 yield return currentNode;
                 currentNode = currentNode.Next;

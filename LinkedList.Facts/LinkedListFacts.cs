@@ -42,6 +42,17 @@ namespace MyLinkedList.Facts
         }
 
         [Fact]
+        public void InsertAfterThrowsExceptionIfInsertAfterNodeIsNull()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Node<int> nodeToInsert = new Node<int>(5);
+            list.Add(new Node<int>(1));
+            list.Add(new Node<int>(2));
+            list.Add(new Node<int>(3));
+            Assert.Throws<ArgumentNullException>(() => list.InsertAfter(null, nodeToInsert));
+        }
+
+        [Fact]
         public void Remove_ShouldReturnTrueWhenSpecifiedNodeIsInTheList()
         {
             LinkedList<int> list = new LinkedList<int>();
@@ -61,6 +72,14 @@ namespace MyLinkedList.Facts
             list.Add(new Node<int>(1));
             list.Add(new Node<int>(2));
             list.Add(new Node<int>(3));
+            Assert.False(list.Remove(specifiedNode));
+        }
+
+        [Fact]
+        public void Remove_ShouldReturnFalseWhenListIsEmpty()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Node<int> specifiedNode = new Node<int>(1);
             Assert.False(list.Remove(specifiedNode));
         }
 
@@ -85,6 +104,13 @@ namespace MyLinkedList.Facts
             list.Add(new Node<int>(2));
             list.Add(new Node<int>(3));
             Assert.Null(list.Find(4));
+        }
+
+        [Fact]
+        public void Find_ShouldReturnNullWhenListIsEmpty()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Assert.Null(list.Find(1));
         }
 
         [Fact]
@@ -119,6 +145,14 @@ namespace MyLinkedList.Facts
             list.Add(new Node<int>(1));
             list.Add(new Node<int>(2));
             list.Add(new Node<int>(3));
+            Assert.DoesNotContain(specifiedNode, list);
+        }
+
+        [Fact]
+        public void ContainsReturnsFalseIfListIsEmpty()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Node<int> specifiedNode = new Node<int>(4);
             Assert.DoesNotContain(specifiedNode, list);
         }
     }

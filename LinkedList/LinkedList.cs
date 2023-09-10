@@ -64,7 +64,13 @@ namespace MyLinkedList
 
         public bool Contains(Node<T> item)
         {
-            Node<T>? current = First;
+            if (First == null)
+            {
+                return false;
+            }
+
+            Node<T> current = First;
+
             while(current.Next != First)
             {
                 if (EqualityComparer<T>.Default.Equals(current.Value, item.Value))
@@ -109,6 +115,11 @@ namespace MyLinkedList
 
         public Node<T>? Find(T valueToFind)
         {
+            if(First == null)
+            {
+                return null;
+            }
+
             var aux = First;
             while (aux.Next != First)
             {
@@ -185,6 +196,11 @@ namespace MyLinkedList
                 throw new ArgumentNullException("The given previous node cannot be null");
             }
 
+            if (insertNode == null)
+            {
+                throw new ArgumentNullException("The given node to insert cannot be null");
+            }
+
             Node<T>? temp = First;
             while(!EqualityComparer<T>.Default.Equals(temp.Value, prev_node.Value))
             {
@@ -201,12 +217,12 @@ namespace MyLinkedList
 
         public IEnumerator<Node<T>> GetEnumerator()
         {
-            Node<T>? currentNode = First;
-
-            if(currentNode== null)
+            if(First == null)
             {
-                yield return null;
+                yield break;
             }
+
+            Node<T> currentNode = First;
 
             while (currentNode.Next != First)
             {

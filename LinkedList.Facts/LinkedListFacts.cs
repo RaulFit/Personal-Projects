@@ -1,159 +1,125 @@
-using System.Formats.Asn1;
-
 namespace MyLinkedList.Facts
 {
     public class LinkedListFacts
     {
         [Fact]
+        public void AddLast_ShouldAddNodeAtTheEnd()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            list.AddLast(1);
+            list.AddLast(2);
+            list.AddLast(3);
+            list.AddLast(4);
+            Assert.Equal(4, list.GetLast());
+        }
+
+        [Fact]
         public void AddFirst_ShouldAddNodeAtTheBeginning()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Node<int> firstNode = new Node<int>(1);
-            Node<int> secondNode = new Node<int>(2);
-            list.AddFirst(secondNode);
-            list.AddFirst(firstNode);
-            Assert.Equal(firstNode, list.First);
+            list.AddFirst(4);
+            list.AddFirst(3);
+            list.AddFirst(2);
+            list.AddFirst(1);
+            Assert.Equal(1, list.GetFirst());
         }
 
         [Fact]
-        public void Add_ShouldAddNodeAtTheEnd()
+        public void Remove_ShouldReturnTrueWhenSpecifiedItemIsInList()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Node<int> nodeToAdd = new Node<int>(4);
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            list.Add(nodeToAdd);
-            Assert.Equal(nodeToAdd, list.First.Prev);
+            list.AddLast(1);
+            list.AddLast(2);
+            list.AddLast(3);
+            list.AddLast(4);
+            Assert.True(list.Remove(3));
+            Assert.Equal(3, list.Count);
         }
 
         [Fact]
-        public void InsertAfter_ShouldInsertNodeAfterTheSpecifiedNode()
+        public void Remove_ShouldReturnFalseWhenSpecifiedItemIsNotInList()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Node<int> specifiedNode = new Node<int>(4);
-            Node<int> nodeToInsert = new Node<int>(5);
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            list.Add(specifiedNode);
-            list.InsertAfter(specifiedNode, nodeToInsert);
-            Assert.Equal(nodeToInsert, list.First.Prev);
+            list.AddLast(1);
+            list.AddLast(2);
+            list.AddLast(3);
+            list.AddLast(4);
+            Assert.False(list.Remove(8));
+            Assert.Equal(4, list.Count);
         }
 
         [Fact]
-        public void InsertAfterThrowsExceptionIfInsertAfterNodeIsNull()
+        public void Contains_ShouldReturnTrueWhenSpecifiedItemIsInList()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Node<int> nodeToInsert = new Node<int>(5);
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            Assert.Throws<ArgumentNullException>(() => list.InsertAfter(null, nodeToInsert));
+            list.AddLast(1);
+            list.AddLast(2);
+            list.AddLast(3);
+            list.AddLast(4);
+            Assert.True(list.Contains(2));
         }
 
         [Fact]
-        public void Remove_ShouldReturnTrueWhenSpecifiedNodeIsInTheList()
+        public void Contains_ShouldReturnFalseWhenSpecifiedItemIsNotInList()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Node<int> specifiedNode = new Node<int>(4);
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            list.Add(specifiedNode);
-            Assert.True(list.Remove(specifiedNode));
+            list.AddLast(1);
+            list.AddLast(2);
+            list.AddLast(3);
+            list.AddLast(4);
+            Assert.False(list.Contains(6));
         }
 
         [Fact]
-        public void Remove_ShouldReturnFalseWhenSpecifiedNodeIsNotInTheList()
+        public void IsEmpty_ShouldReturnTrueWhenListIsEmpty()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Node<int> specifiedNode = new Node<int>(4);
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            Assert.False(list.Remove(specifiedNode));
+            Assert.True(list.IsEmpty());
         }
 
         [Fact]
-        public void Remove_ShouldReturnFalseWhenListIsEmpty()
+        public void GetFirst_ShouldReturnFirstElementInList()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Node<int> specifiedNode = new Node<int>(1);
-            Assert.False(list.Remove(specifiedNode));
+            list.AddLast(1);
+            list.AddLast(2);
+            list.AddLast(3);
+            list.AddLast(4);
+            Assert.Equal(1, list.GetFirst());
         }
 
         [Fact]
-        public void Find_ShouldReturnSpecifiedNode()
+        public void GetLast_ShouldReturnLastElementInList()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Node<int> specifiedNode = new Node<int>(4);
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            list.Add(specifiedNode);
-            Assert.Equal(specifiedNode, list.Find(4));
+            list.AddLast(1);
+            list.AddLast(2);
+            list.AddLast(3);
+            list.AddLast(4);
+            Assert.Equal(4, list.GetLast());
         }
 
         [Fact]
-        public void Find_ShouldReturnNullWhenSpecifiedNodeIsNotInTheList()
+        public void Get_ShouldReturnCurrentElement()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Node<int> specifiedNode = new Node<int>(4);
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            Assert.Null(list.Find(4));
+            list.AddLast(1);
+            list.AddLast(2);
+            list.AddLast(3);
+            list.AddLast(4);
+            Assert.Equal(4, list.Get());
         }
 
         [Fact]
-        public void Find_ShouldReturnNullWhenListIsEmpty()
+        public void Set_ShoulSetValueOfCurrentElement()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Assert.Null(list.Find(1));
-        }
-
-        [Fact]
-        public void Clear_ShouldEmptyTheList()
-        {
-            LinkedList<int> list = new LinkedList<int>();
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            list.Add(new Node<int>(4));
-            list.Clear();
-            Assert.Equal(0, list.Count);
-        }
-
-        [Fact]
-        public void ContainsReturnsTrueIfSpecifiedNodeIsInTheList()
-        {
-            LinkedList<int> list = new LinkedList<int>();
-            Node<int> specifiedNode = new Node<int>(4);
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            list.Add(specifiedNode);
-            Assert.Contains(specifiedNode, list);
-        }
-
-        [Fact]
-        public void ContainsReturnsFalseIfSpecifiedNodeIsNotInTheList()
-        {
-            LinkedList<int> list = new LinkedList<int>();
-            Node<int> specifiedNode = new Node<int>(4);
-            list.Add(new Node<int>(1));
-            list.Add(new Node<int>(2));
-            list.Add(new Node<int>(3));
-            Assert.DoesNotContain(specifiedNode, list);
-        }
-
-        [Fact]
-        public void ContainsReturnsFalseIfListIsEmpty()
-        {
-            LinkedList<int> list = new LinkedList<int>();
-            Node<int> specifiedNode = new Node<int>(4);
-            Assert.DoesNotContain(specifiedNode, list);
+            list.AddLast(1);
+            list.AddLast(2);
+            list.AddLast(3);
+            list.AddLast(4);
+            list.Set(5);
+            Assert.Equal(5, list.Get());
         }
     }
 }

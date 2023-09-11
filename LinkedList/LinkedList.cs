@@ -1,94 +1,158 @@
 ﻿using System.Collections;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Intrinsics.X86;
 
 namespace MyLinkedList
 {
-    public class LinkedList<T> : ICollection<Node<T>>
+    public class LinkedList<T> : ICollection<T>
     {
-        public Node<T>? First { get; private set; }
         public int Count { get; private set; }
+
         public bool IsReadOnly { get; private set; }
 
-        public void Add(Node<T> item)
+        private Node<T> sentinel;
+
+        private Node<T> current;
+
+        public LinkedList()
         {
-            if (First == null)
-            {
-                item.Next = item.Prev = item;
-                First = item;
-                return;
-            }
-
-            Node<T>? last = First.Prev;
-            item.Next = First;
-            First.Prev = item;
-            item.Prev = last;
-            last.Next = item;
-            Count++;
-        }
-
-        public void AddFirst(Node<T> nodeToAdd)
-        {
-            if(First == null)
-            {
-                nodeToAdd.Next = nodeToAdd.Prev = nodeToAdd;
-                First = nodeToAdd;
-                return;
-            }
-
-            Node<T>? last = First.Prev;
-            nodeToAdd.Next = First;
-            nodeToAdd.Prev = last;
-            last.Next = First.Prev = nodeToAdd;
-            First = nodeToAdd;
-            Count++;
+            sentinel = new Node<T>(default);
+            Clear();
         }
 
         public void Clear()
         {
-            if(First != null)
-            {
-                Node<T>? temp;
-                Node<T>? current = First.Next;
-                while(current != First)
-                {
-                    temp = current.Next;
-                    current = null;
-                    current = temp;
-                }
-
-                First = null;
-                Count = 0;
-            }
+            sentinel.Next = sentinel.Prev = sentinel;
+            current = sentinel;
+            Count = 0;
         }
 
-        public bool Contains(Node<T> item)
+        public void Add(T item)
         {
-            if (First == null)
+            Node<T> nodeToAdd = new Node<T>(item);
+            nodeToAdd.Next = current.Next;
+            nodeToAdd.Prev = current;
+            current.Next.Prev = nodeToAdd;
+            current.Next = nodeToAdd;
+            current = nodeToAdd;
+            Count++;
+        }
+
+        public bool Remove(T item)
+        {
+            if (!Contains(item))
             {
                 return false;
             }
 
-            Node<T> current = First;
-
-            while(current.Next != First)
+            for (current = sentinel.Next; !current.Data.Equals(item); current = current.Next)
             {
-                if (EqualityComparer<T>.Default.Equals(current.Value, item.Value))
-                {
-                    return true;
-                }
-                current = current.Next;
             }
 
-            if (EqualityComparer<T>.Default.Equals(current.Value, item.Value))
-            {
-                return true;
-            }
-
-            return false;
+            current.Prev.Next = current.Next;
+            current.Next.Prev = current.Prev;
+            current = current.Next;
+            Count--;
+            return true;
         }
 
-        public void CopyTo(Node<T>[] array, int arrayIndex)
+        public bool Contains(T item)
+        {
+            Node<T> node;
+            sentinel.Data = item;
+            for(node = sentinel.Next; !node.Data.Equals(item); node = node.Next)
+            {
+            }
+
+            sentinel.Data = default;
+            if(node == sentinel)
+            {
+                return false;
+            }
+            else
+            {
+                current = node;
+                return true;
+            }
+        }
+
+        public bool IsEmpty()
+        {
+            return sentinel.Next == sentinel;
+        }
+
+        public bool HasCurrent()
+        {
+            return current != sentinel;
+        }
+
+        public bool HasNext()
+        {
+            return HasCurrent() && current.Next != sentinel;
+        }
+
+        public T GetFirst()
+        {
+            if (IsEmpty())
+            {
+                return default;
+            }
+
+            current = sentinel.Next;
+            return Get();
+        }
+
+        public T GetLast()
+        {
+            if (IsEmpty())
+            {
+                return default;
+            }
+
+            current = sentinel.Prev;
+            return Get();
+        }
+
+        public void AddFirst(T item)
+        {
+            current = sentinel;
+            Add(item);
+        }
+
+        public void AddLast(T item)
+        {
+            current = sentinel.Prev;
+            Add(item);
+        }
+
+        public T Get()
+        {
+            if (HasCurrent())
+            {
+                return current.Data;
+            }
+
+            return default;
+        }
+
+        public void Set(T item)
+        {
+            if (HasCurrent())
+            {
+                current.Data = item;
+            }
+        }
+
+        public T Next()
+        {
+            if (HasNext())
+            {
+                current = current.Next;
+                return current.Data;
+            }
+
+            return default;
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
             {
@@ -105,128 +169,21 @@ namespace MyLinkedList
                 throw new ArgumentException("The number of elements in the source collection is greater than the available space from arrayIndex to the end of the destination array.");
             }
 
+            Node<T>? current = sentinel.Next;
             for (int i = 0; i < Count; i++)
             {
-                Node<T>? current = First;
-                array[i + arrayIndex] = current;
+                array[i + arrayIndex] = current.Data;
                 current = current.Next;
             }
         }
 
-        public Node<T>? Find(T valueToFind)
+        public IEnumerator<T> GetEnumerator()
         {
-            if(First == null)
+            Node<T> currentNode = sentinel.Next;
+
+            while (currentNode != sentinel)
             {
-                return null;
-            }
-
-            var aux = First;
-            while (aux.Next != First)
-            {
-                if (EqualityComparer<T>.Default.Equals(aux.Value, valueToFind))
-                {
-                    return aux;
-                }
-                aux = aux.Next;
-            }
-
-            if (EqualityComparer<T>.Default.Equals(aux.Value, valueToFind))
-            {
-                return aux;
-            }
-
-            return null;
-        }
-
-        public bool Remove(Node<T> item)
-        {
-            if(First == null)
-            {
-                return false;
-            }
-
-            Node<T>? current = First;
-            Node<T>? prev1 = null;
-            while(!EqualityComparer<T>.Default.Equals(current.Value, item.Value))
-            {
-                if(current.Next == First)
-                {
-                    return false;
-                }
-                prev1 = current;
-                current = current.Next;
-            }
-
-            if(current.Next == First && prev1 == null)
-            {
-                First = null;
-                Count--;
-                return true;
-            }
-
-            if(current == First)
-            {
-                prev1 = First.Prev;
-                First = First.Next;
-                prev1.Next = First;
-                First.Prev = prev1;
-            }
-
-            else if(current.Next == First)
-            {
-                prev1.Next = First;
-                First.Prev = prev1;
-            }
-
-            else
-            {
-                Node<T>? temp = current.Next;
-                prev1.Next = temp;
-                temp.Prev = prev1;
-            }
-
-            Count--;
-            return true;
-        }
-
-        public void InsertAfter(Node<T> prev_node, Node<T> insertNode)
-        {
-            if (prev_node == null)
-            {
-                throw new ArgumentNullException("The given previous node cannot be null");
-            }
-
-            if (insertNode == null)
-            {
-                throw new ArgumentNullException("The given node to insert cannot be null");
-            }
-
-            Node<T>? temp = First;
-            while(!EqualityComparer<T>.Default.Equals(temp.Value, prev_node.Value))
-            {
-                temp = temp.Next;
-            }
-
-            Node<T>? next = temp.Next;
-            temp.Next = insertNode;
-            insertNode.Prev = temp;
-            insertNode.Next = next;
-            next.Prev = insertNode;
-            Count++;
-        }
-
-        public IEnumerator<Node<T>> GetEnumerator()
-        {
-            if(First == null)
-            {
-                yield break;
-            }
-
-            Node<T> currentNode = First;
-
-            while (currentNode.Next != First)
-            {
-                yield return currentNode;
+                yield return currentNode.Data;
                 currentNode = currentNode.Next;
             }
         }

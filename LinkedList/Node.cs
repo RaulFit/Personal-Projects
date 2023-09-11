@@ -7,13 +7,14 @@ namespace MyLinkedList
 {
     public class Node<T>
     {
-        internal T Value { get; set; }
-        public Node<T>? Next { get; set; }
-        public Node<T>? Prev { get; set; }
+        public T Data;
+        public Node<T>? Next;
+        public Node<T>? Prev;
 
         public Node(T value)
         {
-            Value = value;
+            Next = Prev = null;
+            Data = value;
         }
     }
 }

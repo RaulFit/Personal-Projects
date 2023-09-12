@@ -28,36 +28,49 @@ namespace MyLinkedList
             get => sentinel.Prev;
         }
 
+        private void Add(Node<T> newNode, bool first = false, bool last = false)
+        {
+            if (first)
+            {
+                newNode.Next = sentinel.Next;
+                newNode.Prev = sentinel;
+                sentinel.Next.Prev = newNode;
+                sentinel.Next = newNode;
+            }
+
+            if (last)
+            {
+                Node<T> lastNode = sentinel.Prev;
+                newNode.Next = lastNode.Next;
+                newNode.Prev = lastNode;
+                lastNode.Next.Prev = newNode;
+                lastNode.Next = newNode;
+            }
+
+            Count++;
+        }
+
         public void AddFirst(Node<T> node)
         {
-            node.Next = sentinel.Next;
-            node.Prev = sentinel;
-            sentinel.Next.Prev = node;
-            sentinel.Next = node;
-            Count++;
+            Add(node, first: true);
         }
 
         public Node<T> AddFirst(T data)
         {
             Node<T> node = new Node<T>(data);
-            AddFirst(node);
+            Add(node, first: true);
             return node;
         }
 
         public void AddLast(Node<T> node)
         {
-            Node<T> last = sentinel.Prev;
-            node.Next = last.Next;
-            node.Prev = last;
-            last.Next.Prev = node;
-            last.Next = node;
-            Count++;
+            Add(node, last: true);
         }
 
         public Node<T> AddLast(T data)
         {
             Node<T> node = new Node<T>(data);
-            AddLast(node);
+            Add(node, last: true);
             return node;
         }
 
@@ -113,32 +126,37 @@ namespace MyLinkedList
             return newNode;
         }
 
-        public Node<T>? Find(T value, bool last = false)
+        public Node<T>? Find(T value)
         {
             Node<T> node;
-            Node<T> returnNode = default;
             sentinel.Data = value;
-            for (node = sentinel.Next; node != sentinel; node = node.Next)
+            for (node = sentinel.Next; node != sentinel && !node.Data.Equals(value); node = node.Next)
             {
-                if(node.Data.Equals(value) && !last)
-                {
-                    returnNode = node;
-                    break;
-                }
-
-                if (node.Data.Equals(value) && last)
-                {
-                    returnNode = node;
-                }
             }
 
             sentinel.Data = default;
-            return returnNode;
+            if(node == sentinel)
+            {
+                return default;
+            }
+
+            return node;
         }
 
         public Node<T>? FindLast(T value)
         {
-            return Find(value, true);
+            Node<T> node;
+            Node<T> lastNode = default;
+            sentinel.Data = value;
+            for (node = sentinel.Next; node != sentinel; node = node.Next)
+            {
+                if (node.Data.Equals(value))
+                {
+                    lastNode = node;
+                }
+            }
+
+            return lastNode;
         }
 
         void ICollection<T>.Add(T item)

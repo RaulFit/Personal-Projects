@@ -133,11 +133,6 @@ namespace MyLinkedList
             }
 
             sentinel.Data = default;
-            if (returnNode == sentinel)
-            {
-                return default;
-            }
-
             return returnNode;
         }
 

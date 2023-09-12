@@ -57,7 +57,7 @@ namespace MyLinkedList
             Count++;
         }
 
-        public void AddLast(T data)
+        public Node<T> AddLast(T data)
         {
             Node<T> node = new Node<T>(data);
             Last = sentinel.Prev;
@@ -67,6 +67,7 @@ namespace MyLinkedList
             Last.Next = node;
             Last = node;
             Count++;
+            return node;
         }
 
         public void AddAfter(Node<T> prevNode, Node<T> newNode)

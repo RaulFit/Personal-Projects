@@ -78,7 +78,7 @@ namespace MyLinkedList
 
         public void AddBefore(Node<T> nextNode, Node<T> newNode)
         {
-            AddNode(nextNode, newNode);
+            AddNode(nextNode.Prev, newNode);
         }
 
         public Node<T> AddBefore(Node<T> nextNode, T value)

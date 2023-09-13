@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Reflection;
 using System.Runtime.Versioning;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace MyLinkedList
@@ -28,102 +31,83 @@ namespace MyLinkedList
             get => sentinel.Prev;
         }
 
-        private void Add(Node<T> newNode, bool first = false, bool last = false)
+        private void Add(Node<T> newNode, int index)
         {
-            if (first)
+            Node<T> current = sentinel;
+            for (int i = 0; i < index; i++)
             {
-                newNode.Next = sentinel.Next;
-                newNode.Prev = sentinel;
-                sentinel.Next.Prev = newNode;
-                sentinel.Next = newNode;
+                current = current.Next;
             }
 
-            if (last)
-            {
-                Node<T> lastNode = sentinel.Prev;
-                newNode.Next = lastNode.Next;
-                newNode.Prev = lastNode;
-                lastNode.Next.Prev = newNode;
-                lastNode.Next = newNode;
-            }
-
+            newNode.Next = current.Next;
+            current.Next = newNode;
+            newNode.Prev = current;
+            newNode.Next.Prev = newNode;
             Count++;
         }
 
         public void AddFirst(Node<T> node)
         {
-            Add(node, first: true);
+            Add(node, 0);
         }
 
         public Node<T> AddFirst(T data)
         {
             Node<T> node = new Node<T>(data);
-            Add(node, first: true);
+            Add(node, 0);
             return node;
         }
 
         public void AddLast(Node<T> node)
         {
-            Add(node, last: true);
+            Add(node, Count);
         }
 
         public Node<T> AddLast(T data)
         {
             Node<T> node = new Node<T>(data);
-            Add(node, last: true);
+            Add(node, Count);
             return node;
         }
 
         public void AddAfter(Node<T> prevNode, Node<T> newNode)
         {
-            if(prevNode == default)
+            Node<T> node;
+            int index = 0;
+            for (node = sentinel.Next; node != sentinel && !node.Data.Equals(prevNode); node = node.Next)
             {
-                return;
+                index++;
             }
 
-            newNode.Next = prevNode.Next;
-            prevNode.Next = newNode;
-            newNode.Prev = prevNode;
-
-            if(newNode.Next != default)
-            {
-                newNode.Next.Prev = newNode;
-            }
-
-            Count++;
+            Add(newNode, index);
         }
 
         public Node<T> AddAfter(Node<T> prevNode, T value)
         {
-            Node<T> newNode = new Node<T>(value);
-            AddAfter(prevNode, newNode);
-            return newNode;
+            Node<T> node = new Node<T>(value);
+            AddAfter(prevNode, node);
+            return node;
         }
 
         public void AddBefore(Node<T> nextNode, Node<T> newNode)
         {
-            if (nextNode == default)
+            Node<T> node;
+            int index = 0;
+            for (node = sentinel.Next; node != sentinel && !node.Data.Equals(nextNode); node = node.Next)
             {
-                return;
+                index++;
             }
 
-            newNode.Prev = nextNode.Prev;
-            nextNode.Prev = newNode;
-            newNode.Next = nextNode;
+            index--;
 
-            if (newNode.Prev != default)
-            {
-                newNode.Prev.Next = newNode;
-            }
-
-            Count++;
+            Add(newNode, index);
         }
 
         public Node<T> AddBefore(Node<T> nextNode, T value)
         {
-            Node<T> newNode = new Node<T>(value);
-            AddBefore(nextNode, newNode);
-            return newNode;
+            Node<T> node = new Node<T>(value);
+            AddBefore(nextNode, node);
+            return node;
         }
 
         public Node<T>? Find(T value)
@@ -161,7 +145,7 @@ namespace MyLinkedList
 
         void ICollection<T>.Add(T item)
         {
-            AddLast(item);
+            Add(new Node<T>(item), Count);
         }
 
         public void Clear()
@@ -175,6 +159,19 @@ namespace MyLinkedList
             return Find(item) != default;
         }
 
+        private void Remove(int index)
+        {
+            Node<T> current = sentinel;
+            for (int i = 0; i <= index; i++)
+            {
+                current = current.Next;
+            }
+
+            current.Prev.Next = current.Next;
+            current.Next.Prev = current.Prev;
+            Count--;
+        }
+
         public bool Remove(Node<T> specifiedNode)
         {
             if (!Contains(specifiedNode.Data))
@@ -182,15 +179,16 @@ namespace MyLinkedList
                 return false;
             }
 
-            Node<T> current;
-
-            for (current = sentinel.Next; !current.Data.Equals(specifiedNode.Data); current = current.Next)
+            Node<T> node;
+            int index = 1;
+            for (node = sentinel.Next; node != sentinel && !node.Data.Equals(specifiedNode); node = node.Next)
             {
+                index++;
             }
 
-            current.Prev.Next = current.Next;
-            current.Next.Prev = current.Prev;
-            Count--;
+            index++;
+
+            Remove(index);
             return true;
         }
 
@@ -202,28 +200,12 @@ namespace MyLinkedList
 
         public void RemoveFirst()
         {
-            if (sentinel.Next == sentinel)
-            {
-                return;
-            }
-
-            Node<T> first = sentinel.Next;
-            sentinel.Next = first.Next;
-            sentinel.Next.Prev = sentinel;
-            Count--;
+            Remove(0);
         }
 
         public void RemoveLast()
         {
-            if(sentinel.Prev == sentinel)
-            {
-                return;
-            }
-
-            Node<T> last = sentinel.Prev;
-            sentinel.Prev = last.Prev;
-            sentinel.Prev.Next = sentinel;
-            Count--;
+            Remove(Count - 1);
         }
 
         public void CopyTo(T[] array, int arrayIndex)

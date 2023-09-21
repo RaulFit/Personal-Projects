@@ -56,6 +56,17 @@ namespace MyLinkedList.Facts
         }
 
         [Fact]
+        public void Find_ShouldReturnNullWhenNodeIsNotInList()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Node<int> first = new Node<int>(2);
+            Node<int> second = new Node<int>(2);
+            list.AddLast(first);
+            list.AddLast(second);
+            Assert.Null(list.Find(5));
+        }
+
+        [Fact]
         public void FindLast_ShouldReturnLastNodeWithSpecifiedData()
         {
             LinkedList<int> list = new LinkedList<int>();
@@ -64,6 +75,17 @@ namespace MyLinkedList.Facts
             list.AddLast(first);
             list.AddLast(second);
             Assert.Equal(second, list.FindLast(2));
+        }
+
+        [Fact]
+        public void FindLast_ShouldReturnNullWhenNodeIsNotInList()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Node<int> first = new Node<int>(2);
+            Node<int> second = new Node<int>(2);
+            list.AddLast(first);
+            list.AddLast(second);
+            Assert.Null(list.FindLast(5));
         }
 
         [Fact]
@@ -165,6 +187,18 @@ namespace MyLinkedList.Facts
             list.AddLast(new Node<int>(3));
             list.Remove(specifiedNode);
             Assert.DoesNotContain(specifiedNode.Data, list);
+        }
+
+        [Fact]
+        public void RemoveWithNode_ShouldReturnWhenNodeIsNotInList()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Node<int> nodeToRemove = new Node<int>(5);
+            list.AddLast(new Node<int>(1));
+            list.AddLast(new Node<int>(2));
+            list.AddLast(new Node<int>(3));
+            list.Remove(nodeToRemove);
+            Assert.Equal(3, list.Count);
         }
 
         [Fact]

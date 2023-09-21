@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Xml.Linq;
 
 namespace MyLinkedList
 {
@@ -10,7 +11,7 @@ namespace MyLinkedList
         public LinkedList()
         {
             sentinel = new Node<T>(default);
-            sentinel.Next = sentinel.Prev = sentinel;
+            Clear();
         }
 
         public int Count { get; private set; }
@@ -19,12 +20,12 @@ namespace MyLinkedList
 
         public Node<T>? First
         {
-            get => sentinel.Next;
+            get => Count == 0 ? null : sentinel.Next;
         }
 
         public Node<T>? Last
         {
-            get => sentinel.Prev;
+            get => Count == 0 ? null : sentinel.Prev;
         }
 
         public void AddFirst(Node<T> node)
@@ -53,6 +54,16 @@ namespace MyLinkedList
 
         public void AddAfter(Node<T> prevNode, Node<T> newNode)
         {
+            if (Count == 0)
+            {
+                newNode.Prev = sentinel;
+                newNode.Next = sentinel;
+                sentinel.Next = newNode;
+                sentinel.Prev = newNode;
+                Count++;
+                return;
+            }
+
             newNode.Next = prevNode.Next;
             prevNode.Next = newNode;
             newNode.Prev = prevNode;
@@ -86,6 +97,11 @@ namespace MyLinkedList
             {
             }
 
+            if(node == sentinel)
+            {
+                return null;
+            }
+
             return node;
         }
 
@@ -100,6 +116,11 @@ namespace MyLinkedList
                 {
                     lastNode = node;
                 }
+            }
+
+            if (lastNode == sentinel)
+            {
+                return null;
             }
 
             return lastNode;
@@ -118,17 +139,22 @@ namespace MyLinkedList
 
         public bool Contains(T item)
         {
-            Node<T> node;
-            for (node = sentinel.Next; node != sentinel && !node.Data.Equals(item); node = node.Next)
-            {
-            }
-
-            return node == sentinel ? false : true;
+            return Find(item) != null;
         }
 
         public void Remove(Node<T> specifiedNode)
         {
-            if (!Contains(specifiedNode.Data))
+            if(Count == 0)
+            {
+                return;
+            }
+
+            Node<T> node;
+            for (node = sentinel.Next; node != sentinel && !node.Equals(specifiedNode); node = node.Next)
+            {
+            }
+
+            if (node == sentinel)
             {
                 return;
             }
@@ -140,13 +166,14 @@ namespace MyLinkedList
 
         public bool Remove(T item)
         {
-            if (Find(item) == sentinel)
+            Node<T> nodeToRemove = Find(item);
+            if(nodeToRemove == null)
             {
                 return false;
             }
 
-            Remove(Find(item));
-            return true;    
+            Remove(nodeToRemove);
+            return true;
         }
 
         public void RemoveFirst()
@@ -187,7 +214,7 @@ namespace MyLinkedList
         public IEnumerator<T> GetEnumerator()
         {
             Node<T> current;
-            for(current = sentinel.Next; current != sentinel; current = current.Next)
+            for (current = sentinel.Next; current != sentinel; current = current.Next)
             {
                 yield return current.Data;
             }

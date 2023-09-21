@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Reflection;
-using System.Runtime.Versioning;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace MyLinkedList
 {
@@ -31,18 +27,9 @@ namespace MyLinkedList
             get => sentinel.Prev;
         }
 
-        private void AddNode(Node<T> current, Node<T> newNode)
-        {
-            newNode.Next = current.Next;
-            current.Next = newNode;
-            newNode.Prev = current;
-            newNode.Next.Prev = newNode;
-            Count++;
-        }
-
         public void AddFirst(Node<T> node)
         {
-            AddNode(sentinel, node);
+            AddAfter(sentinel, node);
         }
 
         public Node<T> AddFirst(T data)
@@ -54,7 +41,7 @@ namespace MyLinkedList
 
         public void AddLast(Node<T> node)
         {
-            AddNode(Last, node);
+            AddAfter(Last, node);
         }
 
         public Node<T> AddLast(T data)
@@ -66,7 +53,11 @@ namespace MyLinkedList
 
         public void AddAfter(Node<T> prevNode, Node<T> newNode)
         {
-            AddNode(prevNode, newNode);
+            newNode.Next = prevNode.Next;
+            prevNode.Next = newNode;
+            newNode.Prev = prevNode;
+            newNode.Next.Prev = newNode;
+            Count++;
         }
 
         public Node<T> AddAfter(Node<T> prevNode, T value)
@@ -78,7 +69,7 @@ namespace MyLinkedList
 
         public void AddBefore(Node<T> nextNode, Node<T> newNode)
         {
-            AddNode(nextNode.Prev, newNode);
+            AddAfter(nextNode.Prev, newNode);
         }
 
         public Node<T> AddBefore(Node<T> nextNode, T value)
@@ -91,15 +82,8 @@ namespace MyLinkedList
         public Node<T>? Find(T value)
         {
             Node<T> node;
-            sentinel.Data = value;
             for (node = sentinel.Next; node != sentinel && !node.Data.Equals(value); node = node.Next)
             {
-            }
-
-            sentinel.Data = default;
-            if(node == sentinel)
-            {
-                return default;
             }
 
             return node;
@@ -123,7 +107,7 @@ namespace MyLinkedList
 
         void ICollection<T>.Add(T item)
         {
-            AddNode(Last, new Node<T>(item));
+            AddAfter(Last, new Node<T>(item));
         }
 
         public void Clear()
@@ -134,30 +118,35 @@ namespace MyLinkedList
 
         public bool Contains(T item)
         {
-            return Find(item) != default;
+            Node<T> node;
+            for (node = sentinel.Next; node != sentinel && !node.Data.Equals(item); node = node.Next)
+            {
+            }
+
+            return node == sentinel ? false : true;
         }
 
-        private void RemoveNode(Node<T> node)
-        {
-            node.Prev.Next = node.Next;
-            node.Next.Prev = node.Prev;
-            Count--;
-        }
-
-        public bool Remove(Node<T> specifiedNode)
+        public void Remove(Node<T> specifiedNode)
         {
             if (!Contains(specifiedNode.Data))
             {
-                return false;
+                return;
             }
 
-            RemoveNode(specifiedNode);
-            return true;
+            specifiedNode.Prev.Next = specifiedNode.Next;
+            specifiedNode.Next.Prev = specifiedNode.Prev;
+            Count--;
         }
 
         public bool Remove(T item)
         {
-            return Remove(Find(item));
+            if (Find(item) == sentinel)
+            {
+                return false;
+            }
+
+            Remove(Find(item));
+            return true;    
         }
 
         public void RemoveFirst()
@@ -197,16 +186,10 @@ namespace MyLinkedList
 
         public IEnumerator<T> GetEnumerator()
         {
-            if(sentinel.Next == sentinel)
-            {
-                yield break;
-            }
-
-            Node<T> current = sentinel.Next;
-            for(int i = 0; i < Count; i++)
+            Node<T> current;
+            for(current = sentinel.Next; current != sentinel; current = current.Next)
             {
                 yield return current.Data;
-                current = current.Next;
             }
         }
 

@@ -163,7 +163,7 @@ namespace MyLinkedList.Facts
             list.AddLast(new Node<int>(1));
             list.AddLast(specifiedNode);
             list.AddLast(new Node<int>(3));
-            Assert.True(list.Remove(specifiedNode));
+            list.Remove(specifiedNode);
             Assert.DoesNotContain(specifiedNode.Data, list);
         }
 

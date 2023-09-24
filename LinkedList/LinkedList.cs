@@ -109,7 +109,7 @@ namespace MyLinkedList
 
         void ICollection<T>.Add(T item)
         {
-            AddAfter(Last, new Node<T>(item));
+            AddAfter(sentinel.Prev, new Node<T>(item));
         }
 
         public void Clear()

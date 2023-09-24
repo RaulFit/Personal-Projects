@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Xml.Linq;
 
 namespace MyLinkedList
 {
@@ -42,7 +41,7 @@ namespace MyLinkedList
 
         public void AddLast(Node<T> node)
         {
-            AddAfter(Last, node);
+            AddAfter(sentinel.Prev, node);
         }
 
         public Node<T> AddLast(T data)
@@ -54,16 +53,6 @@ namespace MyLinkedList
 
         public void AddAfter(Node<T> prevNode, Node<T> newNode)
         {
-            if (Count == 0)
-            {
-                newNode.Prev = sentinel;
-                newNode.Next = sentinel;
-                sentinel.Next = newNode;
-                sentinel.Prev = newNode;
-                Count++;
-                return;
-            }
-
             newNode.Next = prevNode.Next;
             prevNode.Next = newNode;
             newNode.Prev = prevNode;
@@ -93,37 +82,29 @@ namespace MyLinkedList
         public Node<T>? Find(T value)
         {
             Node<T> node;
-            for (node = sentinel.Next; node != sentinel && !node.Data.Equals(value); node = node.Next)
+            for (node = sentinel.Next; node != sentinel; node = node.Next)
             {
+                if (node.Data.Equals(value))
+                {
+                    return node;
+                }
             }
 
-            if(node == sentinel)
-            {
-                return null;
-            }
-
-            return node;
+            return null;
         }
 
         public Node<T>? FindLast(T value)
         {
             Node<T> node;
-            Node<T> lastNode = default;
-            sentinel.Data = value;
-            for (node = sentinel.Next; node != sentinel; node = node.Next)
+            for (node = sentinel.Prev; node != sentinel; node = node.Prev)
             {
                 if (node.Data.Equals(value))
                 {
-                    lastNode = node;
+                    return node;
                 }
             }
 
-            if (lastNode == sentinel)
-            {
-                return null;
-            }
-
-            return lastNode;
+            return null;
         }
 
         void ICollection<T>.Add(T item)
@@ -144,24 +125,22 @@ namespace MyLinkedList
 
         public void Remove(Node<T> specifiedNode)
         {
-            if(Count == 0)
+            if(specifiedNode == null)
             {
-                return;
+                throw new InvalidOperationException("The specified node cannot be null");
             }
 
             Node<T> node;
-            for (node = sentinel.Next; node != sentinel && !node.Equals(specifiedNode); node = node.Next)
+            for (node = sentinel.Next; node != sentinel; node = node.Next)
             {
+                if (node.Equals(specifiedNode))
+                {
+                    specifiedNode.Prev.Next = specifiedNode.Next;
+                    specifiedNode.Next.Prev = specifiedNode.Prev;
+                    Count--;
+                    return;
+                }
             }
-
-            if (node == sentinel)
-            {
-                return;
-            }
-
-            specifiedNode.Prev.Next = specifiedNode.Next;
-            specifiedNode.Next.Prev = specifiedNode.Prev;
-            Count--;
         }
 
         public bool Remove(T item)

@@ -213,6 +213,13 @@ namespace MyLinkedList.Facts
         }
 
         [Fact]
+        public void RemoveFirst_ShouldThrowExceptionWhenListIsEmpty()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Assert.Throws<InvalidOperationException>(() => list.RemoveFirst());
+        }
+
+        [Fact]
         public void RemoveLast_ShouldRemoveLastNode()
         {
             LinkedList<int> list = new LinkedList<int>();
@@ -221,6 +228,13 @@ namespace MyLinkedList.Facts
             list.AddLast(new Node<int>(3));
             list.RemoveLast();
             Assert.DoesNotContain(3, list);
+        }
+
+        [Fact]
+        public void RemoveLast_ShouldThrowExceptionWhenListIsEmpty()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Assert.Throws<InvalidOperationException>(() => list.RemoveLast());
         }
     }
 }

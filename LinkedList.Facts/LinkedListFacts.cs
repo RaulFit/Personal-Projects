@@ -89,6 +89,16 @@ namespace MyLinkedList.Facts
         }
 
         [Fact]
+        public void AddAfterWithNodes_ShouldThrowArgumentNullExceptionWhenNodeIsNull()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            Node<int> prevNode = new Node<int>(1);
+            list.AddLast(prevNode);
+            list.AddLast(3);
+            Assert.Throws<ArgumentNullException>(() => list.AddAfter(prevNode, null));
+        }
+
+        [Fact]
         public void AddAfterWithNodes_ShouldAddNodeAfterSpecifiedNode()
         {
             LinkedList<int> list = new LinkedList<int>();
@@ -131,7 +141,6 @@ namespace MyLinkedList.Facts
             list.AddLast(1);
             list.AddLast(nextNode);
             Node<int> newNode = list.AddBefore(nextNode, 2);
-            list.AddBefore(nextNode, newNode);
             Assert.Equal(newNode, list.Find(2));
         }
 
@@ -215,7 +224,7 @@ namespace MyLinkedList.Facts
         public void RemoveFirst_ShouldThrowExceptionWhenListIsEmpty()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Assert.Throws<InvalidOperationException>(() => list.RemoveFirst());
+            Assert.Throws<ArgumentNullException>(() => list.RemoveFirst());
         }
 
         [Fact]
@@ -233,7 +242,7 @@ namespace MyLinkedList.Facts
         public void RemoveLast_ShouldThrowExceptionWhenListIsEmpty()
         {
             LinkedList<int> list = new LinkedList<int>();
-            Assert.Throws<InvalidOperationException>(() => list.RemoveLast());
+            Assert.Throws<ArgumentNullException>(() => list.RemoveLast());
         }
     }
 }

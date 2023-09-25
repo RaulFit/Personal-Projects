@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections;
-
-namespace MyLinkedList
+﻿namespace MyLinkedList
 {
+    using System.Collections;
+
     public class LinkedList<T> : ICollection<T>
     {
         private Node<T> sentinel;
 
         public LinkedList()
         {
-            sentinel = new Node<T>(default);
-            Clear();
+            this.sentinel = new Node<T>(default);
+            this.Clear();
         }
 
         public int Count { get; private set; }
@@ -19,70 +18,80 @@ namespace MyLinkedList
 
         public Node<T>? First
         {
-            get => Count == 0 ? null : sentinel.Next;
+            get => this.Count == 0 ? null : this.sentinel.Next;
         }
 
         public Node<T>? Last
         {
-            get => Count == 0 ? null : sentinel.Prev;
+            get => this.Count == 0 ? null : this.sentinel.Prev;
         }
 
         public void AddFirst(Node<T> node)
         {
-            AddAfter(sentinel, node);
+            this.AddAfter(this.sentinel, node);
         }
 
         public Node<T> AddFirst(T data)
         {
             Node<T> node = new Node<T>(data);
-            AddFirst(node);
+            this.AddFirst(node);
             return node;
         }
 
         public void AddLast(Node<T> node)
         {
-            AddAfter(sentinel.Prev, node);
+            this.AddAfter(this.sentinel.Prev, node);
         }
 
         public Node<T> AddLast(T data)
         {
             Node<T> node = new Node<T>(data);
-            AddLast(node);
+            this.AddLast(node);
             return node;
         }
 
-        public void AddAfter(Node<T> prevNode, Node<T> newNode)
+        public void AddAfter(Node<T>? prevNode, Node<T>? newNode)
         {
+            if (prevNode == null || newNode == null)
+            {
+                throw new ArgumentNullException("Previous node or new node cannot be null");
+            }
+
+            if (prevNode.Next == null || newNode.Next != null)
+            {
+                throw new InvalidOperationException("Previous node is not in the current LinkedList or new node belongs to another LinkedList");
+            }
+
             newNode.Next = prevNode.Next;
             prevNode.Next = newNode;
             newNode.Prev = prevNode;
             newNode.Next.Prev = newNode;
-            Count++;
+            this.Count++;
         }
 
         public Node<T> AddAfter(Node<T> prevNode, T value)
         {
             Node<T> node = new Node<T>(value);
-            AddAfter(prevNode, node);
+            this.AddAfter(prevNode, node);
             return node;
         }
 
         public void AddBefore(Node<T> nextNode, Node<T> newNode)
         {
-            AddAfter(nextNode.Prev, newNode);
+            this.AddAfter(nextNode.Prev, newNode);
         }
 
         public Node<T> AddBefore(Node<T> nextNode, T value)
         {
             Node<T> node = new Node<T>(value);
-            AddBefore(nextNode, node);
+            this.AddBefore(nextNode, node);
             return node;
         }
 
         public Node<T>? Find(T value)
         {
-            Node<T> node;
-            for (node = sentinel.Next; node != sentinel; node = node.Next)
+            Node<T>? node;
+            for (node = this.sentinel.Next; node != this.sentinel; node = node.Next)
             {
                 if (node.Data.Equals(value))
                 {
@@ -95,8 +104,8 @@ namespace MyLinkedList
 
         public Node<T>? FindLast(T value)
         {
-            Node<T> node;
-            for (node = sentinel.Prev; node != sentinel; node = node.Prev)
+            Node<T>? node;
+            for (node = this.sentinel.Prev; node != this.sentinel; node = node.Prev)
             {
                 if (node.Data.Equals(value))
                 {
@@ -109,56 +118,61 @@ namespace MyLinkedList
 
         void ICollection<T>.Add(T item)
         {
-            AddAfter(sentinel.Prev, new Node<T>(item));
+            this.AddAfter(this.sentinel.Prev, new Node<T>(item));
         }
 
         public void Clear()
         {
-            sentinel.Next = sentinel.Prev = sentinel;
-            Count = 0;
+            this.sentinel.Next = this.sentinel.Prev = this.sentinel;
+            this.Count = 0;
         }
 
         public bool Contains(T item)
         {
-            return Find(item) != null;
+            return this.Find(item) != null;
         }
 
-        public void Remove(Node<T> specifiedNode)
+        public void Remove(Node<T>? specifiedNode)
         {
-            if(specifiedNode == null || specifiedNode.Next == null)
+            if(specifiedNode == null)
             {
-                throw new InvalidOperationException("The specified node cannot be null");
+                throw new ArgumentNullException("The specified node cannot be null");
+            }
+
+            if (specifiedNode.Next == null)
+            {
+                throw new InvalidOperationException("Node is not in the current list");
             }
 
             specifiedNode.Prev.Next = specifiedNode.Next;
             specifiedNode.Next.Prev = specifiedNode.Prev;
-            Count--;
+            this.Count--;
             return;
         }
 
         public bool Remove(T item)
         {
-            Node<T> nodeToRemove = Find(item);
-            if(nodeToRemove == null)
+            Node<T>? nodeToRemove = this.Find(item);
+            if (nodeToRemove == null)
             {
                 return false;
             }
 
-            Remove(nodeToRemove);
+            this.Remove(nodeToRemove);
             return true;
         }
 
         public void RemoveFirst()
         {
-            Remove(First);
+            this.Remove(this.First);
         }
 
         public void RemoveLast()
         {
-            Remove(Last);
+            this.Remove(this.Last);
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T?[] array, int arrayIndex)
         {
             if (array == null)
             {
@@ -170,31 +184,31 @@ namespace MyLinkedList
                 throw new ArgumentOutOfRangeException("The arrayIndex is less than 0");
             }
 
-            if (Count > array.Length - arrayIndex)
+            if (this.Count > array.Length - arrayIndex)
             {
                 throw new ArgumentException("The number of elements in the source collection is greater than the available space from arrayIndex to the end of the destination array.");
             }
 
-            Node<T>? current = sentinel.Next;
-            for (int i = 0; i < Count; i++)
+            Node<T>? current = this.sentinel.Next;
+            for (int i = 0; i < this.Count; i++)
             {
                 array[i + arrayIndex] = current.Data;
                 current = current.Next;
             }
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<T>? GetEnumerator()
         {
-            Node<T> current;
-            for (current = sentinel.Next; current != sentinel; current = current.Next)
+            Node<T>? current;
+            for (current = this.sentinel.Next; current != this.sentinel; current = current.Next)
             {
                 yield return current.Data;
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        IEnumerator? IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return this.GetEnumerator();
         }
     }
 }

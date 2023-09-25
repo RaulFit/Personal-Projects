@@ -125,22 +125,15 @@ namespace MyLinkedList
 
         public void Remove(Node<T> specifiedNode)
         {
-            if(specifiedNode == null)
+            if(specifiedNode == null || specifiedNode.Next == null)
             {
                 throw new InvalidOperationException("The specified node cannot be null");
             }
 
-            Node<T> node;
-            for (node = sentinel.Next; node != sentinel; node = node.Next)
-            {
-                if (node.Equals(specifiedNode))
-                {
-                    specifiedNode.Prev.Next = specifiedNode.Next;
-                    specifiedNode.Next.Prev = specifiedNode.Prev;
-                    Count--;
-                    return;
-                }
-            }
+            specifiedNode.Prev.Next = specifiedNode.Next;
+            specifiedNode.Next.Prev = specifiedNode.Prev;
+            Count--;
+            return;
         }
 
         public bool Remove(T item)

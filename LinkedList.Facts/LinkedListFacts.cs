@@ -190,15 +190,14 @@ namespace MyLinkedList.Facts
         }
 
         [Fact]
-        public void RemoveWithNode_ShouldReturnWhenNodeIsNotInList()
+        public void RemoveWithNode_ShouldThrowExceptionWhenNodeIsNotInList()
         {
             LinkedList<int> list = new LinkedList<int>();
             Node<int> nodeToRemove = new Node<int>(5);
             list.AddLast(new Node<int>(1));
             list.AddLast(new Node<int>(2));
             list.AddLast(new Node<int>(3));
-            list.Remove(nodeToRemove);
-            Assert.Equal(3, list.Count);
+            Assert.Throws<InvalidOperationException>(() => list.Remove(nodeToRemove));
         }
 
         [Fact]

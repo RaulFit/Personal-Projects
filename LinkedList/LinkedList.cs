@@ -40,7 +40,7 @@
 
         public void AddLast(Node<T> node)
         {
-            this.AddAfter(this.sentinel.Prev, node);
+            this.AddBefore(this.sentinel, node);
         }
 
         public Node<T> AddLast(T data)
@@ -52,14 +52,12 @@
 
         public void AddAfter(Node<T>? prevNode, Node<T>? newNode)
         {
-            if (prevNode == null || newNode == null)
-            {
-                throw new ArgumentNullException("Previous node or new node cannot be null");
-            }
+            this.NodeIsNull(newNode);
+            this.NodeIsNotInList(prevNode);
 
-            if (prevNode.Next == null || newNode.Next != null)
+            if (newNode.Next != null)
             {
-                throw new InvalidOperationException("Previous node is not in the current LinkedList or new node belongs to another LinkedList");
+                throw new InvalidOperationException($"{nameof(prevNode)} belongs to another list");
             }
 
             newNode.Next = prevNode.Next;
@@ -118,7 +116,7 @@
 
         void ICollection<T>.Add(T item)
         {
-            this.AddAfter(this.sentinel.Prev, new Node<T>(item));
+            this.AddBefore(this.sentinel, new Node<T>(item));
         }
 
         public void Clear()
@@ -134,16 +132,7 @@
 
         public void Remove(Node<T>? specifiedNode)
         {
-            if(specifiedNode == null)
-            {
-                throw new ArgumentNullException("The specified node cannot be null");
-            }
-
-            if (specifiedNode.Next == null)
-            {
-                throw new InvalidOperationException("Node is not in the current list");
-            }
-
+            this.NodeIsNotInList(specifiedNode);
             specifiedNode.Prev.Next = specifiedNode.Next;
             specifiedNode.Next.Prev = specifiedNode.Prev;
             this.Count--;
@@ -209,6 +198,24 @@
         IEnumerator? IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        private void NodeIsNull(Node<T>? node)
+        {
+            if (node == null)
+            {
+                throw new ArgumentNullException($"{nameof(node)} cannot be null");
+            }
+        }
+
+        private void NodeIsNotInList(Node<T>? node)
+        {
+            this.NodeIsNull(node);
+
+            if (node.Next == null)
+            {
+                throw new InvalidOperationException($"{nameof(node)} is not in the current list");
+            }
         }
     }
 }

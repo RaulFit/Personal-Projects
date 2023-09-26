@@ -9,6 +9,7 @@
         public LinkedList()
         {
             this.sentinel = new Node<T>(default);
+            this.sentinel.list = this;
             this.Clear();
         }
 
@@ -52,26 +53,21 @@
 
         public void AddAfter(Node<T>? prevNode, Node<T>? newNode)
         {
-            this.NodeIsNull(newNode);
-            this.NodeIsNotInList(prevNode);
-
-            if (newNode.Next != null)
-            {
-                throw new InvalidOperationException($"{nameof(prevNode)} belongs to another list");
-            }
-
+            this.ValidateNode(prevNode);
+            this.ValidateNewNode(newNode);
             newNode.Next = prevNode.Next;
             prevNode.Next = newNode;
             newNode.Prev = prevNode;
             newNode.Next.Prev = newNode;
+            newNode.list = this;
             this.Count++;
         }
 
         public Node<T> AddAfter(Node<T> prevNode, T value)
         {
-            Node<T> node = new Node<T>(value);
-            this.AddAfter(prevNode, node);
-            return node;
+            Node<T> result = new Node<T>(value);
+            this.AddAfter(prevNode, result);
+            return result;
         }
 
         public void AddBefore(Node<T> nextNode, Node<T> newNode)
@@ -132,7 +128,7 @@
 
         public void Remove(Node<T>? specifiedNode)
         {
-            this.NodeIsNotInList(specifiedNode);
+            this.ValidateNode(specifiedNode);
             specifiedNode.Prev.Next = specifiedNode.Next;
             specifiedNode.Next.Prev = specifiedNode.Prev;
             this.Count--;
@@ -208,14 +204,39 @@
             }
         }
 
-        private void NodeIsNotInList(Node<T>? node)
+        private void ValidateNode(Node<T>? node)
         {
             this.NodeIsNull(node);
 
-            if (node.Next == null)
+            if (node.list != this)
             {
                 throw new InvalidOperationException($"{nameof(node)} is not in the current list");
             }
+        }
+
+        private void ValidateNewNode(Node<T>? node)
+        {
+            this.NodeIsNull(node);
+
+            if (node.list != null)
+            {
+                throw new InvalidOperationException($"{nameof(node)} belongs to another list");
+            }
+        }
+    }
+
+    public sealed class Node<T>
+    {
+        internal LinkedList<T>? list;
+        public T? Data;
+        internal Node<T>? Next;
+        internal Node<T>? Prev;
+
+        public Node(T? value)
+        {
+            this.Next = this.Prev = null;
+            this.list = null;
+            this.Data = value;
         }
     }
 }

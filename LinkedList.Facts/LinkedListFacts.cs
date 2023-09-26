@@ -210,6 +210,19 @@ namespace MyLinkedList.Facts
         }
 
         [Fact]
+        public void RemoveWithNode_ShouldThrowExceptionWhenNodeIsInAnotherList()
+        {
+            LinkedList<int> list = new LinkedList<int>();
+            LinkedList<int> secondList = new LinkedList<int>();
+            Node<int> nodeToRemove = new Node<int>(5);
+            list.AddLast(new Node<int>(1));
+            list.AddLast(new Node<int>(2));
+            list.AddLast(new Node<int>(3));
+            secondList.AddLast(nodeToRemove);
+            Assert.Throws<InvalidOperationException>(() => list.Remove(nodeToRemove));
+        }
+
+        [Fact]
         public void RemoveFirst_ShouldRemoveFirstNode()
         {
             LinkedList<int> list = new LinkedList<int>();

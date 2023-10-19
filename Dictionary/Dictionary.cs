@@ -1,5 +1,6 @@
 ﻿namespace MyDictionary
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -97,15 +98,18 @@
 
             Element<TKey, TValue> elem = new Element<TKey, TValue>(item.Key, item.Value);
 
+            int index;
+
             if (freeIndex != -1)
             {
-                int index = freeIndex;
+                index = freeIndex;
                 freeIndex = elements[index].Next;
                 elements[index] = elem;
             }
 
             else
             {
+                index = Count;
                 elements[Count] = elem;
             }
 
@@ -114,7 +118,7 @@
                 elem.Next = buckets[GetPosition(elem.Key)];
             }
 
-            buckets[GetPosition(elem.Key)] = Count;
+            buckets[GetPosition(elem.Key)] = index;
             Count++;
         }
 

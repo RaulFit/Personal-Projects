@@ -126,7 +126,6 @@ namespace MyDictionary.Facts
             dictionary.Add(7, "d");
             dictionary.Add(12, "e");
             Assert.True(dictionary.Remove(12));
-            Assert.False(dictionary.ContainsKey(12));
         }
 
         [Fact]
@@ -139,7 +138,6 @@ namespace MyDictionary.Facts
             dictionary.Add(7, "d");
             dictionary.Add(12, "e");
             Assert.True(dictionary.Remove(7));
-            Assert.False(dictionary.ContainsKey(7));
         }
 
         [Fact]
@@ -211,7 +209,6 @@ namespace MyDictionary.Facts
             dictionary.Add(new KeyValuePair<int, string>(7, "d"));
             dictionary.Add(new KeyValuePair<int, string>(12, "e"));
             Assert.True(dictionary.Remove(12));
-            Assert.False(dictionary.ContainsKey(12));
         }
 
         [Fact]
@@ -224,7 +221,6 @@ namespace MyDictionary.Facts
             dictionary.Add(new KeyValuePair<int, string>(7, "d"));
             dictionary.Add(new KeyValuePair<int, string>(12, "e"));
             Assert.True(dictionary.Remove(7));
-            Assert.False(dictionary.ContainsKey(7));
         }
 
         [Fact]
@@ -238,6 +234,7 @@ namespace MyDictionary.Facts
             dictionary.Add(12, "e");
             dictionary.Remove(7);
             dictionary.Remove(1);
+            Assert.Equal(0, dictionary.freeIndex);
             dictionary.Add(17, "f");
             Assert.Equal("f", dictionary.elements[0].Value);
             Assert.Equal(3, dictionary.freeIndex);

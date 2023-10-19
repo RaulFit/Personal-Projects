@@ -9,8 +9,7 @@
     public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         public int[] buckets;
-        public Element<TKey, TValue>[] elements;
-        private LinkedList<int> freeElements;
+        public Element<TKey, TValue>[]? elements;
         public int freeIndex;
 
         public Dictionary(int capacity)
@@ -98,19 +97,11 @@
 
             Element<TKey, TValue> elem = new Element<TKey, TValue>(item.Key, item.Value);
 
-            if (freeElements.Count != 0)
+            if (freeIndex != -1)
             {
-                elements[freeIndex] = elem;
-                freeElements.RemoveFirst();
-                if (freeElements.Count != 0)
-                {
-                    freeIndex = freeElements.First();
-                }
-
-                else
-                {
-                    freeIndex = -1;
-                }
+                int index = freeIndex;
+                freeIndex = elements[index].Next;
+                elements[index] = elem;
             }
 
             else
@@ -143,7 +134,6 @@
             }
 
             elements = new Element<TKey, TValue>[Capacity];
-            freeElements = new LinkedList<int>();
             freeIndex = -1;
             Count = 0;
         }
@@ -227,11 +217,9 @@
 
             if (elements[index].Key.Equals(key))
             {
-                freeElements.AddFirst(index);
-                freeIndex = freeElements.First();
-                int next = elements[index].Next;
-                elements[index] = null;
-                buckets[GetPosition(key)] = next;
+                buckets[GetPosition(key)] = elements[index].Next;
+                elements[index].Next = freeIndex;
+                freeIndex = index;
                 Count--;
                 return true;
             }
@@ -240,11 +228,8 @@
             {
                 if (elements[elements[index].Next].Key.Equals(key))
                 {
-                    freeElements.AddFirst(elements[index].Next);
-                    freeIndex = freeElements.First();
-                    int next = elements[elements[index].Next].Next;
-                    elements[elements[index].Next] = null;
-                    elements[index].Next = next;
+                    elements[elements[index].Next].Next = freeIndex;
+                    freeIndex = elements[index].Next;
                     Count--;
                     break;
                 }

@@ -29,11 +29,6 @@
 
                 DictionaryIsReadOnly();
 
-                if (!ContainsKey(key))
-                {
-                    throw new KeyNotFoundException("Dictionary does not contain the specified key");
-                }
-
                 for (int index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
                 {
                     if (elements[index].Key.Equals(key))
@@ -42,10 +37,10 @@
                     }
                 }
 
-                return default;
+                throw new KeyNotFoundException("Dictionary does not contain the specified key");
             }
 
-            set { }
+            set { Add(key, value); }
         }
 
         public ICollection<TKey> Keys
@@ -104,20 +99,15 @@
             {
                 index = freeIndex;
                 freeIndex = elements[index].Next;
-                elements[index] = elem;
             }
 
             else
             {
                 index = Count;
-                elements[Count] = elem;
             }
 
-            if (buckets[GetPosition(elem.Key)] != -1)
-            {
-                elem.Next = buckets[GetPosition(elem.Key)];
-            }
-
+            elements[index] = elem;
+            elem.Next = buckets[GetPosition(elem.Key)];
             buckets[GetPosition(elem.Key)] = index;
             Count++;
         }
@@ -130,13 +120,8 @@
         public void Clear()
         {
             DictionaryIsReadOnly();
-
             buckets = new int[Capacity];
-            for (int i = 0; i < Capacity; i++)
-            {
-                buckets[i] = -1;
-            }
-
+            Array.Fill(buckets, -1);
             elements = new Element<TKey, TValue>[Capacity];
             freeIndex = -1;
             Count = 0;
@@ -222,6 +207,7 @@
             if (elements[index].Key.Equals(key))
             {
                 buckets[GetPosition(key)] = elements[index].Next;
+                elements[index].Value = default;
                 elements[index].Next = freeIndex;
                 freeIndex = index;
                 Count--;
@@ -234,6 +220,7 @@
                 {
                     elements[elements[index].Next].Next = freeIndex;
                     freeIndex = elements[index].Next;
+                    elements[index].Value = default;
                     Count--;
                     break;
                 }

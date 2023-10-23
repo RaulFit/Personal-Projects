@@ -9,7 +9,7 @@
 
     public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        public int[] buckets;
+        public int[]? buckets;
         public Element<TKey, TValue>[]? elements;
         public int freeIndex;
 
@@ -42,38 +42,11 @@
             set { Add(key, value); }
         }
 
-        private (TValue? value, bool containsItem) Search(TKey? key, TValue? value = default)
-        {
-            TValue? foundValue = default;
-            bool containsItem = false;
-
-            for (int index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
-            {
-                if (elements[index].Key.Equals(key))
-                {
-                    foundValue = elements[index].Value;
-                }
-
-                if (elements[index].Value.Equals(value) && elements[index].Next != freeIndex)
-                {
-                    containsItem = true;
-                }
-            }
-
-            return (foundValue, containsItem);
-        }
-
         public ICollection<TKey> Keys
         {
             get
             {
-                LinkedList<TKey> keys = new LinkedList<TKey>();
-                for (int i = 0; i < Count; i++)
-                {
-                    keys.AddLast(elements[i].Key);
-                }
-
-                return keys;
+               return GetKeysAndValues().keys;
             }
         }
 
@@ -81,13 +54,7 @@
         {
             get
             {
-                LinkedList<TValue> values = new LinkedList<TValue>();
-                for (int i = 0; i < Count; i++)
-                {
-                    values.AddLast(elements[i].Value);
-                }
-
-                return values;
+                return GetKeysAndValues().values;
             }
         }
 
@@ -149,29 +116,13 @@
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            (TValue value, bool found) = Search(item.Key, item.Value);
-
-            return value != null && value.Equals(item.Value) && found;
+            return Keys.Contains(item.Key) && this[item.Key].Equals(item.Value);
         }
 
         public bool ContainsKey(TKey key)
         {
             KeyIsNull(key);
-
-            for (int i = 0; i < Count; i++)
-            {
-                if (elements[i] == null)
-                {
-                    continue;
-                }
-
-                if (elements[i].Key.Equals(key) && elements[i].Next != freeIndex)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return Keys.Contains(key);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -228,19 +179,7 @@
                 return true;
             }
 
-            for (index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
-            {
-                if (elements[elements[index].Next].Key.Equals(key))
-                {
-                    elements[elements[index].Next].Next = freeIndex;
-                    freeIndex = elements[index].Next;
-                    elements[index].Value = default;
-                    Count--;
-                    break;
-                }
-            }
-            
-            return true;
+            return Search(key, remove: true).removed;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -274,6 +213,41 @@
             {
                 throw new NotSupportedException("The dictionary is read-only");
             }
+        }
+
+        private (TValue? value, bool removed) Search(TKey? key, bool remove = false)
+        {
+            for (int index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
+            {
+                if (elements[index].Key.Equals(key) && !remove)
+                {
+                    return (elements[index].Value, false);
+                }
+
+                if (elements[elements[index].Next].Key.Equals(key))
+                {
+                    elements[elements[index].Next].Next = freeIndex;
+                    freeIndex = elements[index].Next;
+                    elements[index].Value = default;
+                    Count--;
+                    return (default, true);
+                }
+            }
+
+            return (default, false);
+        }
+
+        private (ICollection<TKey> keys, ICollection<TValue> values) GetKeysAndValues()
+        {
+            LinkedList<TKey> keys = new LinkedList<TKey>();
+            LinkedList<TValue> values = new LinkedList<TValue>();
+            for (int i = 0; i < Count; i++)
+            {
+                keys.AddLast(elements[i].Key);
+                values.AddLast(elements[i].Value);
+            }
+
+            return (keys, values);
         }
     }
 

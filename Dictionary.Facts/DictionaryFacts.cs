@@ -1,7 +1,5 @@
 namespace MyDictionary.Facts
 {
-    using System.Collections;
-
     public class DictionaryFacts
     {
         [Fact]

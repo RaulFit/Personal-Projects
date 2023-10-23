@@ -3,9 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
-    using System.Dynamic;
 
     public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
@@ -42,30 +40,15 @@
             set { Add(key, value); }
         }
 
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-               return GetKeysAndValues().keys;
-            }
-        }
+        public ICollection<TKey> Keys => GetKeysAndValues().keys;
 
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                return GetKeysAndValues().values;
-            }
-        }
+        public ICollection<TValue> Values => GetKeysAndValues().values;
 
         public int Count { get; set;}
 
         public bool IsReadOnly { get; set; }
 
-        public void Add(TKey key, TValue value)
-        {
-            Add(new KeyValuePair<TKey, TValue>(key, value));
-        }
+        public void Add(TKey key, TValue value) => Add(new KeyValuePair<TKey, TValue>(key, value));
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
@@ -99,10 +82,7 @@
             Count++;
         }
 
-        private int GetPosition(TKey? key)
-        {
-            return Math.Abs(key.GetHashCode()) % Capacity;
-        }
+        private int GetPosition(TKey? key) => Math.Abs(key.GetHashCode()) % Capacity;
 
         public void Clear()
         {
@@ -114,11 +94,8 @@
             Count = 0;
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            return Keys.Contains(item.Key) && this[item.Key].Equals(item.Value);
-        }
-
+        public bool Contains(KeyValuePair<TKey, TValue> item) => Keys.Contains(item.Key) && this[item.Key].Equals(item.Value);
+       
         public bool ContainsKey(TKey key)
         {
             KeyIsNull(key);
@@ -156,6 +133,8 @@
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
         public bool Remove(TKey key)
         {
             KeyIsNull(key);
@@ -182,21 +161,13 @@
             return Search(key, remove: true).removed;
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
-        {
-            return Remove(item.Key);    
-        }
-
+        public bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key);
+        
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
             KeyIsNull(key);
             value = default;
             return ContainsKey(key);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         private void KeyIsNull(TKey key)

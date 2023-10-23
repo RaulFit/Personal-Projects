@@ -240,7 +240,7 @@ namespace MyDictionary.Facts
             Assert.Equal(3, dictionary.freeIndex);
             dictionary.Add(3, "g");
             Assert.Equal("g", dictionary.elements[3].Value);
-            Assert.Equal(-1, dictionary.freeIndex);
+            Assert.Equal(-3, dictionary.freeIndex);
         }
 
         [Fact]

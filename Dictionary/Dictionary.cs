@@ -29,18 +29,38 @@
 
                 DictionaryIsReadOnly();
 
-                for (int index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
+                TValue? foundValue = Search(key).value;
+
+                if (foundValue != null)
                 {
-                    if (elements[index].Key.Equals(key))
-                    {
-                        return elements[index].Value;
-                    }
+                    return foundValue;
                 }
 
                 throw new KeyNotFoundException("Dictionary does not contain the specified key");
             }
 
             set { Add(key, value); }
+        }
+
+        private (TValue? value, bool containsItem) Search(TKey? key, TValue? value = default)
+        {
+            TValue? foundValue = default;
+            bool containsItem = false;
+
+            for (int index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
+            {
+                if (elements[index].Key.Equals(key))
+                {
+                    foundValue = elements[index].Value;
+                }
+
+                if (elements[index].Value.Equals(value) && elements[index].Next != freeIndex)
+                {
+                    containsItem = true;
+                }
+            }
+
+            return (foundValue, containsItem);
         }
 
         public ICollection<TKey> Keys
@@ -95,7 +115,7 @@
 
             int index;
 
-            if (freeIndex != -1)
+            if (freeIndex != -3)
             {
                 index = freeIndex;
                 freeIndex = elements[index].Next;
@@ -112,7 +132,7 @@
             Count++;
         }
 
-        private int GetPosition(TKey key)
+        private int GetPosition(TKey? key)
         {
             return Math.Abs(key.GetHashCode()) % Capacity;
         }
@@ -123,21 +143,15 @@
             buckets = new int[Capacity];
             Array.Fill(buckets, -1);
             elements = new Element<TKey, TValue>[Capacity];
-            freeIndex = -1;
+            freeIndex = -3;
             Count = 0;
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            for (int index = buckets[GetPosition(item.Key)]; index != -1; index = elements[index].Next)
-            {
-                if (elements[index].Value.Equals(item.Value))
-                {
-                    return true;
-                }
-            }
+            (TValue value, bool found) = Search(item.Key, item.Value);
 
-            return false;
+            return value != null && value.Equals(item.Value) && found;
         }
 
         public bool ContainsKey(TKey key)
@@ -151,7 +165,7 @@
                     continue;
                 }
 
-                if (elements[i].Key.Equals(key))
+                if (elements[i].Key.Equals(key) && elements[i].Next != freeIndex)
                 {
                     return true;
                 }

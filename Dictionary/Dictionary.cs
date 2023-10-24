@@ -27,7 +27,7 @@
 
                 DictionaryIsReadOnly();
 
-                TValue? foundValue = Search(key).value;
+                TValue? foundValue = GetElement(key).value;
 
                 if (foundValue != null)
                 {
@@ -81,8 +81,6 @@
             buckets[GetPosition(elem.Key)] = index;
             Count++;
         }
-
-        private int GetPosition(TKey? key) => Math.Abs(key.GetHashCode()) % Capacity;
 
         public void Clear()
         {
@@ -158,7 +156,7 @@
                 return true;
             }
 
-            return Search(key, remove: true).removed;
+            return GetElement(key, remove: true).removed;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key);
@@ -169,6 +167,8 @@
             value = default;
             return ContainsKey(key);
         }
+
+        private int GetPosition(TKey? key) => Math.Abs(key.GetHashCode()) % Capacity;
 
         private void KeyIsNull(TKey key)
         {
@@ -186,7 +186,7 @@
             }
         }
 
-        private (TValue? value, bool removed) Search(TKey? key, bool remove = false)
+        private (TValue? value, bool removed) GetElement(TKey? key, bool remove = false)
         {
             for (int index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
             {

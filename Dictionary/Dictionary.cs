@@ -4,11 +4,12 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Reflection;
 
     public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        public int[]? buckets;
-        public Element<TKey, TValue>[]? elements;
+        public int[] buckets;
+        public Element<TKey, TValue>[] elements;
         public int freeIndex;
 
         public Dictionary(int capacity)
@@ -27,11 +28,24 @@
 
                 DictionaryIsReadOnly();
 
-                TValue? foundValue = GetElement(key).value;
+                Element<TKey, TValue>? element;
 
-                if (foundValue != null)
+                int index = buckets[GetPosition(key)];
+
+                if (elements[index].Key.Equals(key))
                 {
-                    return foundValue;
+                    element = elements[index];
+                }
+
+                else
+                {
+                    index = PrevIndexOf(key);
+                    element = elements[elements[index].Next];
+                }
+
+                if (element != null)
+                {
+                    return element.Value;
                 }
 
                 throw new KeyNotFoundException("Dictionary does not contain the specified key");
@@ -156,7 +170,12 @@
                 return true;
             }
 
-            return GetElement(key, remove: true).removed;
+            index = PrevIndexOf(key);
+            elements[elements[index].Next].Next = freeIndex;
+            freeIndex = elements[index].Next;
+            elements[index].Value = default;
+            Count--;
+            return true;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key);
@@ -186,26 +205,17 @@
             }
         }
 
-        private (TValue? value, bool removed) GetElement(TKey? key, bool remove = false)
+        private int PrevIndexOf(TKey key)
         {
             for (int index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
             {
-                if (elements[index].Key.Equals(key) && !remove)
-                {
-                    return (elements[index].Value, false);
-                }
-
                 if (elements[elements[index].Next].Key.Equals(key))
                 {
-                    elements[elements[index].Next].Next = freeIndex;
-                    freeIndex = elements[index].Next;
-                    elements[index].Value = default;
-                    Count--;
-                    return (default, true);
+                    return index;
                 }
             }
 
-            return (default, false);
+            return -1;
         }
 
         private (ICollection<TKey> keys, ICollection<TValue> values) GetKeysAndValues()

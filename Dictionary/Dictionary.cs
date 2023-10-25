@@ -173,7 +173,7 @@
             index = PrevIndexOf(key);
             elements[elements[index].Next].Next = freeIndex;
             freeIndex = elements[index].Next;
-            elements[index].Value = default;
+            elements[elements[index].Next].Value = default;
             Count--;
             return true;
         }
@@ -236,11 +236,11 @@
     {
         public TKey Key;
 
-        public TValue Value;
+        public TValue? Value;
 
         public int Next { get; set; }
 
-        public Element(TKey key, TValue value)
+        public Element(TKey key, TValue? value)
         {
             Key = key;
             Value = value;

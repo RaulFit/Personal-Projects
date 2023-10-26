@@ -17,7 +17,7 @@
             buckets = new int[Capacity];
             Array.Fill(buckets, -1);
             elements = new Element<TKey, TValue>[Capacity];
-            freeIndex = -3;
+            freeIndex = -1;
             Count = 0;
         }
 
@@ -81,7 +81,7 @@
 
             int index;
 
-            if (freeIndex != -3)
+            if (freeIndex != -1)
             {
                 index = freeIndex;
                 freeIndex = elements[index].Next;
@@ -103,7 +103,7 @@
             DictionaryIsReadOnly();
             Array.Fill(buckets, -1);
             Array.Fill(elements, default);
-            freeIndex = -3;
+            freeIndex = -1;
             Count = 0;
         }
 

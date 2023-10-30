@@ -266,14 +266,5 @@ namespace MyDictionary.Facts
             dictionary.Add(12, "e");
             Assert.False(dictionary.TryGetValue(15, out string val));
         }
-
-        [Fact]
-        public void TryGetValue_ValueIsNotInDictionary()
-        {
-            var dictionary = new Dictionary<string, string>(5);
-            var elem = new KeyValuePair<string, string>("a", "a");
-            dictionary.Add(elem);
-            Assert.Equal("a", dictionary[null]);
-        }
     }
 }

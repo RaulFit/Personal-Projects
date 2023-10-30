@@ -35,7 +35,7 @@
 
                 Element<TKey, TValue>? element = index != -1 ? elements[index] : default;
 
-                if (element != null &&  element.Key != null)
+                if (element != null && element.Key != null)
                 {
                     if (element.Key.Equals(key))
                     {
@@ -53,7 +53,7 @@
                 throw new KeyNotFoundException("Dictionary does not contain the specified key");
             }
 
-            set { Add(key, value); }
+            set => this[key] = value;
         }
 
         public ICollection<TKey> Keys => GetKeysAndValues().keys;
@@ -109,7 +109,7 @@
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            if (item.Key != null && Keys.Contains(item.Key) && this[item.Key] != null)
+            if (Keys.Contains(item.Key) && this[item.Key] != null)
             {
                 return this[item.Key].Equals(item.Value);
             }
@@ -120,7 +120,7 @@
         public bool ContainsKey(TKey key)
         {
             KeyIsNull(key);
-            return Keys.Contains(key);
+            return Keys.Contains(key) && this[key] != null;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -172,7 +172,6 @@
             if (elements[index].Key.Equals(key))
             {
                 buckets[GetPosition(key)] = elements[index].Next;
-                elements[index].Value = default;
                 elements[index].Key = default;
                 elements[index].Next = freeIndex;
                 freeIndex = index;
@@ -183,7 +182,6 @@
             Element<TKey, TValue>? elem = PrevElemOf(key);
             elements[elem.Next].Next = freeIndex;
             freeIndex = elem.Next;
-            elements[elem.Next].Value = default;
             elements[elem.Next].Key = default;
             Count--;
             return true;

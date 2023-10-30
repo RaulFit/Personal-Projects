@@ -4,11 +4,12 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Xml.Linq;
 
     public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         public int[] buckets;
-        public Element<TKey, TValue>[] elements;
+        public Element<TKey?, TValue>[] elements;
         public int freeIndex;
 
         public Dictionary(int capacity)
@@ -16,7 +17,7 @@
             this.Capacity = capacity;
             buckets = new int[Capacity];
             Array.Fill(buckets, -1);
-            elements = new Element<TKey, TValue>[Capacity];
+            elements = new Element<TKey?, TValue>[Capacity];
             freeIndex = -1;
             Count = 0;
         }
@@ -33,14 +34,11 @@
 
                 int index = buckets[GetPosition(key)];
 
-                Element<TKey, TValue>? element = index != -1 ? elements[index] : default;
+                Element<TKey?, TValue>? element = index != -1 ? elements[index] : default;
 
-                if (element != null && element.Key != null)
+                if (element != null && Equals(element.Key, key))
                 {
-                    if (element.Key.Equals(key))
-                    {
-                        return element.Value;
-                    }
+                    return element.Value;
                 }
 
                 element = PrevElemOf(key);
@@ -56,7 +54,7 @@
             set => this[key] = value;
         }
 
-        public ICollection<TKey> Keys => GetKeysAndValues().keys;
+        public ICollection<TKey?> Keys => GetKeysAndValues().keys;
 
         public ICollection<TValue> Values => GetKeysAndValues().values;
 
@@ -77,7 +75,7 @@
                 throw new ArgumentException("An element with the same key already exists in the dictionary");
             }
 
-            Element<TKey, TValue> elem = new Element<TKey, TValue>(item.Key, item.Value);
+            Element<TKey?, TValue> elem = new Element<TKey?, TValue>(item.Key, item.Value);
 
             int index;
 
@@ -102,16 +100,16 @@
         {
             DictionaryIsReadOnly();
             Array.Fill(buckets, -1);
-            Array.Fill(elements, default);
+            Array.Fill(elements, null);
             freeIndex = -1;
             Count = 0;
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            if (Keys.Contains(item.Key) && this[item.Key] != null)
+            if (Keys.Contains(item.Key) && item.Key != null)
             {
-                return this[item.Key].Equals(item.Value);
+                return Equals(this[item.Key], item.Value);
             }
 
             return false;
@@ -120,10 +118,10 @@
         public bool ContainsKey(TKey key)
         {
             KeyIsNull(key);
-            return Keys.Contains(key) && this[key] != null;
+            return Keys.Contains(key);
         }
 
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<TKey?, TValue>[] array, int arrayIndex)
         {
             if (array == null)
             {
@@ -142,15 +140,15 @@
 
             for (int i = 0; i < Count; i++)
             {
-                array[i + arrayIndex] = new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
+                array[i + arrayIndex] = new KeyValuePair<TKey?, TValue>(elements[i].Key, elements[i].Value);
             }
         }
 
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey?, TValue>> GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
             {
-                yield return new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
+                yield return new KeyValuePair<TKey?, TValue>(elements[i].Key, elements[i].Value);
             }
         }
 
@@ -162,14 +160,10 @@
 
             DictionaryIsReadOnly();
 
-            if (!ContainsKey(key))
-            {
-                return false;
-            }
-
             int index = buckets[GetPosition(key)];
+            Element<TKey?, TValue>? element = index != -1 ? elements[index] : default;
 
-            if (elements[index].Key.Equals(key))
+            if (element != null && Equals(element.Key, key))
             {
                 buckets[GetPosition(key)] = elements[index].Next;
                 elements[index].Key = default;
@@ -179,12 +173,18 @@
                 return true;
             }
 
-            Element<TKey, TValue>? elem = PrevElemOf(key);
-            elements[elem.Next].Next = freeIndex;
-            freeIndex = elem.Next;
-            elements[elem.Next].Key = default;
-            Count--;
-            return true;
+            element = PrevElemOf(key);
+
+            if (element != null)
+            {
+                elements[element.Next].Key = default;
+                elements[element.Next].Next = freeIndex;
+                freeIndex = element.Next;
+                Count--;
+                return true;
+            }
+
+            return false;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key);
@@ -196,7 +196,7 @@
             return ContainsKey(key);
         }
 
-        private int GetPosition(TKey key) => Math.Abs(key.GetHashCode()) % Capacity;
+        private int GetPosition(TKey? key) => key == null ? -1 : Math.Abs(key.GetHashCode()) % Capacity;
 
         private void KeyIsNull(TKey key)
         {
@@ -214,11 +214,11 @@
             }
         }
 
-        private Element<TKey, TValue>? PrevElemOf(TKey key)
+        private Element<TKey?, TValue>? PrevElemOf(TKey key)
         {
             for (int index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
             {
-                if (elements[elements[index].Next].Key.Equals(key))
+                if (Equals(elements[elements[index].Next].Key, key))
                 {
                     return elements[index];
                 }
@@ -227,14 +227,14 @@
             return default;
         }
 
-        private (ICollection<TKey> keys, ICollection<TValue> values) GetKeysAndValues()
+        private (ICollection<TKey?> keys, ICollection<TValue> values) GetKeysAndValues()
         {
-            LinkedList<TKey> keys = new LinkedList<TKey>();
+            LinkedList<TKey?> keys = new LinkedList<TKey?>();
             LinkedList<TValue> values = new LinkedList<TValue>();
-            for (int i = 0; i < Count; i++)
+            foreach (var elem in this)
             {
-                keys.AddLast(elements[i].Key);
-                values.AddLast(elements[i].Value);
+                keys.AddLast(elem.Key);
+                values.AddLast(elem.Value);
             }
 
             return (keys, values);
@@ -243,13 +243,13 @@
 
     public sealed class Element<TKey, TValue>
     {
-        public TKey Key;
+        public TKey? Key;
 
         public TValue Value;
 
         public int Next { get; set; }
 
-        public Element(TKey key, TValue value)
+        public Element(TKey? key, TValue value)
         {
             Key = key;
             Value = value;

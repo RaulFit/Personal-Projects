@@ -31,9 +31,7 @@
 
                 DictionaryIsReadOnly();
 
-                int index = buckets[GetPosition(key)];
-
-                Element<TKey, TValue>? element = index != -1 ? elements[index] : default;
+                Element<TKey, TValue>? element = GetFirstElemInBucket(key);
 
                 if (element != null && Equals(element.Key, key))
                 {
@@ -42,7 +40,7 @@
 
                 element = PrevElemOf(key);
 
-                if (element != null  && elements[element.Next] != null)
+                if (element != null)
                 {
                     return elements[element.Next].Value;
                 }
@@ -50,12 +48,45 @@
                 throw new KeyNotFoundException("Dictionary does not contain the specified key");
             }
 
-            set => this[key] = value;
+            set
+            {
+                if (ContainsKey(key))
+                {
+                    elements[IndexOf(key)].Value = value;
+                    return;
+                }
+
+                Add(key, value);
+            }
         }
 
-        public ICollection<TKey> Keys => GetKeysAndValues().keys;
+        public ICollection<TKey> Keys
+        {
+            get
+            {
+                LinkedList<TKey> keys = new LinkedList<TKey>();
+                foreach (var elem in this)
+                {
+                    keys.AddLast(elem.Key);
+                }
 
-        public ICollection<TValue> Values => GetKeysAndValues().values;
+                return keys;
+            }
+        }
+
+        public ICollection<TValue> Values
+        {
+            get
+            {
+                LinkedList<TValue> values = new LinkedList<TValue>();
+                foreach (var elem in this)
+                {
+                    values.AddLast(elem.Value);
+                }
+
+                return values;
+            }
+        }
 
         public int Count { get; set;}
 
@@ -90,7 +121,7 @@
             }
 
             elements[index] = elem;
-            elem.Next = buckets[GetPosition(elem.Key)];
+            elem.Next = IndexOf(elem.Key);
             buckets[GetPosition(elem.Key)] = index;
             Count++;
         }
@@ -161,13 +192,14 @@
 
             DictionaryIsReadOnly();
 
-            int index = buckets[GetPosition(key)];
-            Element<TKey, TValue>? element = index != -1 ? elements[index] : default;
+            int index = IndexOf(key);
+
+            Element<TKey, TValue>? element = GetFirstElemInBucket(key);
 
             if (element != null && Equals(element.Key, key))
             {
-                buckets[GetPosition(key)] = elements[index].Next;
-                elements[index].Next = freeIndex;
+                buckets[GetPosition(key)] = element.Next;
+                element.Next = freeIndex;
                 freeIndex = index;
                 Count--;
                 return true;
@@ -215,7 +247,7 @@
 
         private Element<TKey, TValue>? PrevElemOf(TKey key)
         {
-            for (int index = buckets[GetPosition(key)]; index != -1; index = elements[index].Next)
+            for (int index = IndexOf(key); index != -1; index = elements[index].Next)
             {
                 if (Equals(elements[elements[index].Next].Key, key))
                 {
@@ -226,29 +258,27 @@
             return default;
         }
 
-        private (ICollection<TKey> keys, ICollection<TValue> values) GetKeysAndValues()
+       private int IndexOf(TKey key)
         {
-            LinkedList<TKey> keys = new LinkedList<TKey>();
-            LinkedList<TValue> values = new LinkedList<TValue>();
-            foreach (var elem in this)
-            {
-                keys.AddLast(elem.Key);
-                values.AddLast(elem.Value);
-            }
+            return buckets[GetPosition(key)];
+        }
 
-            return (keys, values);
+        private Element<TKey, TValue>? GetFirstElemInBucket(TKey key)
+        {
+            int index = IndexOf(key);
+            return index != -1 ? elements[index] : default;
         }
     }
 
     public sealed class Element<TKey, TValue>
     {
-        public TKey? Key;
+        public TKey Key;
 
         public TValue Value;
 
         public int Next { get; set; }
 
-        public Element(TKey? key, TValue value)
+        public Element(TKey key, TValue value)
         {
             Key = key;
             Value = value;

@@ -266,5 +266,39 @@ namespace MyDictionary.Facts
             dictionary.Add(12, "e");
             Assert.False(dictionary.TryGetValue(15, out string val));
         }
+
+        [Fact]
+        public void SetterWorksWhenKeyIsAlreadyInDictionary()
+        {
+            var dictionary = new Dictionary<int, string>(5);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            Assert.Equal("a", dictionary[1]);
+            dictionary[1] = "f";
+            Assert.Equal("f", dictionary[1]);
+        }
+
+        [Fact]
+        public void SetterWorksWhenKeyIsNotInDictionary()
+        {
+            var dictionary = new Dictionary<int, string>(5);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            dictionary[4] = "d";
+            Assert.Equal("d", dictionary[4]);
+        }
+
+        [Fact]
+        public void MethodClearWorksCorrectly()
+        {
+            var dictionary = new Dictionary<int, string>(5);
+            dictionary.Add(1, "a");
+            dictionary.Add(2, "b");
+            dictionary.Add(3, "c");
+            dictionary.Clear();
+            Assert.Empty(dictionary);
+        }
     }
 }

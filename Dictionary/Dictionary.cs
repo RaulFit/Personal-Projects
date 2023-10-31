@@ -38,11 +38,11 @@
                     return element.Value;
                 }
 
-                element = PrevElemOf(key);
+                element = Find(key, out _);
 
                 if (element != null)
                 {
-                    return elements[element.Next].Value;
+                    return element.Value;
                 }
 
                 throw new KeyNotFoundException("Dictionary does not contain the specified key");
@@ -205,12 +205,12 @@
                 return true;
             }
 
-            element = PrevElemOf(key);
+            element = Find(key, out index);
 
             if (element != null)
             {
-                elements[element.Next].Next = freeIndex;
-                freeIndex = element.Next;
+                element.Next = freeIndex;
+                freeIndex = index;
                 Count--;
                 return true;
             }
@@ -245,19 +245,6 @@
             }
         }
 
-        private Element<TKey, TValue>? PrevElemOf(TKey key)
-        {
-            for (int index = IndexOf(key); index != -1; index = elements[index].Next)
-            {
-                if (Equals(elements[elements[index].Next].Key, key))
-                {
-                    return elements[index];
-                }
-            }
-
-            return default;
-        }
-
        private int IndexOf(TKey key)
         {
             return buckets[GetPosition(key)];
@@ -267,6 +254,22 @@
         {
             int index = IndexOf(key);
             return index != -1 ? elements[index] : default;
+        }
+
+        private Element<TKey, TValue>? Find(TKey key, out int prevIndex)
+        {
+            prevIndex = -1;
+
+            for (int index = IndexOf(key); index != -1; index = elements[index].Next)
+            {
+                if (Equals(elements[elements[index].Next].Key, key))
+                {
+                    prevIndex = elements[index].Next;
+                    return elements[elements[index].Next];
+                }
+            }
+
+            return default;
         }
     }
 

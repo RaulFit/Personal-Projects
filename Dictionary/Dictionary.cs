@@ -31,18 +31,11 @@
 
                 DictionaryIsReadOnly();
 
-                Element<TKey, TValue>? element = GetFirstElemInBucket(key);
+                int index = Find(key, IndexOf(key), out _);
 
-                if (element != null && Equals(element.Key, key))
+                if (index != -1)
                 {
-                    return element.Value;
-                }
-
-                element = Find(key, out _);
-
-                if (element != null)
-                {
-                    return element.Value;
+                    return elements[index].Value;
                 }
 
                 throw new KeyNotFoundException("Dictionary does not contain the specified key");
@@ -50,9 +43,10 @@
 
             set
             {
-                if (ContainsKey(key))
+                int index = Find(key, IndexOf(key), out _);
+                if (index != -1)
                 {
-                    elements[IndexOf(key)].Value = value;
+                    elements[index].Value = value;
                     return;
                 }
 
@@ -142,14 +136,11 @@
         {
             KeyIsNull(key);
 
-            for (int index = freeIndex; index != -1; index = elements[index].Next)
+            if (Find(key, freeIndex, out _) != -1)
             {
-                if (Equals(elements[index].Key, key))
-                {
-                    return false;
-                }
+                return false;
             }
-
+            
             return Keys.Contains(key);
         }
 
@@ -192,24 +183,22 @@
 
             DictionaryIsReadOnly();
 
-            int index = IndexOf(key);
+            int prevIndex;
+            int index = Find(key, IndexOf(key), out prevIndex);
 
-            Element<TKey, TValue>? element = GetFirstElemInBucket(key);
-
-            if (element != null && Equals(element.Key, key))
+            if (index != -1)
             {
-                buckets[GetPosition(key)] = element.Next;
-                element.Next = freeIndex;
-                freeIndex = index;
-                Count--;
-                return true;
-            }
+                if (index == IndexOf(key))
+                {
+                    buckets[GetPosition(key)] = elements[index].Next;
+                }
 
-            element = Find(key, out index);
+                if (prevIndex != -1)
+                {
+                    elements[prevIndex].Next = elements[index].Next;
+                }
 
-            if (element != null)
-            {
-                element.Next = freeIndex;
+                elements[index].Next = freeIndex;
                 freeIndex = index;
                 Count--;
                 return true;
@@ -222,9 +211,40 @@
         
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            KeyIsNull(key);
             value = default;
-            return ContainsKey(key);
+            KeyIsNull(key);
+
+            if (ContainsKey(key))
+            {
+                value = this[key];
+                return true;
+            }
+
+            return false;
+        }
+
+        private int Find(TKey key, int startIndex, out int prevIndex)
+        {
+            prevIndex = -1;
+
+            if (startIndex != -1 && Equals(elements[startIndex].Key, key))
+            {
+                return startIndex;
+            }
+
+            int next;
+
+            for (int index = startIndex; index != -1 && elements[index].Next != -1; index = elements[index].Next)
+            {
+                next = elements[index].Next;
+                if (Equals(elements[next].Key, key))
+                {
+                    prevIndex = index;
+                    return next;
+                }
+            }
+
+            return -1;
         }
 
         private int GetPosition(TKey? key) => key == null ? -1 : Math.Abs(key.GetHashCode()) % Capacity;
@@ -248,28 +268,6 @@
        private int IndexOf(TKey key)
         {
             return buckets[GetPosition(key)];
-        }
-
-        private Element<TKey, TValue>? GetFirstElemInBucket(TKey key)
-        {
-            int index = IndexOf(key);
-            return index != -1 ? elements[index] : default;
-        }
-
-        private Element<TKey, TValue>? Find(TKey key, out int prevIndex)
-        {
-            prevIndex = -1;
-
-            for (int index = IndexOf(key); index != -1; index = elements[index].Next)
-            {
-                if (Equals(elements[elements[index].Next].Key, key))
-                {
-                    prevIndex = elements[index].Next;
-                    return elements[elements[index].Next];
-                }
-            }
-
-            return default;
         }
     }
 

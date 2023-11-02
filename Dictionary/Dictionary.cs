@@ -206,7 +206,7 @@
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             Remove(item.Key);
-            return !Values.Contains(item.Value);
+            return !Equals(this[item.Key], item.Value);
         }
         
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)

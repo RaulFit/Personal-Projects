@@ -31,7 +31,7 @@
 
                 DictionaryIsReadOnly();
 
-                int index = Find(key, IndexOf(key), out _);
+                int index = Find(key);
 
                 if (index != -1)
                 {
@@ -43,7 +43,7 @@
 
             set
             {
-                int index = Find(key, IndexOf(key), out _);
+                int index = Find(key);
                 if (index != -1)
                 {
                     elements[index].Value = value;
@@ -131,17 +131,10 @@
 
         public bool Contains(KeyValuePair<TKey, TValue> item) => ContainsKey(item.Key) && Equals(this[item.Key], item.Value);
         
-       
         public bool ContainsKey(TKey key)
         {
             KeyIsNull(key);
-
-            if (Find(key, freeIndex, out _) != -1)
-            {
-                return false;
-            }
-            
-            return Keys.Contains(key);
+            return Find(key) != -1;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -184,7 +177,7 @@
             DictionaryIsReadOnly();
 
             int prevIndex;
-            int index = Find(key, IndexOf(key), out prevIndex);
+            int index = Find(key, out prevIndex);
 
             if (index != -1)
             {
@@ -223,18 +216,19 @@
             return false;
         }
 
-        private int Find(TKey key, int startIndex, out int prevIndex)
+        private int Find(TKey key, out int prevIndex)
         {
             prevIndex = -1;
+            int index = IndexOf(key);
 
-            if (startIndex != -1 && Equals(elements[startIndex].Key, key))
+            if (index != -1 && Equals(elements[index].Key, key))
             {
-                return startIndex;
+                return index;
             }
 
             int next;
 
-            for (int index = startIndex; index != -1 && elements[index].Next != -1; index = elements[index].Next)
+            for (index = IndexOf(key); index != -1 && elements[index].Next != -1; index = elements[index].Next)
             {
                 next = elements[index].Next;
                 if (Equals(elements[next].Key, key))
@@ -246,6 +240,8 @@
 
             return -1;
         }
+
+        private int Find(TKey key) => Find(key, out int _);
 
         private int GetPosition(TKey? key) => key == null ? -1 : Math.Abs(key.GetHashCode()) % Capacity;
 

@@ -94,7 +94,7 @@
 
             DictionaryIsReadOnly();
 
-            if (ContainsKey(item.Key))
+            if (Find(item.Key) != -1)
             {
                 throw new ArgumentException("An element with the same key already exists in the dictionary");
             }
@@ -115,7 +115,7 @@
             }
 
             elements[index] = elem;
-            elem.Next = IndexOf(elem.Key);
+            elem.Next = GetBucketIndex(elem.Key);
             buckets[GetPosition(elem.Key)] = index;
             Count++;
         }
@@ -129,7 +129,7 @@
             Count = 0;
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item) => ContainsKey(item.Key) && Equals(this[item.Key], item.Value);
+        public bool Contains(KeyValuePair<TKey, TValue> item) => Find(item.Key) != -1 && Equals(this[item.Key], item.Value);
         
         public bool ContainsKey(TKey key)
         {
@@ -164,7 +164,10 @@
         {
             for (int i = 0; i < Count; i++)
             {
-                yield return new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
+                if (Find(elements[i].Key) != -1)
+                {
+                    yield return new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
+                }
             }
         }
 
@@ -179,35 +182,39 @@
             int prevIndex;
             int index = Find(key, out prevIndex);
 
-            if (index != -1)
+            if (index == -1)
             {
-                if (index == IndexOf(key))
-                {
-                    buckets[GetPosition(key)] = elements[index].Next;
-                }
-
-                if (prevIndex != -1)
-                {
-                    elements[prevIndex].Next = elements[index].Next;
-                }
-
-                elements[index].Next = freeIndex;
-                freeIndex = index;
-                Count--;
-                return true;
+                return false;
             }
 
-            return false;
+            if (prevIndex != -1)
+            {
+                elements[prevIndex].Next = elements[index].Next;
+            }
+
+            else
+            {
+                buckets[GetPosition(key)] = elements[index].Next;
+            }
+
+            elements[index].Next = freeIndex;
+            freeIndex = index;
+            Count--;
+            return true;
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key);
+        public bool Remove(KeyValuePair<TKey, TValue> item)
+        {
+            Remove(item.Key);
+            return !Values.Contains(item.Value);
+        }
         
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
             value = default;
             KeyIsNull(key);
 
-            if (ContainsKey(key))
+            if (Find(key) != -1)
             {
                 value = this[key];
                 return true;
@@ -219,7 +226,7 @@
         private int Find(TKey key, out int prevIndex)
         {
             prevIndex = -1;
-            int index = IndexOf(key);
+            int index = GetBucketIndex(key);
 
             if (index != -1 && Equals(elements[index].Key, key))
             {
@@ -228,7 +235,7 @@
 
             int next;
 
-            for (index = IndexOf(key); index != -1 && elements[index].Next != -1; index = elements[index].Next)
+            for (index = GetBucketIndex(key); index != -1 && elements[index].Next != -1; index = elements[index].Next)
             {
                 next = elements[index].Next;
                 if (Equals(elements[next].Key, key))
@@ -261,7 +268,7 @@
             }
         }
 
-       private int IndexOf(TKey key)
+       private int GetBucketIndex(TKey key)
         {
             return buckets[GetPosition(key)];
         }

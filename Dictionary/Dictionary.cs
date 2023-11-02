@@ -129,7 +129,7 @@
             Count = 0;
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item) => Find(item.Key) != -1 && Equals(this[item.Key], item.Value);
+        public bool Contains(KeyValuePair<TKey, TValue> item) => Find(item.Key) != -1;
         
         public bool ContainsKey(TKey key)
         {
@@ -154,19 +154,19 @@
                 throw new ArgumentException("The number of elements in the source collection is greater than the available space from arrayIndex to the end of the destination array.");
             }
 
-            for (int i = 0; i < Count; i++)
+            foreach (var elem in this)
             {
-                array[i + arrayIndex] = new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
+                array[arrayIndex++] = new KeyValuePair<TKey, TValue>(elem.Key, elem.Value);
             }
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < Capacity; i++)
             {
-                if (Find(elements[i].Key) != -1)
+                for (int j = buckets[i]; j != -1; j = elements[j].Next)
                 {
-                    yield return new KeyValuePair<TKey, TValue>(elements[i].Key, elements[i].Value);
+                    yield return new KeyValuePair<TKey, TValue>(elements[j].Key, elements[j].Value);
                 }
             }
         }
@@ -180,6 +180,7 @@
             DictionaryIsReadOnly();
 
             int prevIndex;
+
             int index = Find(key, out prevIndex);
 
             if (index == -1)
@@ -233,12 +234,10 @@
                 return index;
             }
 
-            int next;
-
-            for (index = GetBucketIndex(key); index != -1 && elements[index].Next != -1; index = elements[index].Next)
+            for (index = GetBucketIndex(key); index != -1; index = elements[index].Next)
             {
-                next = elements[index].Next;
-                if (Equals(elements[next].Key, key))
+                int next = elements[index].Next;
+                if (next != -1 && Equals(elements[next].Key, key))
                 {
                     prevIndex = index;
                     return next;
@@ -250,7 +249,7 @@
 
         private int Find(TKey key) => Find(key, out int _);
 
-        private int GetPosition(TKey? key) => key == null ? -1 : Math.Abs(key.GetHashCode()) % Capacity;
+        private int GetPosition(TKey key) => key == null ? -1 : Math.Abs(key.GetHashCode()) % Capacity;
 
         private void KeyIsNull(TKey key)
         {

@@ -210,8 +210,13 @@
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            Remove(item.Key);
-            return !Contains(item);
+            if (Contains(item))
+            {
+                Remove(item.Key);
+                return true;
+            }
+
+            return false;
         }
         
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
@@ -231,21 +236,15 @@
         private int Find(TKey key, out int prevIndex)
         {
             prevIndex = -1;
-            int index = GetBucketIndex(key);
 
-            if (index != -1 && Equals(elements[index].Key, key))
+            for (int index = GetBucketIndex(key); index != -1; index = elements[index].Next)
             {
-                return index;
-            }
-
-            for (index = GetBucketIndex(key); index != -1; index = elements[index].Next)
-            {
-                int next = elements[index].Next;
-                if (next != -1 && Equals(elements[next].Key, key))
+                if (Equals(elements[index].Key, key))
                 {
-                    prevIndex = index;
-                    return next;
+                    return index;
                 }
+
+                prevIndex = index;
             }
 
             return -1;

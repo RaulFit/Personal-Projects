@@ -129,7 +129,11 @@
             Count = 0;
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item) => Find(item.Key) != -1;
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            int index = Find(item.Key);
+            return index != -1 && Equals(elements[index].Value, item.Value);
+        }
         
         public bool ContainsKey(TKey key)
         {
@@ -207,7 +211,7 @@
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             Remove(item.Key);
-            return !Equals(this[item.Key], item.Value);
+            return !Contains(item);
         }
         
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)

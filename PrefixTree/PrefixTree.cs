@@ -9,6 +9,22 @@
             Root = new Node<T>();
         }
 
+        public void Insert(IEnumerable<T> word)
+        {
+            var current = Root;
+            foreach (var ch in word)
+            {
+                if (!current.Children.ContainsKey(ch))
+                {
+                    current.Children[ch] = new Node<T>();
+                }
+
+                current = current.Children[ch];
+            }
+
+            current.IsEndOfWord = true;
+        }
+
         public bool Search(IEnumerable<T> word)
         {
             var current = Root;

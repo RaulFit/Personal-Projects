@@ -40,6 +40,22 @@
 
             return current.IsEndOfWord;
         }
+
+        public bool startsWith(IEnumerable<T> prefix)
+        {
+            var current = Root;
+            foreach (var ch in prefix)
+            {
+                if (!current.Children.ContainsKey(ch))
+                {
+                    return false;
+                }
+
+                current = current.Children[ch];
+            }
+
+            return true;
+        }
     }
 
     public sealed class Node<T> where T : notnull

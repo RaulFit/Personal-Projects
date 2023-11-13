@@ -48,5 +48,26 @@ namespace MyPrefixTree.Facts
             prefixTree.Insert("horse");
             Assert.True(prefixTree.startsWith("hor"));
         }
+
+        [Fact]
+        public void Remove_ShouldReturnFalseWhenTreeDoesNotContainSpecifiedWord()
+        {
+            var prefixTree = new PrefixTree<char>();
+            prefixTree.Insert("dog");
+            prefixTree.Insert("cat");
+            prefixTree.Insert("horse");
+            Assert.False(prefixTree.Remove("animal"));
+        }
+
+        [Fact]
+        public void Remove_ShouldReturnTrueAndRemoveWordWhenTreeContainsSpecifiedWord()
+        {
+            var prefixTree = new PrefixTree<char>();
+            prefixTree.Insert("dog");
+            prefixTree.Insert("cat");
+            prefixTree.Insert("horse");
+            Assert.True(prefixTree.Remove("horse"));
+            Assert.False(prefixTree.Search("horse"));
+        }
     }
 }

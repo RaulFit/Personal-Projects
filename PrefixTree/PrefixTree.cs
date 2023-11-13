@@ -35,6 +35,39 @@
             return Contains(prefix, true);
         }
 
+        public bool Remove(IEnumerable<T> word)
+        {
+            return Remove(Root, word, 0);
+        }
+
+        private bool Remove(Node<T> current, IEnumerable<T> word, int index)
+        {
+            if (index == word.Count())
+            {
+                if (!current.IsEndOfWord)
+                {
+                    return false;
+                }
+
+                current.IsEndOfWord = false;
+                return true;
+            }
+
+            if (!current.Children.TryGetValue(word.ElementAt(index), out Node<T> children))
+            {
+                return false;
+            }
+
+            bool shoulRemoveChildren = Remove(children, word, index + 1) && !children.IsEndOfWord;
+            if (shoulRemoveChildren)
+            {
+                current.Children.Remove(word.ElementAt(index));
+                return true;
+            }
+
+            return false;
+        }
+
         private bool Contains(IEnumerable<T> word, bool prefix = false)
         {
             var current = Root;

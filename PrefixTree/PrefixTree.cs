@@ -27,6 +27,16 @@
 
         public bool Search(IEnumerable<T> word)
         {
+            return Contains(word);
+        }
+
+        public bool startsWith(IEnumerable<T> prefix)
+        {
+            return Contains(prefix, true);
+        }
+
+        private bool Contains(IEnumerable<T> word, bool prefix = false)
+        {
             var current = Root;
             foreach (var ch in word)
             {
@@ -38,23 +48,7 @@
                 current = current.Children[ch];
             }
 
-            return current.IsEndOfWord;
-        }
-
-        public bool startsWith(IEnumerable<T> prefix)
-        {
-            var current = Root;
-            foreach (var ch in prefix)
-            {
-                if (!current.Children.ContainsKey(ch))
-                {
-                    return false;
-                }
-
-                current = current.Children[ch];
-            }
-
-            return true;
+            return prefix ? true : current.IsEndOfWord;
         }
     }
 

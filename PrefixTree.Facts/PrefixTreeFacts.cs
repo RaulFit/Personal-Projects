@@ -50,24 +50,48 @@ namespace MyPrefixTree.Facts
         }
 
         [Fact]
-        public void Remove_ShouldReturnFalseWhenTreeDoesNotContainSpecifiedWord()
+        public void Remove_ShouldNotModifyTreeWhenItDoesNotContainSpecifiedWord()
         {
             var prefixTree = new PrefixTree<char>();
             prefixTree.Insert("dog");
             prefixTree.Insert("cat");
             prefixTree.Insert("horse");
-            Assert.False(prefixTree.Remove("animal"));
+            prefixTree.Remove("tiger");
+            Assert.True(prefixTree.Search("dog"));
+            Assert.True(prefixTree.Search("cat"));
+            Assert.True(prefixTree.Search("horse"));
         }
 
         [Fact]
-        public void Remove_ShouldReturnTrueAndRemoveWordWhenTreeContainsSpecifiedWord()
+        public void Remove_ShouldRemoveAllNodesWhenTreeContainsOneWord()
         {
             var prefixTree = new PrefixTree<char>();
-            prefixTree.Insert("dog");
-            prefixTree.Insert("cat");
             prefixTree.Insert("horse");
-            Assert.True(prefixTree.Remove("horse"));
+            prefixTree.Remove("horse");
             Assert.False(prefixTree.Search("horse"));
+            Assert.False(prefixTree.startsWith("h"));
+        }
+
+        [Fact]
+        public void Remove_ShouldNotRemoveAllNodesWhenTreeContainsSimilarWords()
+        {
+            var prefixTree = new PrefixTree<char>();
+            prefixTree.Insert("tree");
+            prefixTree.Insert("treehouse");
+            prefixTree.Remove("treehouse");
+            Assert.False(prefixTree.Search("treehouse"));
+            Assert.True(prefixTree.Search("tree"));
+        }
+
+        [Fact]
+        public void Remove_ShouldNotRemoveAnyNodesWhenWordIsAPrefixOfAnotherWord()
+        {
+            var prefixTree = new PrefixTree<char>();
+            prefixTree.Insert("tree");
+            prefixTree.Insert("treehouse");
+            prefixTree.Remove("tree");
+            Assert.False(prefixTree.Search("tree"));
+            Assert.True(prefixTree.Search("treehouse"));
         }
     }
 }

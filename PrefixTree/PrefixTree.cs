@@ -1,4 +1,6 @@
-﻿namespace MyPrefixTree
+﻿using Microsoft.VisualBasic.FileIO;
+
+namespace MyPrefixTree
 {
     public class PrefixTree<T> where T : notnull
     {
@@ -35,9 +37,9 @@
             return Contains(prefix, true);
         }
 
-        public bool Remove(IEnumerable<T> word)
+        public void Remove(IEnumerable<T> word)
         {
-            return Remove(Root, word, 0);
+            Remove(Root, word, 0);
         }
 
         private bool Remove(Node<T> current, IEnumerable<T> word, int index)
@@ -50,7 +52,7 @@
                 }
 
                 current.IsEndOfWord = false;
-                return true;
+                return current.Children.Count == 0;
             }
 
             if (!current.Children.TryGetValue(word.ElementAt(index), out Node<T> children))
@@ -62,7 +64,7 @@
             if (shoulRemoveChildren)
             {
                 current.Children.Remove(word.ElementAt(index));
-                return true;
+                return current.Children.Count == 0;
             }
 
             return false;

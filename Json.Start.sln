@@ -25,9 +25,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dictionary", "Dictionary\Di
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dictionary.Facts", "Dictionary.Facts\Dictionary.Facts.csproj", "{A8CC6DE9-B84B-43F1-90C7-7004BD334966}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrefixTree", "PrefixTree\PrefixTree.csproj", "{57CF9CF1-00FE-41E3-ABB3-C30552F6023B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrefixTree", "PrefixTree\PrefixTree.csproj", "{57CF9CF1-00FE-41E3-ABB3-C30552F6023B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrefixTree.Facts", "PrefixTree.Facts\PrefixTree.Facts.csproj", "{6A9511D1-1877-4200-A9A5-0E828909E92F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrefixTree.Facts", "PrefixTree.Facts\PrefixTree.Facts.csproj", "{6A9511D1-1877-4200-A9A5-0E828909E92F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVLTree", "AVLTree\AVLTree.csproj", "{F823C072-58A8-4E58-982A-990C855FCE27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVLTree.Facts", "AVLTree.Facts\AVLTree.Facts.csproj", "{0329DBFF-7CEF-4964-A3A9-2623823419F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +91,14 @@ Global
 		{6A9511D1-1877-4200-A9A5-0E828909E92F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A9511D1-1877-4200-A9A5-0E828909E92F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A9511D1-1877-4200-A9A5-0E828909E92F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F823C072-58A8-4E58-982A-990C855FCE27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F823C072-58A8-4E58-982A-990C855FCE27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F823C072-58A8-4E58-982A-990C855FCE27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F823C072-58A8-4E58-982A-990C855FCE27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0329DBFF-7CEF-4964-A3A9-2623823419F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0329DBFF-7CEF-4964-A3A9-2623823419F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0329DBFF-7CEF-4964-A3A9-2623823419F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0329DBFF-7CEF-4964-A3A9-2623823419F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

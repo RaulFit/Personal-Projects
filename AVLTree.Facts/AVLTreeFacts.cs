@@ -41,5 +41,29 @@ namespace MyAVLTree.Facts
             tree.Insert(6);
             Assert.True(tree.IsBalanced());
         }
+
+        [Fact]
+        public void Remove_ShouldRemoveSpecifiedNode()
+        {
+            var tree = new AVLTree();
+            tree.Insert(1);
+            tree.Insert(2);
+            tree.Insert(3);
+            tree.Remove(2);
+            Assert.Null(tree.Find(2));
+        }
+
+        [Fact]
+        public void Remove_ShouldReturnNullWhenTreeDoesNotContainSpecifiedNode()
+        {
+            var tree = new AVLTree();
+            tree.Insert(1);
+            tree.Insert(2);
+            tree.Insert(3);
+            tree.Remove(4);
+            Assert.NotNull(tree.Find(1));
+            Assert.NotNull(tree.Find(2));
+            Assert.NotNull(tree.Find(3));
+        }
     }
 }

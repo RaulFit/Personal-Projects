@@ -26,6 +26,8 @@ namespace MyAVLTree
 
         public bool IsBalanced() => IsBalanced(root);
 
+        public Node? Remove(int value) => Remove(value, root);
+
         private Node Insert(int value, Node? node)
         {
             if (node == null)
@@ -47,6 +49,68 @@ namespace MyAVLTree
             updateHeight(node);
             return Rotate(node);
         }
+
+        private Node? Remove(int value, Node? root)
+        {
+            if (root == null)
+            {
+                return root;
+            }
+
+            if (value < root.value)
+            {
+                root.left = Remove(value, root.left);
+            }
+
+            else if (value > root.value)
+            {
+                root.right = Remove(value, root.right);
+            }
+
+            else
+            {
+                if (root.left == null || root.right == null)
+                {
+                    Node? temp = null;
+                    if (temp == root.left)
+                    {
+                        temp = root.right;
+                    }
+
+                    else
+                    {
+                        temp = root.left;
+                    }
+
+                    if (temp == null)
+                    {
+                        root = null;
+                    }
+
+                    else
+                    {
+                        root = temp;
+                    }
+                }
+
+                else
+                {
+                    Node? temp = minValueNode(root.right);
+                    root.value = temp.value;
+                    root.right = Remove(temp.value, root.right);
+                }
+            }
+
+            if (root == null)
+            {
+                return root;
+            }
+
+            updateHeight(root);
+
+            return Rotate(root);
+        }
+
 
         private Node Rotate(Node node)
         {
@@ -117,6 +181,17 @@ namespace MyAVLTree
             updateHeight(node);
 
             return right;
+        }
+
+        private Node? minValueNode(Node node)
+        {
+            Node? current = node;
+            while (current?.left != null)
+            {
+                current = current.left;
+            }
+
+            return current;
         }
 
         private int Height(Node? node) => node == null ? -1 : node.height;

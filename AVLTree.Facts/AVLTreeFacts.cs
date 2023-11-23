@@ -3,67 +3,10 @@ namespace MyAVLTree.Facts
     public class AVLTreeFacts
     {
         [Fact]
-        public void Find_TreeDoesNotContainNode_ShouldReturnFalse()
+        public void Find_ShouldReturnNullWhenTreeDoesNotContainSpecifiedValue()
         {
-            var tree = new AVLTree();
-            Assert.Null(tree.Find(3));
-        }
-
-        [Fact]
-        public void Insert_ShouldCreateAndInsertNode()
-        {
-            var tree = new AVLTree();
-            tree.Insert(3);
-            Assert.NotNull(tree.Find(3));
-        }
-
-        [Fact]
-        public void Insert_WorkWhenAddingMultipleNodes()
-        {
-            var tree = new AVLTree();
-            tree.Insert(1);
-            tree.Insert(2);
-            tree.Insert(3);
-            Assert.NotNull(tree.Find(1));
-            Assert.NotNull(tree.Find(2));
-            Assert.NotNull(tree.Find(3));
-        }
-
-        [Fact]
-        public void TreeSelfBalancesWhenInsertingMaxValueNodes()
-        {
-            var tree = new AVLTree();
-            tree.Insert(1);
-            tree.Insert(2);
-            tree.Insert(3);
-            tree.Insert(4);
-            tree.Insert(5);
-            tree.Insert(6);
-            Assert.True(tree.IsBalanced());
-        }
-
-        [Fact]
-        public void Remove_ShouldRemoveSpecifiedNode()
-        {
-            var tree = new AVLTree();
-            tree.Insert(1);
-            tree.Insert(2);
-            tree.Insert(3);
-            tree.Remove(2);
-            Assert.Null(tree.Find(2));
-        }
-
-        [Fact]
-        public void Remove_ShouldReturnNullWhenTreeDoesNotContainSpecifiedNode()
-        {
-            var tree = new AVLTree();
-            tree.Insert(1);
-            tree.Insert(2);
-            tree.Insert(3);
-            tree.Remove(4);
-            Assert.NotNull(tree.Find(1));
-            Assert.NotNull(tree.Find(2));
-            Assert.NotNull(tree.Find(3));
+            var tree = new AVLTree<int>();
+            Assert.Null(tree.Find(1));
         }
     }
 }

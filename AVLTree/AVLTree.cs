@@ -31,29 +31,9 @@
                 return null;
             }
 
-            else if (root.value.Equals(value))
+            if (root.value.Equals(value))
             {
-                if (root.left == null && root.right == null)
-                {
-                    root = null;
-                }
-
-                else if (root.left == null)
-                {
-                    root = root.right;
-                }
-
-                else if (root.right == null)
-                {
-                    root = root.left;
-                }
-
-                else
-                {
-                    T minValue = GetMostLeftValue(root.right);
-                    root.value = minValue;
-                    root.right = Remove(root.right, minValue);
-                }
+                root = RemoveNode(root);
             }
 
             else if (value.CompareTo(root.value) < 0)
@@ -74,6 +54,33 @@
             return root;
         }
 
+        private Node<T>? RemoveNode(Node<T>? root)
+        {
+            if (root.left == null && root.right == null)
+            {
+                root = null;
+            }
+
+            else if (root.left == null)
+            {
+                root = root.right;
+            }
+
+            else if (root.right == null)
+            {
+                root = root.left;
+            }
+
+            else
+            {
+                T minValue = GetMostLeftValue(root.right);
+                root.value = minValue;
+                root.right = Remove(root.right, minValue);
+            }
+
+            return root;
+        }
+
         private Node<T>? Insert(Node<T>? root, T value)
         {
             if (root == null)
@@ -81,7 +88,7 @@
                 return new Node<T>(value);
             }
 
-            else if (value.CompareTo(root.value) < 0)
+            if (value.CompareTo(root.value) < 0)
             {
                 root.left = Insert(root.left, value);
             }
@@ -106,30 +113,44 @@
 
             if (balance > 1)
             {
-                if (GetHeight(root?.left?.left) > GetHeight(root?.left?.right))
-                {
-                    root = RotateRight(root);
-                }
-
-                if (GetHeight(root?.left?.left) < GetHeight(root?.left?.right))
-                {
-                    root.left = RotateLeft(root.left);
-                    root = RotateRight(root);
-                }
+                return IsLeftHeavy(root);
             }
 
-            else if (balance < 1)
+            if (balance < 1)
             {
-                if (GetHeight(root?.right?.right) > GetHeight(root?.right?.left))
-                {
-                    root = RotateLeft(root);
-                }
+                return IsRightHeavy(root);
+            }
 
-                if (GetHeight(root?.right?.right) < GetHeight(root?.right?.left))
-                {
-                    root.right = RotateRight(root.right);
-                    root = RotateLeft(root);
-                }
+            return root;
+        }
+
+        private Node<T>? IsLeftHeavy(Node<T> root)
+        {
+            if (GetHeight(root?.left?.left) > GetHeight(root?.left?.right))
+            {
+                root = RotateRight(root);
+            }
+
+            if (GetHeight(root?.left?.left) < GetHeight(root?.left?.right))
+            {
+                root.left = RotateLeft(root.left);
+                root = RotateRight(root);
+            }
+
+            return root;
+        }
+
+        private Node<T>? IsRightHeavy(Node<T> root)
+        {
+            if (GetHeight(root?.right?.right) > GetHeight(root?.right?.left))
+            {
+                root = RotateLeft(root);
+            }
+
+            if (GetHeight(root?.right?.right) < GetHeight(root?.right?.left))
+            {
+                root.right = RotateRight(root.right);
+                root = RotateLeft(root);
             }
 
             return root;

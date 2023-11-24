@@ -2,7 +2,7 @@
 {
     public class AVLTree<T> where T : IComparable<T>
     {
-        public Node<T>? root;
+        private Node<T>? root;
 
         public Node<T>? Find(T value)
         {
@@ -106,12 +106,12 @@
 
             if (balance > 1)
             {
-                if (GetHeight(root?.left?.left) - GetHeight(root?.left?.right) > 0)
+                if (GetHeight(root?.left?.left) > GetHeight(root?.left?.right))
                 {
                     root = RotateRight(root);
                 }
 
-                if (GetHeight(root?.left?.left) - GetHeight(root?.left?.right) < 0)
+                if (GetHeight(root?.left?.left) < GetHeight(root?.left?.right))
                 {
                     root.left = RotateLeft(root.left);
                     root = RotateRight(root);
@@ -120,12 +120,12 @@
 
             else if (balance < 1)
             {
-                if (GetHeight(root?.right?.right) - GetHeight(root?.right?.left) > 0)
+                if (GetHeight(root?.right?.right) > GetHeight(root?.right?.left))
                 {
                     root = RotateLeft(root);
                 }
 
-                if (GetHeight(root?.right?.right) - GetHeight(root?.right?.left) < 0)
+                if (GetHeight(root?.right?.right) < GetHeight(root?.right?.left))
                 {
                     root.right = RotateRight(root.right);
                     root = RotateLeft(root);
@@ -135,7 +135,7 @@
             return root;
         }
 
-        public int GetHeight(Node<T>? node) => node != null ? node.height : -1;
+        private int GetHeight(Node<T>? node) => node != null ? node.height : -1;
 
         private void UpdateHeight(Node<T> node) => node.height = 1 + Math.Max(GetHeight(node.left), GetHeight(node.right));
 

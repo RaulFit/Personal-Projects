@@ -22,6 +22,58 @@
 
         public void Insert(T value) => root = Insert(root, value);
 
+        public Node<T>? Remove(T value) => root = Remove(root, value);
+
+        private Node<T>? Remove(Node<T>? root, T value)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            else if (root.value.Equals(value))
+            {
+                if (root.left == null && root.right == null)
+                {
+                    root = null;
+                }
+
+                else if (root.left == null)
+                {
+                    root = root.right;
+                }
+
+                else if (root.right == null)
+                {
+                    root = root.left;
+                }
+
+                else
+                {
+                    T minValue = GetMostLeftValue(root.right);
+                    root.value = minValue;
+                    root.right = Remove(root.right, minValue);
+                }
+            }
+
+            else if (value.CompareTo(root.value) < 0)
+            {
+                root.left = Remove(root.left, value);
+            }
+
+            else
+            {
+                root.right = Remove(root.right, value);
+            }
+
+            if (root != null)
+            {
+                root = Balance(root);
+            }
+
+            return root;
+        }
+
         private Node<T>? Insert(Node<T>? root, T value)
         {
             if (root == null)
@@ -88,6 +140,17 @@
         private void UpdateHeight(Node<T> node) => node.height = 1 + Math.Max(GetHeight(node.left), GetHeight(node.right));
 
         private int GetBalance(Node<T> node) => node == null ? 0 : GetHeight(node.left) - GetHeight(node.right);
+
+        private T GetMostLeftValue(Node<T> node)
+        {
+            Node<T> current = node;
+            while (current.left != null)
+            {
+                current = current.left;
+            }
+
+            return current.value;
+        }
 
         private Node<T> RotateLeft(Node<T>? y)
         {

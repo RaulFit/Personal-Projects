@@ -29,9 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrefixTree", "PrefixTree\Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrefixTree.Facts", "PrefixTree.Facts\PrefixTree.Facts.csproj", "{6A9511D1-1877-4200-A9A5-0E828909E92F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVLTree", "AVLTree\AVLTree.csproj", "{F823C072-58A8-4E58-982A-990C855FCE27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVLTree", "AVLTree\AVLTree.csproj", "{F823C072-58A8-4E58-982A-990C855FCE27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVLTree.Facts", "AVLTree.Facts\AVLTree.Facts.csproj", "{0329DBFF-7CEF-4964-A3A9-2623823419F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVLTree.Facts", "AVLTree.Facts\AVLTree.Facts.csproj", "{0329DBFF-7CEF-4964-A3A9-2623823419F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionMethods", "ExtensionMethods\ExtensionMethods.csproj", "{5906F7F7-4DCD-49C6-82FF-A8E4EA4B6BE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionMethods.Facts", "ExtensionMethods.Facts\ExtensionMethods.Facts.csproj", "{AC39DCDB-58C8-4477-8702-42CAEC64B451}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +103,14 @@ Global
 		{0329DBFF-7CEF-4964-A3A9-2623823419F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0329DBFF-7CEF-4964-A3A9-2623823419F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0329DBFF-7CEF-4964-A3A9-2623823419F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5906F7F7-4DCD-49C6-82FF-A8E4EA4B6BE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5906F7F7-4DCD-49C6-82FF-A8E4EA4B6BE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5906F7F7-4DCD-49C6-82FF-A8E4EA4B6BE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5906F7F7-4DCD-49C6-82FF-A8E4EA4B6BE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC39DCDB-58C8-4477-8702-42CAEC64B451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC39DCDB-58C8-4477-8702-42CAEC64B451}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC39DCDB-58C8-4477-8702-42CAEC64B451}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC39DCDB-58C8-4477-8702-42CAEC64B451}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

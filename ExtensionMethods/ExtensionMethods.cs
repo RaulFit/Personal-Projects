@@ -6,8 +6,7 @@ namespace ExtensionMethods
     {
         public static bool All<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            CollectionIsNull(source);
-            FunctionIsNull(predicate);
+            HasNullParams(source, predicate);
 
             foreach (var item in source)
             {
@@ -22,8 +21,7 @@ namespace ExtensionMethods
 
         public static bool Any<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            CollectionIsNull(source);
-            FunctionIsNull(predicate);
+            HasNullParams(source, predicate);
 
             foreach (var item in source)
             {
@@ -36,19 +34,16 @@ namespace ExtensionMethods
             return false;
         }
 
-        private static void CollectionIsNull<TSource>(IEnumerable<TSource> source)
+        private static void HasNullParams<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
             if (source == null)
             {
-                throw new ArgumentNullException("The collection is null");
+                throw new ArgumentNullException($"The {source} collection is null");
             }
-        }
 
-        private static void FunctionIsNull<TSource>(Func<TSource, bool> function)
-        {
-            if (function == null)
+            if (predicate == null)
             {
-                throw new NullReferenceException("The function is null");
+                throw new ArgumentNullException($"The {predicate} function is null");
             }
         }
     }

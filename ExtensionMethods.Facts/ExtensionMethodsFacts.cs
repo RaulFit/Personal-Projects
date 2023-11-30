@@ -24,7 +24,7 @@ namespace ExtensionMethods.Facts
         [Fact]
         public void All_ShouldThrowExceptionWhenFunctionIsNull()
         {
-            Assert.Throws<NullReferenceException>(() => ExtensionMethods.All(new int[] { 2, 4, 6, 7, 10 }, null));
+            Assert.Throws<ArgumentNullException>(() => ExtensionMethods.All(new int[] { 2, 4, 6, 7, 10 }, null));
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace ExtensionMethods.Facts
         [Fact]
         public void Any_ShouldThrowExceptionWhenFunctionIsNull()
         {
-            Assert.Throws<NullReferenceException>(() => ExtensionMethods.Any(new int[] { 2, 4, 6, 7, 10 }, null));
+            Assert.Throws<ArgumentNullException>(() => ExtensionMethods.Any(new int[] { 2, 4, 6, 7, 10 }, null));
         }
     }
 }

@@ -51,5 +51,30 @@ namespace ExtensionMethods.Facts
         {
             Assert.Throws<ArgumentNullException>(() => ExtensionMethods.Any(new int[] { 2, 4, 6, 7, 10 }, null));
         }
+
+        [Fact]
+        public void First_ShouldReturnFirstElementWithRequiredCondition()
+        {
+            Assert.Equal(8, ExtensionMethods.First(new int[] { 1, 3, 5 , 8 ,12 ,15, 16}, e => e % 2 == 0));
+        }
+
+        [Fact]
+        public void First_ShouldThrowExceptionWhenNoElementWithRequiredConditionIsFound()
+        {
+            Assert.Throws<InvalidOperationException>(() => ExtensionMethods.First(new int[] { 1, 3, 5, 15}, e => e % 2 == 0));
+        }
+
+        [Fact]
+        public void First_ShouldThrowExceptionWhenCollectionIsNull()
+        {
+            int[] arr = null;
+            Assert.Throws<ArgumentNullException>(() => ExtensionMethods.First(arr, e => e % 2 == 0));
+        }
+
+        [Fact]
+        public void First_ShouldThrowExceptionWhenFunctionIsNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => ExtensionMethods.First(new int[] { 2, 4, 6, 7, 10 }, null));
+        }
     }
 }

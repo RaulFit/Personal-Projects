@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 namespace ExtensionMethods
 {
@@ -49,7 +50,17 @@ namespace ExtensionMethods
             throw new InvalidOperationException("No element with the required condition was found");
         }
 
-        private static void HasNullParams<TSource>(IEnumerable<TSource> source, Func<TSource, bool> predicate)
+        public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
+        {
+            HasNullParams(source, selector);
+
+            foreach (var item in source)
+            {
+                yield return selector(item);
+            }
+        }
+
+        private static void HasNullParams<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, TResult> predicate)
         {
             if (source == null)
             {

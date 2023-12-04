@@ -1,4 +1,8 @@
-﻿namespace ExtensionMethods
+﻿using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+
+namespace ExtensionMethods
 {
     public static class ExtensionMethods
     {
@@ -61,11 +65,12 @@
             }
         }
 
-        private static void IsNull<TSource>(TSource param)
+
+        private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)
             {
-                throw new ArgumentNullException(nameof(param));
+                throw new ArgumentNullException(paramName);
             }
         }
     }

@@ -76,5 +76,18 @@ namespace ExtensionMethods.Facts
         {
             Assert.Throws<ArgumentNullException>(() => ExtensionMethods.First(new int[] { 2, 4, 6, 7, 10 }, null));
         }
+
+        [Fact]
+        public void ExceptionShouldSpecifyCollectionName()
+        {
+            int[] arr = null;
+            Assert.True(ExtensionMethods.All(arr, e => e % 2 == 0));
+        }
+
+        [Fact]
+        public void ExceptionShouldSpecifyFunctionName()
+        {
+            Assert.True(ExtensionMethods.All(new int[] { 2, 4, 6, 7, 10 }, null));
+        }
     }
 }

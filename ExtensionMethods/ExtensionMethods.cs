@@ -65,7 +65,6 @@ namespace ExtensionMethods
             }
         }
 
-
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)

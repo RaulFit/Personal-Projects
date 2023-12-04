@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -62,6 +63,20 @@ namespace ExtensionMethods
             foreach (var item in source)
             {
                 yield return selector(item);
+            }
+        }
+        
+        public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
+        {
+            IsNull(source);
+            IsNull(selector);
+
+            foreach (var item in source)
+            {
+                foreach (var inner in selector(item))
+                {
+                    yield return inner;
+                }
             }
         }
 

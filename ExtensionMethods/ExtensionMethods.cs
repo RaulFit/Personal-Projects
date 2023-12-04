@@ -7,7 +7,8 @@ namespace ExtensionMethods
     {
         public static bool All<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            HasNullParams(source, predicate);
+            IsNull(source);
+            IsNull(predicate);
 
             foreach (var item in source)
             {
@@ -22,7 +23,8 @@ namespace ExtensionMethods
 
         public static bool Any<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            HasNullParams(source, predicate);
+            IsNull(source);
+            IsNull(predicate);
 
             foreach (var item in source)
             {
@@ -37,7 +39,8 @@ namespace ExtensionMethods
 
         public static TSource First<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            HasNullParams(source, predicate);
+            IsNull(source);
+            IsNull(predicate);
 
             foreach (var item in source)
             {
@@ -52,7 +55,8 @@ namespace ExtensionMethods
 
         public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
-            HasNullParams(source, selector);
+            IsNull(source);
+            IsNull(selector);
 
             foreach (var item in source)
             {
@@ -60,16 +64,11 @@ namespace ExtensionMethods
             }
         }
 
-        private static void HasNullParams<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, TResult> predicate)
+        private static void IsNull<TSource>(TSource param)
         {
-            if (source == null)
+            if (param == null)
             {
-                throw new ArgumentNullException($"The {source} collection is null");
-            }
-
-            if (predicate == null)
-            {
-                throw new ArgumentNullException($"The {predicate} function is null");
+                throw new ArgumentNullException($"The {param} is null");
             }
         }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-
-namespace ExtensionMethods
+﻿namespace ExtensionMethods
 {
     public static class ExtensionMethods
     {
@@ -68,7 +65,7 @@ namespace ExtensionMethods
         {
             if (param == null)
             {
-                throw new ArgumentNullException($"The {param} is null");
+                throw new ArgumentNullException(nameof(param));
             }
         }
     }

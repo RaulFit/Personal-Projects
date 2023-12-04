@@ -87,12 +87,48 @@ namespace ExtensionMethods.Facts
         }
 
         [Fact]
+        public void Select_WithEmptyCollection_ShouldReturnEmptyCollection()
+        {
+            var input = new List<int>();
+            Func<int, int> selector = i => i + 1;
+            var result = ExtensionMethods.Select(input, selector);
+            Assert.Equal(new LinkedList<int>(), result);
+        }
+
+        [Fact]
         public void SelectMany_WithValidInput_ReturnsExpectedResult()
         {
             var input = new List<List<int>> { new List<int> { 1, 2 }, new List<int> { 3, 4 }, new List<int> { 5, 6 } };
             Func<List<int>, IEnumerable<int>> selector = list => list.Select(item => item * 2);
             var result = ExtensionMethods.SelectMany(input, selector);
             Assert.Equal(new int[] { 2, 4, 6, 8, 10, 12 }, result);
+        }
+
+        [Fact]
+        public void SelectMany_WithEmptyCollection_ShouldReturnEmptyCollection()
+        {
+            var input = new List<List<int>>();
+            Func<List<int>, IEnumerable<int>> selector = list => list.Select(item => item * 2);
+            var result = ExtensionMethods.SelectMany(input, selector);
+            Assert.Equal(new int[] { }, result);
+        }
+
+        [Fact]
+        public void Where_NoElementsRespectPredicate_ShouldReturnAnEmptyCollection()
+        {
+            int[] arr = new int[] { 1, 3, 5, 7, 9, 11 };
+            Func<int, bool> predicate = i => i % 2 == 0;
+            var result = ExtensionMethods.Where(arr, predicate);
+            Assert.Equal(new int[] {}, result);
+        }
+
+        [Fact]
+        public void Where_WithValidElements_ShouldReturnExpectedResult()
+        {
+            int[] arr = new int[] { 1, 2, 3, 4, 5, 6, 7 };
+            Func<int, bool> predicate = i => i % 2 == 0;
+            var result = ExtensionMethods.Where(arr, predicate);
+            Assert.Equal(new int[] { 2, 4 ,6 }, result);
         }
 
         [Fact]

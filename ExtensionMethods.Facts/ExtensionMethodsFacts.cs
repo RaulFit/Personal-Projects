@@ -19,12 +19,16 @@ namespace ExtensionMethods.Facts
         {
             int[] arr = null;
             Assert.Throws<ArgumentNullException>(() => ExtensionMethods.All(arr, e => e % 2 == 0));
+            var ex = Assert.Throws<ArgumentNullException>(() => ExtensionMethods.All(arr, e => e % 2 == 0));
+            Assert.Equal("Value cannot be null. (Parameter 'source')", ex.Message);
         }
 
         [Fact]
         public void All_ShouldThrowExceptionWhenFunctionIsNull()
         {
             Assert.Throws<ArgumentNullException>(() => ExtensionMethods.All(new int[] { 2, 4, 6, 7, 10 }, null));
+            var ex = Assert.Throws<ArgumentNullException>(() => ExtensionMethods.All(new int[] { 2, 4, 6, 7, 10 }, null));
+            Assert.Equal("Value cannot be null. (Parameter 'predicate')", ex.Message);
         }
 
         [Fact]
@@ -129,19 +133,6 @@ namespace ExtensionMethods.Facts
             Func<int, bool> predicate = i => i % 2 == 0;
             var result = ExtensionMethods.Where(arr, predicate);
             Assert.Equal(new int[] { 2, 4 ,6 }, result);
-        }
-
-        [Fact]
-        public void ExceptionShouldSpecifyCollectionName()
-        {
-            int[] arr = null;
-            Assert.True(ExtensionMethods.All(arr, e => e % 2 == 0));
-        }
-
-        [Fact]
-        public void ExceptionShouldSpecifyFunctionName()
-        {
-            Assert.True(ExtensionMethods.All(new int[] { 2, 4, 6, 7, 10 }, null));
         }
     }
 }

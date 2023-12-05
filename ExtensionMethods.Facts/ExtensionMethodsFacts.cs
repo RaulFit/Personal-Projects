@@ -134,5 +134,50 @@ namespace ExtensionMethods.Facts
             var result = ExtensionMethods.Where(arr, predicate);
             Assert.Equal(new int[] { 2, 4 ,6 }, result);
         }
+
+        [Fact]
+        public void ToDictionary_WithEmptyCollection_ShouldReturnEmptyDictionary()
+        {
+            int[] arr = { };
+            Func<int, int> keySelector = i => i;
+            Func<int, char> elementSelector = i => (char)(97 + i);
+            Assert.Equal(new Dictionary<int, char>(), ExtensionMethods.ToDictionary(arr, keySelector, elementSelector));
+        }
+
+        [Fact]
+        public void ToDictionary_WithValidCollection_ShouldReturnExpectedResult()
+        {
+            int[] arr = { 0, 1, 2, 3 };
+            Func<int, int> keySelector = i => i;
+            Func<int, char> elementSelector = i => (char)(97 + i);
+            Assert.Equal(new Dictionary<int, char>() { { 0, 'a' }, { 1, 'b' }, { 2, 'c' }, { 3, 'd' }, }, ExtensionMethods.ToDictionary(arr, keySelector, elementSelector));;
+        }
+
+        [Fact]
+        public void ToDictionary_CollectionIsNull_ShouldThrowArgumentNullException()
+        {
+            int[] arr = null;
+            Func<int, int> keySelector = i => i;
+            Func<int, char> elementSelector = i => (char)(97 + i);
+            Assert.Throws<ArgumentNullException>(() => ExtensionMethods.ToDictionary(arr, keySelector, elementSelector));
+        }
+
+        [Fact]
+        public void ToDictionary_KeySelectorIsNull_ShouldThrowArgumentNullException()
+        {
+            int[] arr = { 0, 1, 2, 3 };
+            Func<int, int> keySelector = null;
+            Func<int, char> elementSelector = i => (char)(97 + i);
+            Assert.Throws<ArgumentNullException>(() => ExtensionMethods.ToDictionary(arr, keySelector, elementSelector));
+        }
+
+        [Fact]
+        public void ToDictionary_ElementSelectorIsNull_ShouldThrowArgumentNullException()
+        {
+            int[] arr = { 0, 1, 2, 3 };
+            Func<int, int> keySelector = i => i;
+            Func<int, char> elementSelector = null;
+            Assert.Throws<ArgumentNullException>(() => ExtensionMethods.ToDictionary(arr, keySelector, elementSelector));
+        }
     }
 }

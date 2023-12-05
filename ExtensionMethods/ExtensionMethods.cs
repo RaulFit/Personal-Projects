@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace ExtensionMethods
 {
@@ -92,6 +89,22 @@ namespace ExtensionMethods
                     yield return item;
                 }
             }
+        }
+
+        public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) where TKey : notnull
+        {
+            IsNull(source);
+            IsNull(keySelector);
+            IsNull(elementSelector);
+
+            Dictionary<TKey, TElement> dictionary = new Dictionary<TKey, TElement>();
+
+            foreach (var item in source)
+            {
+                dictionary[keySelector(item)] = elementSelector(item);
+            }
+
+            return dictionary;
         }
 
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")

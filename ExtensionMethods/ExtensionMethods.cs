@@ -121,6 +121,22 @@ namespace ExtensionMethods
             }
         }
 
+        public static TAccumulate Aggregate<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
+        {
+            IsNull(source);
+            IsNull(seed);
+            IsNull(func);
+
+            TAccumulate value = seed;
+            
+            foreach(var item in source)
+            {
+                value = func(value, item);
+            }
+
+            return value;
+        }
+
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)

@@ -208,5 +208,23 @@ namespace ExtensionMethods.Facts
             Func<int, string, string> resultSelector = (i, j) => i + "-" + j;
             Assert.Equal(new string[] { "1-one", "2-two", "3-three", "4-four" }, ExtensionMethods.Zip(first, second, resultSelector));
         }
+
+        [Fact]
+        public void Aggregate_EmptyCollection_ShouldReturnSeed()
+        {
+            int[] arr = { };
+            int seed = 5;
+            Func<int, int, int> func = (i, j) => i * j;
+            Assert.Equal(seed, ExtensionMethods.Aggregate(arr, seed, func));
+        }
+
+        [Fact]
+        public void Aggregate_ValidCollection_ShouldReturnExpectedResult()
+        {
+            int[] arr = { 10, 20, 30, 40 };
+            int seed = 5;
+            Func<int, int, int> func = (i, j) => i * j;
+            Assert.Equal(1200000, ExtensionMethods.Aggregate(arr, seed, func));
+        }
     }
 }

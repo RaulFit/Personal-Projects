@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace ExtensionMethods.Facts
 {
     public class ExtensionMethodsFacts
@@ -178,6 +180,33 @@ namespace ExtensionMethods.Facts
             Func<int, int> keySelector = i => i;
             Func<int, char> elementSelector = null;
             Assert.Throws<ArgumentNullException>(() => ExtensionMethods.ToDictionary(arr, keySelector, elementSelector));
+        }
+
+        [Fact]
+        public void Zip_WithEmptyCollections_ShouldReturnEmptyCollection()
+        {
+            int[] first = { };
+            int[] second = { };
+            Func<int, int, int> resultSelector = (i, j) => (i + j);
+            Assert.Equal(new int[] { }, ExtensionMethods.Zip(first, second, resultSelector));
+        }
+
+        [Fact]
+        public void Zip_SameLengthCollections_ShouldReturnExpectedResult()
+        {
+            int[] first = { 1, 2, 3, 4 };
+            string[] second = { "one", "two", "three", "four"};
+            Func<int, string, string> resultSelector = (i, j) => i + "-" + j;
+            Assert.Equal(new string[] { "1-one", "2-two", "3-three", "4-four"}, ExtensionMethods.Zip(first, second, resultSelector));
+        }
+
+        [Fact]
+        public void Zip_DifferentLengthCollections_ShouldReturnCollectionWithMinSize()
+        {
+            int[] first = { 1, 2, 3, 4, 5, 6, 7 };
+            string[] second = { "one", "two", "three", "four" };
+            Func<int, string, string> resultSelector = (i, j) => i + "-" + j;
+            Assert.Equal(new string[] { "1-one", "2-two", "3-three", "4-four" }, ExtensionMethods.Zip(first, second, resultSelector));
         }
     }
 }

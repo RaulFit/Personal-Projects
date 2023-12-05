@@ -107,6 +107,20 @@ namespace ExtensionMethods
             return dictionary;
         }
 
+        public static IEnumerable<TResult> Zip<TFirst, TSecond, TResult>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second, Func<TFirst, TSecond, TResult> resultSelector)
+        {
+            IsNull(first);
+            IsNull(second);
+            IsNull(resultSelector);
+
+            int smallerCollectionSize = Math.Min(first.Count(), second.Count());
+
+            for (int i = 0; i < smallerCollectionSize; i++)
+            {
+                yield return resultSelector(first.ElementAt(i), second.ElementAt(i));
+            }
+        }
+
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)

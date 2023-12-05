@@ -20,7 +20,7 @@ namespace ExtensionMethods.Facts
             int[] arr = null;
             Assert.Throws<ArgumentNullException>(() => ExtensionMethods.All(arr, e => e % 2 == 0));
             var ex = Assert.Throws<ArgumentNullException>(() => ExtensionMethods.All(arr, e => e % 2 == 0));
-            Assert.Equal("Value cannot be null. (Parameter 'source')", ex.Message);
+            Assert.Equal("source", ex.ParamName);
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace ExtensionMethods.Facts
         {
             Assert.Throws<ArgumentNullException>(() => ExtensionMethods.All(new int[] { 2, 4, 6, 7, 10 }, null));
             var ex = Assert.Throws<ArgumentNullException>(() => ExtensionMethods.All(new int[] { 2, 4, 6, 7, 10 }, null));
-            Assert.Equal("Value cannot be null. (Parameter 'predicate')", ex.Message);
+            Assert.Equal("predicate", ex.ParamName);
         }
 
         [Fact]

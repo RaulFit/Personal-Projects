@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace ExtensionMethods
 {
@@ -136,6 +137,27 @@ namespace ExtensionMethods
             }
 
             return value;
+        }
+
+        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector,
+        Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector)
+        {
+            IsNull(outer);
+            IsNull(inner);
+            IsNull(outerKeySelector);
+            IsNull(innerKeySelector);
+            IsNull(resultSelector);
+
+            foreach (var outerItem in outer)
+            {
+                foreach (var innerItem in inner)
+                {
+                    if (Equals(outerKeySelector(outerItem), innerKeySelector(innerItem)))
+                    {
+                        yield return resultSelector(outerItem, innerItem);
+                    }
+                }
+            }
         }
 
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")

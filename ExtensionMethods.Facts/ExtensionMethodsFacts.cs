@@ -226,5 +226,27 @@ namespace ExtensionMethods.Facts
             Func<int, int, int> func = (i, j) => i * j;
             Assert.Equal(1200000, ExtensionMethods.Aggregate(arr, seed, func));
         }
+
+        [Fact]
+        public void Join_EmptyCollections_ShouldReturnEmptyCollection()
+        {
+            var outer = new List<int>();
+            var inner = new List<int>();
+            Func<int, int> outerKeySelector = e => e;
+            Func<int, int> innerKeySelector = e => e;
+            Func<int, int, string> resultSelector = (i, j) => i + "=" + j;
+            Assert.Equal(new string[] { }, ExtensionMethods.Join(outer, inner, outerKeySelector, innerKeySelector, resultSelector));
+        }
+
+        [Fact]
+        public void Join_ValidCollections_ShouldReturnExpectedResult()
+        {
+            var outer = new List<int>() { 1, 2, 3};
+            var inner = new List<int>() { 2, 3, 4 };
+            Func<int, int> outerKeySelector = e => e;
+            Func<int, int> innerKeySelector = e => e;
+            Func<int, int, string> resultSelector = (i, j) => i + "-" + j;
+            Assert.Equal(new string[] { "2-2", "3-3" }, ExtensionMethods.Join(outer, inner, outerKeySelector, innerKeySelector, resultSelector));
+        }
     }
 }

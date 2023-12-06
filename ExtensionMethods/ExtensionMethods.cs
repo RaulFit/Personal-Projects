@@ -113,11 +113,12 @@ namespace ExtensionMethods
             IsNull(second);
             IsNull(resultSelector);
 
-            int smallerCollectionSize = Math.Min(first.Count(), second.Count());
+            var firstEnum = first.GetEnumerator();
+            var secondEnum = second.GetEnumerator();
 
-            for (int i = 0; i < smallerCollectionSize; i++)
+            while (firstEnum.MoveNext() && secondEnum.MoveNext())
             {
-                yield return resultSelector(first.ElementAt(i), second.ElementAt(i));
+                yield return (resultSelector(firstEnum.Current, secondEnum.Current));
             }
         }
 

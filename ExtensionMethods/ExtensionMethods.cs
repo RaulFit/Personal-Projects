@@ -160,6 +160,30 @@ namespace ExtensionMethods
             }
         }
 
+        public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
+        {
+            List<TSource> distinctItems = new List<TSource>();
+
+            foreach (var item in source)
+            {
+                bool found = false;
+                foreach (var distinctItem in distinctItems)
+                {
+                    if (comparer.Equals(item, distinctItem))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    distinctItems.Add(item);
+                    yield return item;
+                }
+            }
+        }
+
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)

@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 
 namespace ExtensionMethods.Facts
@@ -228,6 +229,15 @@ namespace ExtensionMethods.Facts
         }
 
         [Fact]
+        public void Aggregate_NullCollection_ShouldThrowArgumentNullException()
+        {
+            int[] arr = null;
+            int seed = 5;
+            Func<int, int, int> func = (i, j) => i * j;
+            Assert.Throws<ArgumentNullException>(() => ExtensionMethods.Aggregate(arr, seed, func));
+        }
+
+        [Fact]
         public void Join_EmptyCollections_ShouldReturnEmptyCollection()
         {
             var outer = new List<int>();
@@ -247,6 +257,20 @@ namespace ExtensionMethods.Facts
             Func<int, int> innerKeySelector = e => e;
             Func<int, int, string> resultSelector = (i, j) => i + "-" + j;
             Assert.Equal(new string[] { "2-2", "3-3" }, ExtensionMethods.Join(outer, inner, outerKeySelector, innerKeySelector, resultSelector));
+        }
+
+        [Fact]
+        public void Distinct_EmptyCollection_ShouldReturnEmptyCollection()
+        {
+            string[] list = { };
+            Assert.Equal(new string[] { }, ExtensionMethods.Distinct(list, StringComparer.OrdinalIgnoreCase));
+        }
+
+        [Fact]
+        public void Distinct_ValidCollection_ShouldReturnExpectedResult()
+        {
+            string[] list = { "apple", "Apple", "pear", "PEAR", "banana", "bAnaNA"};
+            Assert.Equal(new string[] { "apple", "pear", "banana" }, ExtensionMethods.Distinct(list, StringComparer.OrdinalIgnoreCase));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace ExtensionMethods
@@ -162,6 +163,9 @@ namespace ExtensionMethods
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
         {
+            IsNull(source);
+            IsNull(comparer);
+
             List<TSource> distinctItems = new List<TSource>();
 
             foreach (var item in source)

@@ -288,5 +288,21 @@ namespace ExtensionMethods.Facts
             string[] second = { "India", "ROMANIA", "Canada", "France", "Japan" };
             Assert.Equal(new string[] { "India", "USA", "Romania", "Canada", "Srilanka", "France", "Japan" }, ExtensionMethods.Union(first, second, StringComparer.OrdinalIgnoreCase));
         }
+
+        [Fact]
+        public void Intersect_EmptyCollections_ShouldReturnEmptyCollection()
+        {
+            string[] first = { };
+            string[] second = { };
+            Assert.Equal(new string[] { }, ExtensionMethods.Intersect(first, second, StringComparer.OrdinalIgnoreCase));
+        }
+
+        [Fact]
+        public void Intersect_ValidCollections_ShouldReturnCollectionWithCommonItems()
+        {
+            string[] first = { "India", "USA", "UK", "Canada", "Srilanka" };
+            string[] second = { "India", "uk", "Canada", "France", "Japan" };
+            Assert.Equal(new string[] { "India", "UK", "Canada" }, ExtensionMethods.Intersect(first, second, StringComparer.OrdinalIgnoreCase));
+        }
     }
 }

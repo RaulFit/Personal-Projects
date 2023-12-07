@@ -200,6 +200,23 @@ namespace ExtensionMethods
             }
         }
 
+        public static IEnumerable<TSource> Intersect<TSource>(this IEnumerable<TSource> first,IEnumerable<TSource> second,IEqualityComparer<TSource> comparer)
+        {
+            IsNull(first);
+            IsNull(second);
+            IsNull(comparer);
+
+            HashSet<TSource> union = new HashSet<TSource>(second, comparer);
+
+            foreach (var item in first)
+            {
+                if (union.Contains(item))
+                {
+                    yield return item;
+                }
+            }
+        }
+
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)

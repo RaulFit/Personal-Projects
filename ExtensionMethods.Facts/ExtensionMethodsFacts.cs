@@ -251,7 +251,7 @@ namespace ExtensionMethods.Facts
         [Fact]
         public void Join_ValidCollections_ShouldReturnExpectedResult()
         {
-            var outer = new List<int>() { 1, 2, 3};
+            var outer = new List<int>() { 1, 2, 3 };
             var inner = new List<int>() { 2, 3, 4 };
             Func<int, int> outerKeySelector = e => e;
             Func<int, int> innerKeySelector = e => e;
@@ -271,6 +271,22 @@ namespace ExtensionMethods.Facts
         {
             string[] list = { "apple", "Apple", "pear", "PEAR", "banana", "bAnaNA"};
             Assert.Equal(new string[] { "apple", "pear", "banana" }, ExtensionMethods.Distinct(list, StringComparer.OrdinalIgnoreCase));
+        }
+
+        [Fact]
+        public void Union_EmptyCollections_ShouldReturnEmptyCollection()
+        {
+            string[] first = { };
+            string[] second = { };
+            Assert.Equal(new string[] { }, ExtensionMethods.Union(first, second, StringComparer.OrdinalIgnoreCase));
+        }
+
+        [Fact]
+        public void Union_ValidCollections_ShouldReturnExpectedResult()
+        {
+            string[] first = { "India", "USA", "Romania", "Canada", "Srilanka" };
+            string[] second = { "India", "ROMANIA", "Canada", "France", "Japan" };
+            Assert.Equal(new string[] { "India", "USA", "Romania", "Canada", "Srilanka", "France", "Japan" }, ExtensionMethods.Union(first, second, StringComparer.OrdinalIgnoreCase));
         }
     }
 }

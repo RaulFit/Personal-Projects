@@ -166,23 +166,35 @@ namespace ExtensionMethods
             IsNull(source);
             IsNull(comparer);
 
-            List<TSource> distinctItems = new List<TSource>();
+            HashSet<TSource> distinctItems= new HashSet<TSource>(comparer);
 
             foreach (var item in source)
             {
-                bool found = false;
-                foreach (var distinctItem in distinctItems)
+                if (distinctItems.Add(item))
                 {
-                    if (comparer.Equals(item, distinctItem))
-                    {
-                        found = true;
-                        break;
-                    }
+                    yield return item;
                 }
+            }
+        }
 
-                if (!found)
+        public static IEnumerable<TSource> Union<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
+        {
+            IsNull(first);
+            IsNull(second);
+            IsNull(comparer);
+
+            HashSet<TSource> union = new HashSet<TSource>(comparer);
+
+            foreach (var item in first)
+            {
+                union.Add(item);
+                yield return item;
+            }
+
+            foreach (var item in second)
+            {
+                if (union.Add(item))
                 {
-                    distinctItems.Add(item);
                     yield return item;
                 }
             }

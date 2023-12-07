@@ -304,5 +304,21 @@ namespace ExtensionMethods.Facts
             string[] second = { "India", "uk", "Canada", "France", "Japan" };
             Assert.Equal(new string[] { "India", "UK", "Canada" }, ExtensionMethods.Intersect(first, second, StringComparer.OrdinalIgnoreCase));
         }
+
+        [Fact]
+        public void Except_EmptyCollections_ShouldReturnEmptyCollection()
+        {
+            string[] first = { };
+            string[] second = { };
+            Assert.Equal(new string[] { }, ExtensionMethods.Except(first, second, StringComparer.OrdinalIgnoreCase));
+        }
+
+        [Fact]
+        public void Except_ValidCollections_ShouldReturnCollectionWithItemsOnlyFromFirstCollection()
+        {
+            string[] first = { "India", "USA", "UK", "Canada", "Srilanka" };
+            string[] second = { "India", "uk", "Canada", "France", "Japan" };
+            Assert.Equal(new string[] { "USA", "Srilanka" }, ExtensionMethods.Except(first, second, StringComparer.OrdinalIgnoreCase));
+        }
     }
 }

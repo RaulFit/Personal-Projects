@@ -183,21 +183,10 @@ namespace ExtensionMethods
             IsNull(second);
             IsNull(comparer);
 
-            HashSet<TSource> union = new HashSet<TSource>(comparer);
+            HashSet<TSource> union = new HashSet<TSource>(first, comparer);
+            union.UnionWith(second);
 
-            foreach (var item in first)
-            {
-                union.Add(item);
-                yield return item;
-            }
-
-            foreach (var item in second)
-            {
-                if (union.Add(item))
-                {
-                    yield return item;
-                }
-            }
+            return union;
         }
 
         public static IEnumerable<TSource> Intersect<TSource>(this IEnumerable<TSource> first,IEnumerable<TSource> second,IEqualityComparer<TSource> comparer)
@@ -206,15 +195,10 @@ namespace ExtensionMethods
             IsNull(second);
             IsNull(comparer);
 
-            HashSet<TSource> union = new HashSet<TSource>(second, comparer);
+            HashSet<TSource> union = new HashSet<TSource>(first, comparer);
+            union.IntersectWith(second);
 
-            foreach (var item in first)
-            {
-                if (union.Contains(item))
-                {
-                    yield return item;
-                }
-            }
+            return union;
         }
 
         public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
@@ -223,15 +207,10 @@ namespace ExtensionMethods
             IsNull(second);
             IsNull(comparer);
 
-            HashSet<TSource> union = new HashSet<TSource>(second, comparer);
+            HashSet<TSource> union = new HashSet<TSource>(first, comparer);
+            union.ExceptWith(second);
 
-            foreach (var item in first)
-            {
-                if (!union.Contains(item))
-                {
-                    yield return item;
-                }
-            }
+            return union;
         }
 
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")

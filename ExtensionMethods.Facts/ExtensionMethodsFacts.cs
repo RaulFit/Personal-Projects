@@ -318,7 +318,7 @@ namespace ExtensionMethods.Facts
         {
             string[] first = { "India", "USA", "UK", "Canada", "Srilanka" };
             string[] second = { "India", "uk", "Canada", "France", "Japan" };
-            Assert.Equal(new string[] { "USA", "Srilanka" }, ExtensionMethods.Except(first, second, StringComparer.OrdinalIgnoreCase));
+            Assert.Equal(new List<string>() { "USA", "Srilanka" }, ExtensionMethods.Except(first, second, StringComparer.OrdinalIgnoreCase));
         }
     }
 }

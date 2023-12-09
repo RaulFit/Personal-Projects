@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace ExtensionMethods
 {
@@ -211,6 +213,33 @@ namespace ExtensionMethods
             union.ExceptWith(second);
 
             return union;
+        }
+
+        public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector,
+        Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        {
+            IsNull(source);
+            IsNull(keySelector);
+            IsNull(elementSelector);
+            IsNull(resultSelector);
+            IsNull(comparer);
+
+            Dictionary<TKey, List<TElement>> dict = new Dictionary<TKey, List<TElement>>(comparer);
+
+            foreach (var item in source)
+            {
+                TKey key = keySelector(item);
+                if (!dict.TryGetValue(key, out List<TElement>? list))
+                {
+                    dict.Add(key, list = new List<TElement>());
+                }
+                list.Add(elementSelector(item));
+            }
+            
+            foreach (var item in dict.Keys)
+            {
+                yield return resultSelector(item, dict[item]);
+            }
         }
 
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")

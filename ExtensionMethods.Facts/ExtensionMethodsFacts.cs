@@ -320,5 +320,21 @@ namespace ExtensionMethods.Facts
             string[] second = { "India", "uk", "Canada", "France", "Japan" };
             Assert.Equal(new List<string>() { "USA", "Srilanka" }, ExtensionMethods.Except(first, second, StringComparer.OrdinalIgnoreCase));
         }
+
+        [Fact]
+        public void GroupBy_EmptyCollection_ShouldReturnEmptyCollection()
+        {
+            int[] source = { };
+            var result = ExtensionMethods.GroupBy(source, x => x % 2, x => x * 2, (key, elements) => $"{key}: {string.Join(",", elements)}", EqualityComparer<int>.Default);
+            Assert.Equal(new string[] { }, result);
+        }
+
+        [Fact]
+        public void GroupBy_ValidCollection_ShouldReturnExpectedResult()
+        {
+            var source = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var result = ExtensionMethods.GroupBy(source, x => x % 2, x => x * 2, (key, elements) => $"{key}: {string.Join(",", elements)}", EqualityComparer<int>.Default);
+            Assert.Collection(result, item => Assert.Equal("1: 2,6,10,14,18", item), item => Assert.Equal("0: 4,8,12,16,20", item));
+        }
     }
 }

@@ -134,7 +134,7 @@ namespace ExtensionMethods
 
             TAccumulate value = seed;
             
-            foreach(var item in source)
+            foreach (var item in source)
             {
                 value = func(value, item);
             }
@@ -185,10 +185,21 @@ namespace ExtensionMethods
             IsNull(second);
             IsNull(comparer);
 
-            HashSet<TSource> union = new HashSet<TSource>(first, comparer);
-            union.UnionWith(second);
+            HashSet<TSource> union = new HashSet<TSource>(comparer);
 
-            return union;
+            foreach (var item in first)
+            {
+                union.Add(item);
+                yield return item;
+            }
+
+            foreach (var item in second)
+            {
+                if (union.Add(item))
+                {
+                    yield return item;
+                }
+            }
         }
 
         public static IEnumerable<TSource> Intersect<TSource>(this IEnumerable<TSource> first,IEnumerable<TSource> second,IEqualityComparer<TSource> comparer)
@@ -197,10 +208,15 @@ namespace ExtensionMethods
             IsNull(second);
             IsNull(comparer);
 
-            HashSet<TSource> union = new HashSet<TSource>(first, comparer);
-            union.IntersectWith(second);
+            HashSet<TSource> union = new HashSet<TSource>(second, comparer);
 
-            return union;
+            foreach (var item in first)
+            {
+                if (union.Contains(item))
+                {
+                    yield return item;
+                }
+            }
         }
 
         public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
@@ -209,10 +225,15 @@ namespace ExtensionMethods
             IsNull(second);
             IsNull(comparer);
 
-            HashSet<TSource> union = new HashSet<TSource>(first, comparer);
-            union.ExceptWith(second);
+            HashSet<TSource> union = new HashSet<TSource>(second, comparer);
 
-            return union;
+            foreach (var item in first)
+            {
+                if (!union.Contains(item))
+                {
+                    yield return item;
+                }
+            }
         }
 
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector,

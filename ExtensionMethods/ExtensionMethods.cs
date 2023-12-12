@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -268,6 +269,113 @@ namespace ExtensionMethods
             if (param == null)
             {
                 throw new ArgumentNullException(paramName);
+            }
+        }
+
+        internal class OrderedEnumerable<TSource> : IOrderedEnumerable<TSource>
+        {
+
+            private readonly IEnumerable<TSource> source;
+            private readonly IComparer<TSource> comparer;
+
+            internal OrderedEnumerable(IEnumerable<TSource> source, IComparer<TSource> comparer)
+            {
+                this.source = source;
+                this.comparer = comparer;
+            }
+
+            public IOrderedEnumerable<TSource> CreateOrderedEnumerable<TKey>(Func<TSource, TKey> keySelector, IComparer<TKey>? comparer, bool descending)
+            {
+                IsNull(keySelector);
+
+                IComparer<TSource> secondaryComparer = new ProjectionComparer<TSource, TKey>(keySelector, comparer);
+
+                if (descending)
+                {
+                    secondaryComparer = new ReverseComparer<TSource>(secondaryComparer);
+                }
+
+                return new OrderedEnumerable<TSource>(source, new CompoundComparer<TSource>(this.comparer, secondaryComparer));
+            }
+
+            public IEnumerator<TSource> GetEnumerator()
+            {
+                var elements = source.ToList();
+
+                for (int i = 1; i < elements.Count; i++)
+                {
+                    for (int j = i; j > 0 && comparer.Compare(source.ElementAt(j - 1), source.ElementAt(j)) < 0; j--)
+                    {
+                        (elements[j - 1], elements[j]) = (elements[j], elements[j - 1]);
+                    }
+                }
+
+                foreach (var elem in elements)
+                {
+                    yield return elem;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
+        internal class ProjectionComparer<TElement, TKey> : IComparer<TElement>
+        {
+            private readonly Func<TElement, TKey> keySelector;
+            private readonly IComparer<TKey> comparer;
+
+            internal ProjectionComparer(Func<TElement, TKey> keySelector, IComparer<TKey> comparer)
+            {
+                this.keySelector = keySelector;
+                this.comparer = comparer ?? Comparer<TKey>.Default;
+            }
+
+            public int Compare(TElement x, TElement y)
+            {
+                TKey keyX = keySelector(x);
+                TKey keyY = keySelector(y);
+                return comparer.Compare(keyX, keyY);
+            }
+        }
+
+        internal class ReverseComparer<T> : IComparer<T>
+        {
+            private readonly IComparer<T> forwardComparer;
+
+            internal ReverseComparer(IComparer<T> forwardComparer)
+            {
+                this.forwardComparer = forwardComparer;
+            }
+
+            public int Compare(T x, T y)
+            {
+                return forwardComparer.Compare(y, x);
+            }
+        }
+
+        internal class CompoundComparer<T> : IComparer<T>
+        {
+            private readonly IComparer<T> primary;
+            private readonly IComparer<T> secondary;
+
+            internal CompoundComparer(IComparer<T> primary, IComparer<T> secondary)
+            {
+                this.primary = primary;
+                this.secondary = secondary;
+            }
+
+            public int Compare(T x, T y)
+            {
+                int primaryResult = primary.Compare(x, y);
+
+                if (primaryResult != 0)
+                {
+                    return primaryResult;
+                }
+                return secondary.Compare(x, y);
             }
         }
     }

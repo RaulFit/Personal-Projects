@@ -350,5 +350,22 @@ namespace ExtensionMethods.Facts
             string[] names = { "Alex", "ALEX", "David", "Rick", "Erik", "Mark" };
             Assert.Equal(new string[] { "Alex", "ALEX", "David", "Erik", "Mark", "Rick" }, ExtensionMethods.OrderBy(names, name => name, StringComparer.OrdinalIgnoreCase));
         }
+
+        [Fact]
+        public void ThenBy_EmptyCollection_ShouldReturnEmptyCollection()
+        {
+            string[] names = { };
+            var orderedNames = ExtensionMethods.OrderBy(names, name => name, StringComparer.OrdinalIgnoreCase);
+            Assert.Equal(new string[] { }, ExtensionMethods.ThenBy(orderedNames, name => name, StringComparer.OrdinalIgnoreCase));
+        }
+
+        [Fact]
+        public void ThenBy_ValidCollection_ShouldReturnExpectedResult()
+        {
+            string[] names = { "Alex", "ALEX", "David", "Rick", "Erik", "Mark" };
+            var firstSort = ExtensionMethods.OrderBy(names, name => name, StringComparer.CurrentCulture);
+            var secondSort = ExtensionMethods.ThenBy(firstSort, name => name, StringComparer.OrdinalIgnoreCase);
+            Assert.Equal(new string[] { "Alex", "ALEX", "David", "Erik", "Mark", "Rick" }, secondSort);
+        }
     }
 }

@@ -273,6 +273,15 @@ namespace ExtensionMethods
             return new OrderedEnumerable<TSource>(source, new ProjectionComparer<TSource, TKey>(keySelector, comparer));
         }
 
+        public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
+        {
+            IsNull(source);
+            IsNull(keySelector);
+            IsNull(comparer);
+
+            return source.CreateOrderedEnumerable(keySelector, comparer, false);
+        }
+
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)

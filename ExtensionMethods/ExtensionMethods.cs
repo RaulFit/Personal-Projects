@@ -264,6 +264,15 @@ namespace ExtensionMethods
             }
         }
 
+        public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
+        {
+            IsNull(source);
+            IsNull(keySelector);
+            IsNull(comparer);
+
+            return new OrderedEnumerable<TSource>(source, new ProjectionComparer<TSource, TKey>(keySelector, comparer));
+        }
+
         private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)
@@ -290,11 +299,6 @@ namespace ExtensionMethods
 
                 IComparer<TSource> secondaryComparer = new ProjectionComparer<TSource, TKey>(keySelector, comparer);
 
-                if (descending)
-                {
-                    secondaryComparer = new ReverseComparer<TSource>(secondaryComparer);
-                }
-
                 return new OrderedEnumerable<TSource>(source, new CompoundComparer<TSource>(this.comparer, secondaryComparer));
             }
 
@@ -304,7 +308,7 @@ namespace ExtensionMethods
 
                 for (int i = 1; i < elements.Count; i++)
                 {
-                    for (int j = i; j > 0 && comparer.Compare(source.ElementAt(j - 1), source.ElementAt(j)) < 0; j--)
+                    for (int j = i; j > 0 && comparer.Compare(elements[j - 1], elements[j]) > 0; j--)
                     {
                         (elements[j - 1], elements[j]) = (elements[j], elements[j - 1]);
                     }
@@ -338,21 +342,6 @@ namespace ExtensionMethods
                 TKey keyX = keySelector(x);
                 TKey keyY = keySelector(y);
                 return comparer.Compare(keyX, keyY);
-            }
-        }
-
-        internal class ReverseComparer<T> : IComparer<T>
-        {
-            private readonly IComparer<T> forwardComparer;
-
-            internal ReverseComparer(IComparer<T> forwardComparer)
-            {
-                this.forwardComparer = forwardComparer;
-            }
-
-            public int Compare(T x, T y)
-            {
-                return forwardComparer.Compare(y, x);
             }
         }
 

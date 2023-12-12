@@ -336,5 +336,19 @@ namespace ExtensionMethods.Facts
             var result = ExtensionMethods.GroupBy(source, x => x % 2, x => x * 2, (key, elements) => $"{key}: {string.Join(",", elements)}", EqualityComparer<int>.Default);
             Assert.Collection(result, item => Assert.Equal("1: 2,6,10,14,18", item), item => Assert.Equal("0: 4,8,12,16,20", item));
         }
+
+        [Fact]
+        public void OrderBy_EmptyCollection_ShouldReturnEmptyCollection()
+        {
+            string[] names = { };
+            Assert.Equal(new string[] { }, ExtensionMethods.OrderBy(names, name => name, StringComparer.OrdinalIgnoreCase));
+        }
+
+        [Fact]
+        public void OrderBy_ValidCollection_ShouldReturnExpectedResult()
+        {
+            string[] names = { "Alex", "ALEX", "David", "Rick", "Erik", "Mark" };
+            Assert.Equal(new string[] { "Alex", "ALEX", "David", "Erik", "Mark", "Rick" }, ExtensionMethods.OrderBy(names, name => name, StringComparer.OrdinalIgnoreCase));
+        }
     }
 }

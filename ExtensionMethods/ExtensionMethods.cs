@@ -270,7 +270,7 @@ namespace ExtensionMethods
             IsNull(keySelector);
             IsNull(comparer);
 
-            return new OrderedEnumerable<TSource>(source, new ProjectionComparer<TSource, TKey>(keySelector, comparer));
+            return new OrderedEnumerable<TSource, TKey>(source, new ProjectionComparer<TSource, TKey>(keySelector, null, comparer));
         }
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
@@ -282,17 +282,8 @@ namespace ExtensionMethods
             return source.CreateOrderedEnumerable(keySelector, comparer, false);
         }
 
-        private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
+        internal class OrderedEnumerable<TSource, TKey> : IOrderedEnumerable<TSource>
         {
-            if (param == null)
-            {
-                throw new ArgumentNullException(paramName);
-            }
-        }
-
-        internal class OrderedEnumerable<TSource> : IOrderedEnumerable<TSource>
-        {
-
             private readonly IEnumerable<TSource> source;
             private readonly IComparer<TSource> comparer;
 
@@ -305,10 +296,8 @@ namespace ExtensionMethods
             public IOrderedEnumerable<TSource> CreateOrderedEnumerable<TKey>(Func<TSource, TKey> keySelector, IComparer<TKey>? comparer, bool descending)
             {
                 IsNull(keySelector);
-
-                IComparer<TSource> secondaryComparer = new ProjectionComparer<TSource, TKey>(keySelector, comparer);
-
-                return new OrderedEnumerable<TSource>(source, new CompoundComparer<TSource>(this.comparer, secondaryComparer));
+                var compoundComparer = new ProjectionComparer<TSource, TKey>(keySelector, this.comparer, comparer);
+                return new OrderedEnumerable<TSource, TKey>(source, compoundComparer);
             }
 
             public IEnumerator<TSource> GetEnumerator()
@@ -338,42 +327,37 @@ namespace ExtensionMethods
         internal class ProjectionComparer<TElement, TKey> : IComparer<TElement>
         {
             private readonly Func<TElement, TKey> keySelector;
-            private readonly IComparer<TKey> comparer;
+            private readonly IComparer<TElement> comparer;
+            private readonly IComparer<TKey>? secondComparer;
 
-            internal ProjectionComparer(Func<TElement, TKey> keySelector, IComparer<TKey> comparer)
+            internal ProjectionComparer(Func<TElement, TKey> keySelector, IComparer<TElement>? comparer, IComparer<TKey>? secondComparer = null)
             {
                 this.keySelector = keySelector;
-                this.comparer = comparer ?? Comparer<TKey>.Default;
+                this.comparer = comparer ?? Comparer<TElement>.Default;
+                this.secondComparer = secondComparer ?? Comparer<TKey>.Default;
             }
 
-            public int Compare(TElement x, TElement y)
+            public int Compare(TElement first, TElement second)
             {
-                TKey keyX = keySelector(x);
-                TKey keyY = keySelector(y);
-                return comparer.Compare(keyX, keyY);
+                int baseResult = comparer.Compare(first, second);
+
+                if (baseResult != 0 || secondComparer == null)
+                {
+                    return baseResult;
+                }
+
+                TKey firstKey = keySelector(first);
+                TKey secondKey = keySelector(second);
+
+                return secondComparer.Compare(firstKey, secondKey);
             }
         }
 
-        internal class CompoundComparer<T> : IComparer<T>
+        private static void IsNull<TSource>(TSource param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
-            private readonly IComparer<T> primary;
-            private readonly IComparer<T> secondary;
-
-            internal CompoundComparer(IComparer<T> primary, IComparer<T> secondary)
+            if (param == null)
             {
-                this.primary = primary;
-                this.secondary = secondary;
-            }
-
-            public int Compare(T x, T y)
-            {
-                int primaryResult = primary.Compare(x, y);
-
-                if (primaryResult != 0)
-                {
-                    return primaryResult;
-                }
-                return secondary.Compare(x, y);
+                throw new ArgumentNullException(paramName);
             }
         }
     }

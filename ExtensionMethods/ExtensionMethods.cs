@@ -270,7 +270,8 @@ namespace ExtensionMethods
             IsNull(keySelector);
             IsNull(comparer);
 
-            return new OrderedEnumerable<TSource, TKey>(source, new ProjectionComparer<TSource, TKey>(keySelector, null, comparer));
+            var generalComparer = new GeneralComparer<TSource>((TSource first, TSource second) => comparer.Compare(keySelector(first), keySelector(second)));
+            return new OrderedEnumerable<TSource>(source, generalComparer);
         }
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
@@ -282,7 +283,7 @@ namespace ExtensionMethods
             return source.CreateOrderedEnumerable(keySelector, comparer, false);
         }
 
-        internal class OrderedEnumerable<TSource, TKey> : IOrderedEnumerable<TSource>
+        internal class OrderedEnumerable<TSource> : IOrderedEnumerable<TSource>
         {
             private readonly IEnumerable<TSource> source;
             private readonly IComparer<TSource> comparer;
@@ -296,8 +297,11 @@ namespace ExtensionMethods
             public IOrderedEnumerable<TSource> CreateOrderedEnumerable<TKey>(Func<TSource, TKey> keySelector, IComparer<TKey>? comparer, bool descending)
             {
                 IsNull(keySelector);
-                var compoundComparer = new ProjectionComparer<TSource, TKey>(keySelector, this.comparer, comparer);
-                return new OrderedEnumerable<TSource, TKey>(source, compoundComparer);
+
+                Func<TSource, TSource, int> compare = (TSource first, TSource second) =>
+                this.comparer.Compare(first, second) != 0 || comparer == null ? this.comparer.Compare(first, second) : comparer.Compare(keySelector(first), keySelector(second));
+
+                return new OrderedEnumerable<TSource>(source, new GeneralComparer<TSource>(compare));
             }
 
             public IEnumerator<TSource> GetEnumerator()
@@ -324,32 +328,18 @@ namespace ExtensionMethods
             }
         }
 
-        internal class ProjectionComparer<TElement, TKey> : IComparer<TElement>
+        internal class GeneralComparer<TSource> : IComparer<TSource>
         {
-            private readonly Func<TElement, TKey> keySelector;
-            private readonly IComparer<TElement> comparer;
-            private readonly IComparer<TKey>? secondComparer;
+            Func<TSource, TSource, int> compare;
 
-            internal ProjectionComparer(Func<TElement, TKey> keySelector, IComparer<TElement>? comparer, IComparer<TKey>? secondComparer = null)
+            internal GeneralComparer(Func<TSource, TSource, int> compare)
             {
-                this.keySelector = keySelector;
-                this.comparer = comparer ?? Comparer<TElement>.Default;
-                this.secondComparer = secondComparer ?? Comparer<TKey>.Default;
+                this.compare = compare;
             }
 
-            public int Compare(TElement first, TElement second)
+            public int Compare(TSource first, TSource second)
             {
-                int baseResult = comparer.Compare(first, second);
-
-                if (baseResult != 0 || secondComparer == null)
-                {
-                    return baseResult;
-                }
-
-                TKey firstKey = keySelector(first);
-                TKey secondKey = keySelector(second);
-
-                return secondComparer.Compare(firstKey, secondKey);
+                return compare(first, second);
             }
         }
 

@@ -299,7 +299,9 @@ namespace ExtensionMethods
                 IsNull(keySelector);
 
                 Func<TSource, TSource, int> compare = (TSource first, TSource second) =>
-                this.comparer.Compare(first, second) != 0 || comparer == null ? this.comparer.Compare(first, second) : comparer.Compare(keySelector(first), keySelector(second));
+                this.comparer.Compare(first, second) != 0 || comparer == null ?
+                this.comparer.Compare(first, second) :
+                comparer.Compare(keySelector(first), keySelector(second));
 
                 return new OrderedEnumerable<TSource>(source, new GeneralComparer<TSource>(compare));
             }
@@ -307,14 +309,7 @@ namespace ExtensionMethods
             public IEnumerator<TSource> GetEnumerator()
             {
                 var elements = source.ToList();
-
-                for (int i = 1; i < elements.Count; i++)
-                {
-                    for (int j = i; j > 0 && comparer.Compare(elements[j - 1], elements[j]) > 0; j--)
-                    {
-                        (elements[j - 1], elements[j]) = (elements[j], elements[j - 1]);
-                    }
-                }
+                QuickSort(elements, 0, elements.Count - 1);
 
                 foreach (var elem in elements)
                 {
@@ -325,6 +320,47 @@ namespace ExtensionMethods
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
+            }
+
+            private void QuickSort(List<TSource> array, int leftIndex, int rightIndex)
+            {
+                if (array.Count == 0)
+                {
+                    return;
+                }
+
+                int i = leftIndex;
+                int j = rightIndex;
+                var pivot = array[leftIndex];
+                while (i <= j)
+                {
+                    while (comparer.Compare(array[i], pivot) < 0)
+                    {
+                        i++;
+                    }
+
+                    while (comparer.Compare(array[j], pivot) > 0)
+                    {
+                        j--;
+                    }
+
+                    if (i <= j)
+                    {
+                        (array[i], array[j]) = (array[j], array[i]);
+                        i++;
+                        j--;
+                    }
+                }
+
+                if (leftIndex < j)
+                {
+                    QuickSort(array, leftIndex, j);
+                }
+
+                if (i < rightIndex)
+                {
+                    QuickSort(array, i, rightIndex);
+                }
             }
         }
 

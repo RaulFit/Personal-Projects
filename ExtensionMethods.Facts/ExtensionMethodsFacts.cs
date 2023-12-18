@@ -347,7 +347,7 @@ namespace ExtensionMethods.Facts
         [Fact]
         public void OrderBy_ValidCollection_ShouldReturnExpectedResult()
         {
-            string[] names = { "Alex", "ALEX", "David", "Rick", "Erik", "Mark" };
+            string[] names = { "ALEX", "Alex", "David", "Rick", "Erik", "Mark" };
             Assert.Equal(new string[] { "Alex", "ALEX", "David", "Erik", "Mark", "Rick" }, ExtensionMethods.OrderBy(names, name => name, StringComparer.OrdinalIgnoreCase));
         }
 

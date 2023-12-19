@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
@@ -329,37 +330,45 @@ namespace ExtensionMethods
                     return;
                 }
 
-                int i = leftIndex;
-                int j = rightIndex;
-                var pivot = array[leftIndex];
-                while (i <= j)
+                var stack = new Stack<(int left, int right)>();
+                stack.Push((leftIndex, rightIndex));
+
+                while (stack.Count > 0)
                 {
-                    while (comparer.Compare(array[i], pivot) < 0)
+                    var (left, right) = stack.Pop();
+                    int i = left;
+                    int j = right;
+                    var pivot = array[left];
+
+                    while (i <= j)
                     {
-                        i++;
+                        while (comparer.Compare(array[i], pivot) < 0)
+                        {
+                            i++;
+                        }
+
+                        while (comparer.Compare(array[j], pivot) > 0)
+                        {
+                            j--;
+                        }
+
+                        if (i <= j)
+                        {
+                            (array[i], array[j]) = (array[j], array[i]);
+                            i++;
+                            j--;
+                        }
                     }
 
-                    while (comparer.Compare(array[j], pivot) > 0)
+                    if (left < j)
                     {
-                        j--;
+                        stack.Push((left, j));
                     }
 
-                    if (i <= j)
+                    if (i < right)
                     {
-                        (array[i], array[j]) = (array[j], array[i]);
-                        i++;
-                        j--;
+                        stack.Push((i, right));
                     }
-                }
-
-                if (leftIndex < j)
-                {
-                    QuickSort(array, leftIndex, j);
-                }
-
-                if (i < rightIndex)
-                {
-                    QuickSort(array, i, rightIndex);
                 }
             }
         }

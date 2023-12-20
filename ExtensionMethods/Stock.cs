@@ -7,7 +7,22 @@
         public Stock()
         {
             products = new Dictionary<string, int>();
-        } 
+        }
+
+        public void Add(string name, int quantity)
+        {
+            if (products.ContainsKey(name))
+            {
+                throw new ArgumentException($"Stock already contains {name}");
+            }
+
+            if (quantity < 0)
+            {
+                throw new ArgumentException($"The quantity cannot be less than zero");
+            }
+
+            products.Add(name, quantity);
+        }
 
         public bool IsInStock(string name)
         {

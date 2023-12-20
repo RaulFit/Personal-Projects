@@ -24,6 +24,16 @@
             products.Add(name, quantity);
         }
 
+        public void FillStock(string name, int quantity)
+        {
+            if (!products.ContainsKey(name))
+            {
+                throw new ArgumentException($"{name} is not in stock");
+            }
+
+            products[name] += quantity;
+        }
+
         public bool IsInStock(string name)
         {
             if (products.TryGetValue(name, out int quantity))

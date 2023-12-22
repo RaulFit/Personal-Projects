@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ExtensionMethods
+namespace Stock
 {
     public class Stock
     {
@@ -8,7 +8,23 @@ namespace ExtensionMethods
 
         public Stock()
         {
-            this.products = new List<Product>();
+            products = new List<Product>();
+        }
+
+        public bool AddProduct(string product, int quantity)
+        {
+            if (IsInStock(product))
+            {
+                return false;
+            }
+
+            if (quantity < 0)
+            {
+                throw new ArgumentException("The quantity cannot be less than zero!");
+            }
+
+            products.Add(new Product(product, quantity));
+            return true;
         }
 
         public bool IsInStock(string product)
@@ -35,7 +51,7 @@ namespace ExtensionMethods
         }
     }
 
-    public sealed class Product
+    public class Product
     {
         internal readonly string Name;
         internal int Quantity;

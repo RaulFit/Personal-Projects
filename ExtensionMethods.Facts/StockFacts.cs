@@ -12,6 +12,13 @@ namespace Stock.Facts
         }
 
         [Fact]
+        public void IsInStock_ShouldThrowArgumentNullExceptionWhenProductNameIsNull()
+        {
+            var stock = new Stock();
+            Assert.Throws<ArgumentNullException>(() => stock.IsInStock(null));
+        }
+
+        [Fact]
         public void AddProduct_ShouldAddSpecifiedProductInStock()
         {
             var stock = new Stock();
@@ -28,10 +35,27 @@ namespace Stock.Facts
         }
 
         [Fact]
-        public void AddProduct_ShouldThrowArgumentNullExceptionWhenProductNameIsNull()
+        public void Sell_ShouldSellASpecifiedQuantityOfProduct()
         {
             var stock = new Stock();
-            Assert.Throws<ArgumentNullException>(() => stock.AddProduct(null, 10));
+            stock.AddProduct("phone", 15);
+            Assert.True(stock.Sell("phone", 7));
+        }
+
+        [Fact]
+        public void Sell_ShouldReturnFalseWhenProductIsNotInStock()
+        {
+            var stock = new Stock();
+            stock.AddProduct("phone", 15);
+            Assert.False(stock.Sell("tablet", 7));
+        }
+
+        [Fact]
+        public void Sell_ShouldThrowArgumentNullExceptionWhenProductNameIsNull()
+        {
+            var stock = new Stock();
+            stock.AddProduct("phone", 15);
+            Assert.Throws<ArgumentNullException>(() => stock.Sell(null, 5));
         }
     }
 }

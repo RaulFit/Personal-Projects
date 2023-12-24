@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Linq
@@ -17,6 +18,14 @@ namespace Linq
             int vowelsCount = word.Count(vowels.Contains);
             int consonantsCount = word.Count(e => !vowels.Contains(e));
             return (vowelsCount, consonantsCount);
+        }
+
+        public static char FirstUniqueChar(string word)
+        {
+            IsNull(word);
+
+            var uniqueChars = word.GroupBy(c => c).Where(group => group.Count() == 1).Select(group => group.Key);
+            return uniqueChars.FirstOrDefault();
         }
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

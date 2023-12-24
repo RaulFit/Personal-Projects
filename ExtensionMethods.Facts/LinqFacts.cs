@@ -34,5 +34,23 @@ namespace Linq.Facts
             string word = "HeLlO";
             Assert.Equal((2, 3), Linq.CountVowelsAndConsonants(word));
         }
+
+        [Fact]
+        public void FirstUniqueChar_ShoulThrowArgumentNullExceptionWhenStringIsNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => Linq.FirstUniqueChar(null));
+        }
+
+        [Fact]
+        public void FirstUniqueChar_EmptyString_ShouldReturnDefaultValue()
+        {
+            Assert.Equal('\0', Linq.FirstUniqueChar(""));
+        }
+
+        [Fact]
+        public void FirstUniqueChar_ShouldReturnFirstUniqueCharInString()
+        {
+            Assert.Equal('i', Linq.FirstUniqueChar("airplane"));
+        }
     }
 }

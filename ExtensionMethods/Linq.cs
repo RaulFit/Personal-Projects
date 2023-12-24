@@ -28,6 +28,12 @@ namespace Linq
             return uniqueChars.FirstOrDefault();
         }
 
+        public static char MostCommonChar(string word)
+        {
+            IsNull(word);
+            return word.GroupBy(e => e).OrderByDescending(group => group.Count()).Select(group => group.Key).FirstOrDefault();
+        }
+
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)

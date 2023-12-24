@@ -52,5 +52,24 @@ namespace Linq.Facts
         {
             Assert.Equal('i', Linq.FirstUniqueChar("airplane"));
         }
+
+        [Fact]
+        public void MostCommonChar_EmptyString_ShouldReturnDefaultValue()
+        {
+            Assert.Equal('\0', Linq.MostCommonChar(""));
+        }
+
+        [Fact]
+        public void MostCommonChar_ValidString_ShouldReturnMostCommonChar()
+        {
+            Assert.Equal('a', Linq.MostCommonChar("abracadabra"));
+        }
+
+        [Fact]
+        public void MostCommonChar_ValidStringWithNoMaxApparitions_ShouldReturnFirstChar()
+        {
+            Assert.Equal('o', Linq.MostCommonChar("ocean"));
+        }
+
     }
 }

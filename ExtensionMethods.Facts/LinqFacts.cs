@@ -71,5 +71,22 @@ namespace Linq.Facts
             Assert.Equal('o', Linq.MostCommonChar("ocean"));
         }
 
+        [Fact]
+        public void GenerateAllPalindromes_ValidStringShouldReturnAllPossiblePalindromes()
+        {
+            string result = """
+                a a b a a c
+                aa aa
+                aba
+                aabaa
+                """;
+            Assert.Equal(result, Linq.GenerateAllPalindromes("aabaac"));
+        }
+
+        [Fact]
+        public void GenerateAllPalindromes_ShouldWorkWhenStringIsEmpty()
+        {
+            Assert.Equal("", Linq.GenerateAllPalindromes(""));
+        }
     }
 }

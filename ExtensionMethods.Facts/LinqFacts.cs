@@ -77,8 +77,8 @@ namespace Linq.Facts
             string result = """
                 a a b a a c
                 aa aa
-                aba
                 aabaa
+                aba
                 """;
             Assert.Equal(result, Linq.GenerateAllPalindromes("aabaac"));
         }
@@ -87,6 +87,23 @@ namespace Linq.Facts
         public void GenerateAllPalindromes_ShouldWorkWhenStringIsEmpty()
         {
             Assert.Equal("", Linq.GenerateAllPalindromes(""));
+        }
+
+        [Fact]
+        public void GenerateSubarraysWithSumLessOrEqualToK_EmptyArray_ShouldReturnEmptyString()
+        {
+            Assert.Equal("", Linq.GenerateSubarraysWithSumLessOrEqualToK(new int[]{ }, 6));
+        }
+
+        [Fact]
+        public void GenerateSubarraysWithSumLessOrEqualToK_ShouldReturnAllPossibleArrays()
+        {
+            var result = """
+                1 2 3 4
+                12 23
+                123
+                """;
+            Assert.Equal(result, Linq.GenerateSubarraysWithSumLessOrEqualToK(new int[] {1, 2, 3, 4}, 6));
         }
     }
 }

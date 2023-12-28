@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -31,25 +33,21 @@ namespace Linq
         public static char MostCommonChar(string word)
         {
             IsNull(word);
-            return word.GroupBy(e => e).OrderByDescending(group => group.Count()).Select(group => group.Key).FirstOrDefault();
+            return word.GroupBy(e => e).OrderByDescending(group => group.Count()).SelectMany(e => e).FirstOrDefault();
         }
 
         public static string GenerateAllPalindromes(string word)
         {
             IsNull(word);
 
-            if(word.Length == 0)
+            if (word.Length == 0)
             {
                 return word;
             }
 
-            var palindromes = Enumerable.Range(0, 2 * word.Length - 1).Select(
-                center =>
-                {
-                    int left = center / 2;
-                    int right = left + center % 2;
-                    return GetAllPalindromes(word, left, right);
-                }).SelectMany(palindrome => palindrome).ToList();
+            var palindromes = Enumerable.Range(0, word.Length)
+                .SelectMany(length => Enumerable.Range(0, word.Length - length + 1),
+                word.Substring).Where(word => word.SequenceEqual(word.Reverse()));
 
             var lengthOne = string.Join(" ", palindromes.Where(p => p.Length == 1));
             var lengthTwo = string.Join(" ", palindromes.Where(p => p.Length == 2));
@@ -58,15 +56,23 @@ namespace Linq
             return $"{lengthOne}\r\n{lengthTwo}\r\n{others}";
         }
 
-        private static IEnumerable<string> GetAllPalindromes(string word, int left, int right)
+        public static string GenerateSubarraysWithSumLessOrEqualToK(int[] nums, int k)
         {
-            while (left >= 0 && right < word.Length && word[left] == word[right])
+            if (nums.Length == 0)
             {
-                string palindrome = word.Substring(left, right - left + 1);
-                yield return palindrome;
-                left--;
-                right++;
+                return "";
             }
+
+            var subArrays = Enumerable.Range(0, nums.Length)
+                .SelectMany(start => Enumerable.Range(0, nums.Length - start + 1),
+                (start, length) => nums.Skip(start).Take(length)).Where(subArr => subArr.Sum() <= k)
+                .Select(subArr => string.Join("", subArr));
+
+            var lengthOne = string.Join(" ", subArrays.Where(p => p.Length == 1));
+            var lengthTwo = string.Join(" ", subArrays.Where(p => p.Length == 2));
+            var others = string.Join("\r\n", subArrays.Where(p => p.Length > 2));
+
+            return $"{lengthOne}\r\n{lengthTwo}\r\n{others}";
         }
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

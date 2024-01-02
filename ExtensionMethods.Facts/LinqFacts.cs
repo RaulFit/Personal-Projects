@@ -92,7 +92,7 @@ namespace Linq.Facts
         [Fact]
         public void GenerateSubarraysWithSumLessOrEqualToK_EmptyArray_ShouldReturnEmptyString()
         {
-            Assert.Equal("", Linq.GenerateSubarraysWithSumLessOrEqualToK(new int[]{ }, 6));
+            Assert.Equal("", Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[]{ }, 6));
         }
 
         [Fact]
@@ -103,7 +103,24 @@ namespace Linq.Facts
                 12 23
                 123
                 """;
-            Assert.Equal(result, Linq.GenerateSubarraysWithSumLessOrEqualToK(new int[] {1, 2, 3, 4}, 6));
+            Assert.Equal(result, Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[] {1, 2, 3, 4}, 6));
+        }
+
+        [Fact]
+        public void GenerateAllCombinationsEqualTo_ShouldReturnAllPossibleCombinationsEqualToK()
+        {
+            var result = """
+                -1+2+3+4-5=3
+                1-2+3-4+5=3
+                -1-2-3+4+5=3
+                """;
+            Assert.Equal(result, Linq.GenerateAllCombinationsEqualTo(5, 3));
+        }
+
+        [Fact]
+        public void GenerateAllCombinationsEqualTo_NoPossibleCombinations_ShouldReturnEmptyString()
+        {
+            Assert.Equal("", Linq.GenerateAllCombinationsEqualTo(0, 2));
         }
     }
 }

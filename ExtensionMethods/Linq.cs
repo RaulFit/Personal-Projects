@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Linq
 {
@@ -93,6 +95,17 @@ namespace Linq
             .Select(intermediate => $"{intermediate.str}={k}".Replace("+-", "-"));
 
             return string.Join("\r\n", results);
+        }
+
+        public static string GenerateTriplets(int[] nums)
+        {
+            IEnumerable<string> result = from a in nums
+                                         from b in nums
+                                         from c in nums
+                                         where a < b && b < c && a*a + b*b == c*c
+                                         select $"{a}^2 + {b}^2 = {c}^2";
+
+            return string.Join("\r\n", result);
         }
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

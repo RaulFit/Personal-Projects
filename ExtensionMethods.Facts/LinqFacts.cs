@@ -122,5 +122,23 @@ namespace Linq.Facts
         {
             Assert.Equal("", Linq.GenerateAllCombinationsEqualTo(0, 2));
         }
+
+        [Fact]
+        public void GenerateTriplets_ArrayLengthLessThanThree_ShouldReturnEmptyString()
+        {
+            Assert.Equal("", Linq.GenerateTriplets(new int[] {1, 2}));
+        }
+
+        [Fact]
+        public void GenerateTriplets_ShouldReturnResult()
+        {
+            int[] nums = new int[] { 3, 4, 5, 12, 13, 8, 15, 17};
+            var result = """
+                3^2 + 4^2 = 5^2
+                5^2 + 12^2 = 13^2
+                8^2 + 15^2 = 17^2
+                """;
+            Assert.Equal(result, Linq.GenerateTriplets(nums));
+        }
     }
 }

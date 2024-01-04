@@ -112,7 +112,12 @@ namespace Linq
 
         public static List<Product> GetProductsWithFeature(List<Product> products, List<Feature> features)
         {
-            return products.Where(prod => prod.Features.Any(feature => features.Contains(feature))).ToList();
+            return products.Where(prod => features.Any(feature => prod.Features.Contains(feature))).ToList();
+        }
+
+        public static List<Product> GetProductsWithAllFeatures(List<Product> products, List<Feature> features)
+        {
+            return products.Where(prod => features.All(feature => prod.Features.Contains(feature))).ToList();
         }
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

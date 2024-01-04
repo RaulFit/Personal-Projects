@@ -120,6 +120,11 @@ namespace Linq
             return products.Where(prod => features.All(feature => prod.Features.Contains(feature))).ToList();
         }
 
+        public static List<Product> GetProductsWithNoFeatures(List<Product> products, List<Feature> features)
+        {
+            return products.Where(prod => features.All(feature => !prod.Features.Contains(feature))).ToList();
+        }
+
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)

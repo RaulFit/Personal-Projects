@@ -140,5 +140,63 @@ namespace Linq.Facts
                 """;
             Assert.Equal(result, Linq.GenerateTriplets(nums));
         }
+
+        [Fact]
+        public void GetProductsWithFeature_NoProducts_ShouldReturnEmptyList()
+        {
+            Linq.Feature first = new Linq.Feature();
+            first.Id = 1;
+
+            Linq.Product prod1 = new Linq.Product();
+            prod1.Name = "phone";
+            prod1.Features = new List<Linq.Feature>();
+
+            Linq.Product prod2 = new Linq.Product();
+            prod2.Name = "charger";
+            prod2.Features = new List<Linq.Feature>();
+
+            Linq.Product prod3 = new Linq.Product();
+            prod3.Name = "laptop";
+            prod3.Features = new List<Linq.Feature>() { };
+
+            List<Linq.Feature> features = new List<Linq.Feature>() { first };
+            List<Linq.Product> products = new List<Linq.Product> { prod1, prod2, prod3 };
+
+            var result = new List<Linq.Product>();
+
+            Assert.Equal(result, Linq.GetProductsWithFeature(products, features));
+        }
+
+        [Fact]
+        public void GetProductsWithFeature_ShouldReturnExpectedResult()
+        {
+            Linq.Feature first = new Linq.Feature();
+            first.Id = 1;
+
+            Linq.Feature second = new Linq.Feature();
+            second.Id = 2;
+
+            Linq.Feature third = new Linq.Feature();
+            third.Id = 3;
+
+            Linq.Product prod1 = new Linq.Product();
+            prod1.Name = "phone";
+            prod1.Features = new List<Linq.Feature>() { first, second };
+
+            Linq.Product prod2 = new Linq.Product();
+            prod2.Name = "charger";
+            prod2.Features = new List<Linq.Feature>() { third };
+
+            Linq.Product prod3 = new Linq.Product();
+            prod3.Name = "laptop";
+            prod3.Features = new List<Linq.Feature>() { };
+
+            List<Linq.Feature> features = new List<Linq.Feature>() { first, second, third };
+            List<Linq.Product> products = new List<Linq.Product> { prod1, prod2, prod3 };
+
+            var result = new List<Linq.Product>() { prod1, prod2 };
+
+            Assert.Equal(result, Linq.GetProductsWithFeature(products, features));
+        }
     }
 }

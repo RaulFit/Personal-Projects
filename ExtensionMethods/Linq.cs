@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Tracing;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Linq
 {
@@ -106,6 +97,22 @@ namespace Linq
                                          select $"{a}^2 + {b}^2 = {c}^2";
 
             return string.Join("\r\n", result);
+        }
+
+        public class Product
+        {
+            public string Name { get; set; }
+            public ICollection<Feature> Features { get; set; }
+        }
+
+        public class Feature
+        {
+            public int Id { get; set; }
+        }
+
+        public static List<Product> GetProductsWithFeature(List<Product> products, List<Feature> features)
+        {
+            return products.Where(prod => prod.Features.Any(feature => features.Contains(feature))).ToList();
         }
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

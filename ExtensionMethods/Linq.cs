@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks.Dataflow;
 
 namespace Linq
 {
@@ -123,6 +124,27 @@ namespace Linq
         public static List<Product> GetProductsWithNoFeatures(List<Product> products, List<Feature> features)
         {
             return products.Where(prod => features.All(feature => !prod.Features.Contains(feature))).ToList();
+        }
+
+        public struct Prod
+        {
+            public string Name;
+            public int Quantity;
+
+            public Prod(string name, int quantity)
+            {
+                Name = name;
+                Quantity = quantity;
+            }
+            public override string ToString()
+            {
+                return $"{Name} - {Quantity}";
+            }
+        }
+
+        public static List<Prod> GetTotalQuantity(List<Prod> first, List<Prod> second)
+        {
+            return first.Concat(second).GroupBy(prod => prod.Name, prod => prod.Quantity).Select(group => new Prod(group.Key, group.Sum())).ToList();
         }
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

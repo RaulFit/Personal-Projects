@@ -315,5 +315,47 @@ namespace Linq.Facts
             Assert.Equal(result, Linq.GetProductsWithNoFeatures(products, features));
         }
 
+        [Fact]
+        public void GetTotalQuantity_NoProducts_ShouldReturnEmptyList()
+        {
+            List<Linq.Prod> first = new List<Linq.Prod>();
+            List<Linq.Prod> second = new List<Linq.Prod>();
+            
+
+            Assert.Equal(new List<Linq.Prod>(), Linq.GetTotalQuantity(first, second));
+        }
+
+        [Fact]
+        public void GetTotalQuantity_ShouldReturnExpectedResult()
+        {
+            List<Linq.Prod> first = new List<Linq.Prod>
+            {
+                new Linq.Prod("phone", 13),
+                new Linq.Prod("laptop", 6),
+                new Linq.Prod("charger", 15),
+                new Linq.Prod("tablet", 9)
+            };
+
+            List<Linq.Prod> second = new List<Linq.Prod>
+            {
+                new Linq.Prod("phone", 5),
+                new Linq.Prod("tv", 14),
+                new Linq.Prod("cpu", 12),
+                new Linq.Prod("tablet", 10)
+            };
+
+            var result = new List<Linq.Prod>()
+            {
+                new Linq.Prod("phone", 18),
+                new Linq.Prod("laptop", 6),
+                new Linq.Prod("charger", 15),
+                new Linq.Prod("tablet", 19),
+                new Linq.Prod("tv", 14),
+                new Linq.Prod("cpu", 12),
+            };
+
+            Assert.Equal(result, Linq.GetTotalQuantity(first, second));
+        }
+
     }
 }

@@ -357,5 +357,36 @@ namespace Linq.Facts
             Assert.Equal(result, Linq.GetTotalQuantity(first, second));
         }
 
+        [Fact]
+        public void KeepMaxScore_NoProducts_ShouldReturnEmptyList()
+        {
+            List<Linq.TestResults> results = new List<Linq.TestResults>();
+
+            Assert.Equal(new List<Linq.TestResults>(), Linq.KeepMaxScore(results));
+        }
+
+        [Fact]
+        public void KeepMaxScore_ShouldOnlyKeepMaxScoreForEachFamily()
+        {
+            List<Linq.TestResults> results = new List<Linq.TestResults>
+            {
+                new Linq.TestResults("Alex", "Pop", 73),
+                new Linq.TestResults("Michael", "Pop", 90),
+                new Linq.TestResults("David", "Blake", 60),
+                new Linq.TestResults("Erik", "Jones", 80),
+                new Linq.TestResults("Steve", "Blake", 76),
+                new Linq.TestResults("George", "Blake", 98),
+            };
+
+            var final = new List<Linq.TestResults>
+            {
+                new Linq.TestResults("Michael", "Pop", 90),
+                new Linq.TestResults("George", "Blake", 98),
+                new Linq.TestResults("Erik", "Jones", 80),
+            };
+
+            Assert.Equivalent(final, Linq.KeepMaxScore(results));
+        }
+
     }
 }

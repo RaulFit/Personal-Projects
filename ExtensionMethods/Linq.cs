@@ -147,6 +147,25 @@ namespace Linq
             return first.Concat(second).GroupBy(prod => prod.Name, prod => prod.Quantity).Select(group => new Prod(group.Key, group.Sum())).ToList();
         }
 
+        public class TestResults
+        {
+            public string Id { get; set; }
+            public string FamilyId { get; set; }
+            public int Score { get; set; }
+
+            public TestResults(string id, string familyId, int score)
+            {
+                Id = id;
+                FamilyId = familyId;
+                Score = score;
+            }
+        }
+
+        public static List<TestResults> KeepMaxScore(List<TestResults> results)
+        {
+            return results.GroupBy(family => family.FamilyId).Select(group => group.Aggregate((a, b) => a.Score > b.Score ? a : b)).ToList();
+        }
+
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)

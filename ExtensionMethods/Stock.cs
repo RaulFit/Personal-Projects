@@ -41,6 +41,7 @@ namespace Stock
             }
 
             product = null;
+
             return false;
         }
 

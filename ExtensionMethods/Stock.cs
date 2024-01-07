@@ -1,70 +1,106 @@
-﻿namespace ExtensionMethods
+﻿using System.Runtime.CompilerServices;
+
+namespace Stock
 {
     public class Stock
     {
-        private Dictionary<string, int> products;
+        private List<Product> products;
 
         public Stock()
         {
-            products = new Dictionary<string, int>();
+            products = new List<Product>();
         }
 
-        private Action<string, int> callback;
-
-        public void Add(string name, int quantity)
+        public bool AddProduct(string product, int quantity)
         {
-            if (products.ContainsKey(name))
-            {
-                throw new ArgumentException($"Stock already contains {name}");
-            }
-
-            if (quantity < 0)
-            {
-                throw new ArgumentException($"The quantity cannot be less than zero");
-            }
-
-            products.Add(name, quantity);
-        }
-
-        public bool Sell(string name, int quantity)
-        {
-            if (!IsInStock(name))
+            if (IsInStock(product))
             {
                 return false;
             }
 
-            if (quantity > products[name])
+            if (quantity < 0)
             {
-                throw new ArgumentException($"Not enough {name}s in stock");
+                throw new ArgumentException("The quantity cannot be less than zero!");
             }
 
-            products[name] -= quantity;
-
+            products.Add(new Product(product, quantity));
+            return true;
         }
 
-        private void NotifyStock(string name, int quantity)
+        public bool IsInStock(string name, out Product? product)
         {
+            IsNull(name);
 
-        }
-
-        public void FillStock(string name, int quantity)
-        {
-            if (!products.ContainsKey(name))
+            foreach (var prod in products)
             {
-                throw new ArgumentException($"{name} is not in stock");
+                if (prod.Name.Equals(name))
+                {
+                    product = prod;
+                    return prod.Quantity > 0;
+                }
             }
 
-            products[name] += quantity;
-        }
-
-        public bool IsInStock(string name)
-        {
-            if (products.TryGetValue(name, out int quantity))
-            {
-                return quantity > 0;
-            }
+            product = null;
 
             return false;
+        }
+
+        public bool IsInStock(string name) => IsInStock(name, out Product _);
+
+        public bool Sell(string product, int quantity) => HandleSell(product, quantity, NotifyStock);
+
+        private bool HandleSell(string product, int quantity, Action<Product> notify)
+        {
+            if (!IsInStock(product, out Product prod))
+            {
+                return false;
+            }
+
+            if (quantity > prod.Quantity)
+            {
+                throw new ArgumentException($"Not enough {prod.Name}s in stock!");
+            }
+
+            prod.Quantity -= quantity;
+
+            if (prod.Quantity < 10 && prod.Quantity >= 5)
+            {
+                notify(prod);
+            }
+
+            else if (prod.Quantity < 5 && prod.Quantity >= 2)
+            {
+                notify(prod);
+            }
+
+            else if (prod.Quantity < 2)
+            {
+                notify(prod);
+            }
+
+            return true;
+        }
+
+        private void NotifyStock(Product product) => Console.WriteLine($"{product.Quantity} {product.Name}s remaining!");
+
+        private void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")
+        {
+            if (param == null)
+            {
+                throw new ArgumentNullException(paramName);
+            }
+        }
+    }
+
+    public sealed class Product
+    {
+        internal readonly string Name;
+        internal int Quantity;
+
+        public Product(string name, int quantity)
+        {
+            Name = name;
+            Quantity = quantity;
         }
     }
 }

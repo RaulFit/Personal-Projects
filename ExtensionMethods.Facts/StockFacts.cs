@@ -57,14 +57,5 @@ namespace Stock.Facts
             stock.AddProduct("phone", 15);
             Assert.Throws<ArgumentNullException>(() => stock.Sell(null, 5));
         }
-
-        [Fact]
-        public void FillStock_ShouldFillStockForSpecifiedProduct()
-        {
-            var stock = new Stock();
-            stock.Add("charger", 0);
-            stock.FillStock("charger", 10);
-            Assert.True(stock.IsInStock("charger"));
-        }
     }
 }

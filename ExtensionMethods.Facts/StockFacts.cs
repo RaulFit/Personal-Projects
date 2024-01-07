@@ -1,51 +1,61 @@
-﻿namespace ExtensionMethods.Facts
+﻿using Xunit;
+
+namespace Stock.Facts
 {
     public class StockFacts
     {
         [Fact]
-        public void IsInStock_ShouldReturnFalseWhenProductIsNotInStock()
+        public void IsInStock_ShouldReturnFalseWhenSpecifiedProductIsNotInStock()
         {
             var stock = new Stock();
             Assert.False(stock.IsInStock("charger"));
         }
 
         [Fact]
-        public void Add_ShouldAddNewProductInStock()
+        public void IsInStock_ShouldThrowArgumentNullExceptionWhenProductNameIsNull()
         {
             var stock = new Stock();
-            stock.Add("charger", 10);
+            Assert.Throws<ArgumentNullException>(() => stock.IsInStock(null));
+        }
+
+        [Fact]
+        public void AddProduct_ShouldAddSpecifiedProductInStock()
+        {
+            var stock = new Stock();
+            Assert.True(stock.AddProduct("charger", 10));
             Assert.True(stock.IsInStock("charger"));
         }
 
         [Fact]
-        public void Add_ShoulThrowExceptionWhenStockAlreadyContainsTheSpecifiedProduct()
+        public void AddProduct_ShouldReturnFalseWhenSpecifiedProductIsAlreadyInStock()
         {
             var stock = new Stock();
-            stock.Add("charger", 10);
-            Assert.Throws<ArgumentException>(() => stock.Add("charger", 4));
+            Assert.True(stock.AddProduct("charger", 10));
+            Assert.False(stock.AddProduct("charger", 12));
         }
 
         [Fact]
-        public void Add_ShoulThrowExceptionWhenQuantityIsLessThanZero()
+        public void Sell_ShouldSellASpecifiedQuantityOfProduct()
         {
             var stock = new Stock();
-            Assert.Throws<ArgumentException>(() => stock.Add("charger", -2));
+            stock.AddProduct("phone", 15);
+            Assert.True(stock.Sell("phone", 7));
         }
 
         [Fact]
-        public void FillStock_ShoulThrowExceptionWhenSpecifiedProductIsNotInStock()
+        public void Sell_ShouldReturnFalseWhenProductIsNotInStock()
         {
             var stock = new Stock();
-            Assert.Throws<ArgumentException>(() => stock.FillStock("charger", 10));
+            stock.AddProduct("phone", 15);
+            Assert.False(stock.Sell("tablet", 7));
         }
 
         [Fact]
-        public void FillStock_ShouldFillStockForSpecifiedProduct()
+        public void Sell_ShouldThrowArgumentNullExceptionWhenProductNameIsNull()
         {
             var stock = new Stock();
-            stock.Add("charger", 0);
-            stock.FillStock("charger", 10);
-            Assert.True(stock.IsInStock("charger"));
+            stock.AddProduct("phone", 15);
+            Assert.Throws<ArgumentNullException>(() => stock.Sell(null, 5));
         }
 
         [Fact]

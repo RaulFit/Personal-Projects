@@ -9,6 +9,8 @@
             products = new Dictionary<string, int>();
         }
 
+        private Action<string, int> callback;
+
         public void Add(string name, int quantity)
         {
             if (products.ContainsKey(name))
@@ -22,6 +24,27 @@
             }
 
             products.Add(name, quantity);
+        }
+
+        public bool Sell(string name, int quantity)
+        {
+            if (!IsInStock(name))
+            {
+                return false;
+            }
+
+            if (quantity > products[name])
+            {
+                throw new ArgumentException($"Not enough {name}s in stock");
+            }
+
+            products[name] -= quantity;
+
+        }
+
+        private void NotifyStock(string name, int quantity)
+        {
+
         }
 
         public void FillStock(string name, int quantity)

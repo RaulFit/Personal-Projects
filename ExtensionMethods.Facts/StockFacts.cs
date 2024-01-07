@@ -47,5 +47,14 @@
             stock.FillStock("charger", 10);
             Assert.True(stock.IsInStock("charger"));
         }
+
+        [Fact]
+        public void FillStock_ShouldFillStockForSpecifiedProduct()
+        {
+            var stock = new Stock();
+            stock.Add("charger", 0);
+            stock.FillStock("charger", 10);
+            Assert.True(stock.IsInStock("charger"));
+        }
     }
 }

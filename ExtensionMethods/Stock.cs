@@ -11,79 +11,72 @@ namespace Stock
             products = new List<Product>();
         }
 
-        public bool AddProduct(string product, int quantity)
+        public bool AddProduct(Product product)
         {
+            IsNull(product);
+
             if (IsInStock(product))
             {
                 return false;
             }
 
-            if (quantity < 0)
+            if (product.Quantity < 0)
             {
                 throw new ArgumentException("The quantity cannot be less than zero!");
             }
 
-            products.Add(new Product(product, quantity));
+            products.Add(product);
             return true;
         }
 
-        public bool IsInStock(string name, out Product? product)
+        public bool IsInStock(Product product)
         {
-            IsNull(name);
+            IsNull(product);
 
-            foreach (var prod in products)
+            foreach (Product prod in products)
             {
-                if (prod.Name.Equals(name))
+                if (prod.Name.Equals(product.Name))
                 {
-                    product = prod;
                     return prod.Quantity > 0;
                 }
             }
 
-            product = null;
-
             return false;
         }
 
-        public bool IsInStock(string name) => IsInStock(name, out Product _);
-
-        public bool Sell(string product, int quantity) => HandleSell(product, quantity, NotifyStock);
-
-        private bool HandleSell(string product, int quantity, Action<Product> notify)
+        public bool Sell(Product product, int quantity, Action<Product> notify)
         {
-            if (!IsInStock(product, out Product prod))
+            if (!IsInStock(product))
             {
                 return false;
             }
 
-            if (quantity > prod.Quantity)
+            if (quantity > product.Quantity)
             {
-                throw new ArgumentException($"Not enough {prod.Name}s in stock!");
+                throw new ArgumentException($"Not enough {product.Name}s in stock!");
             }
 
-            prod.Quantity -= quantity;
+            product.Quantity -= quantity;
 
-            if (prod.Quantity < 10 && prod.Quantity >= 5)
+            if (product.Quantity < 10 && product.Quantity >= 5)
             {
-                notify(prod);
+                notify(product);
             }
 
-            else if (prod.Quantity < 5 && prod.Quantity >= 2)
+            else if (product.Quantity < 5 && product.Quantity >= 2)
             {
-                notify(prod);
+                notify(product);
             }
 
-            else if (prod.Quantity < 2)
+            else if (product.Quantity < 2)
             {
-                notify(prod);
+                notify(product);
             }
 
             return true;
         }
 
-        private void NotifyStock(Product product) => Console.WriteLine($"{product.Quantity} {product.Name}s remaining!");
-
-        private void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")
+        private void IsNull(Product param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {
             if (param == null)
             {
@@ -94,8 +87,8 @@ namespace Stock
 
     public sealed class Product
     {
-        internal readonly string Name;
-        internal int Quantity;
+        public readonly string Name;
+        public int Quantity;
 
         public Product(string name, int quantity)
         {

@@ -4,13 +4,13 @@ namespace Stock
 {
     public class Stock
     {
-        private List<Product> products;
-        public Action<Product> Notify { get; set; }
-
         public Stock()
         {
             products = new List<Product>();
         }
+
+        private List<Product> products;
+        public Action<Product> Notify { get; set; }
 
         public bool AddProduct(Product product)
         {
@@ -61,10 +61,7 @@ namespace Stock
 
             int[] threshHolds = new int[] {10, 5, 2};
 
-            bool shouldNotify = Enumerable.Range(0, threshHolds.Length - 2)
-                .Any(i => product.Quantity < threshHolds[i] && product.Quantity >= threshHolds[i + 1]) || product.Quantity < threshHolds[threshHolds.Length - 1];
-
-            if (shouldNotify)
+            if (threshHolds.Any(x => product.Quantity < x))
             {
                 Notify(product);
             }

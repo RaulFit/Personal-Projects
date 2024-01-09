@@ -50,7 +50,9 @@
                 notification = $"{product.Quantity} {product.Name}s remaining!";
             }
 
-            Assert.False(stock.Sell(tablet, 7, Notify));
+            stock.Notify = Notify;
+
+            Assert.False(stock.Sell(tablet, 7));
         }
 
         [Fact]
@@ -66,7 +68,9 @@
                 notification = $"{product.Quantity} {product.Name}s remaining!";
             }
 
-            Assert.True(stock.Sell(phone, 7, Notify));
+            stock.Notify = Notify;
+
+            Assert.True(stock.Sell(phone, 7));
             Assert.Equal(8, phone.Quantity);
             Assert.Equal("8 phones remaining!", notification);
         }
@@ -84,7 +88,9 @@
                 notification = $"{product.Quantity} {product.Name}s remaining!";
             }
 
-            Assert.True(stock.Sell(phone, 7, Notify));
+            stock.Notify = Notify;
+
+            Assert.True(stock.Sell(phone, 7));
             Assert.Equal(13, phone.Quantity);
             Assert.Equal("", notification);
         }

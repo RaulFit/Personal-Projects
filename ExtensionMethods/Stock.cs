@@ -5,6 +5,7 @@ namespace Stock
     public class Stock
     {
         private List<Product> products;
+        public Action<Product> Notify { get; set; }
 
         public Stock()
         {
@@ -44,7 +45,7 @@ namespace Stock
             return false;
         }
 
-        public bool Sell(Product product, int quantity, Action<Product> notify)
+        public bool Sell(Product product, int quantity)
         {
             if (!IsInStock(product))
             {
@@ -58,19 +59,14 @@ namespace Stock
 
             product.Quantity -= quantity;
 
-            if (product.Quantity < 10 && product.Quantity >= 5)
-            {
-                notify(product);
-            }
+            int[] threshHolds = new int[] {10, 5, 2};
 
-            else if (product.Quantity < 5 && product.Quantity >= 2)
-            {
-                notify(product);
-            }
+            bool shouldNotify = Enumerable.Range(0, threshHolds.Length - 2)
+                .Any(i => product.Quantity < threshHolds[i] && product.Quantity >= threshHolds[i + 1]) || product.Quantity < threshHolds[threshHolds.Length - 1];
 
-            else if (product.Quantity < 2)
+            if (shouldNotify)
             {
-                notify(product);
+                Notify(product);
             }
 
             return true;

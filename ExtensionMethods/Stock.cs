@@ -4,12 +4,13 @@ namespace Stock
 {
     public class Stock
     {
+        private List<Product> products;
+
         public Stock()
         {
             products = new List<Product>();
         }
 
-        private List<Product> products;
         public Action<Product> Notify { get; set; }
 
         public bool AddProduct(Product product)
@@ -57,11 +58,13 @@ namespace Stock
                 throw new ArgumentException($"Not enough {product.Name}s in stock!");
             }
 
-            product.Quantity -= quantity;
-
             int[] threshHolds = new int[] {10, 5, 2};
 
-            if (threshHolds.Any(x => product.Quantity < x))
+            bool shouldNotify = threshHolds.Any(x => product.Quantity >= x && product.Quantity - quantity < x);
+
+            product.Quantity -= quantity;
+
+            if (shouldNotify)
             {
                 Notify(product);
             }

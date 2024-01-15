@@ -66,12 +66,12 @@ namespace Linq
 
         public static string GenerateAllCombinationsEqualTo(int n, int k)
         {
-            var permsNum = (int)Math.Pow(2, n);
-            var results = Enumerable.Range(0, permsNum)
+            var results = Enumerable.Range(0, 1 << n)
             .Select(bits =>
             {
                 var permutation = Enumerable.Range(0, n)
-                .Select(n => (bits & ((int)Math.Pow(2, n))) != 0 ? (n + 1) : -(n + 1)).ToList();
+                    .Select(n => (bits & (1 << n)) != 0 ? (n + 1) : -(n + 1))
+                    .ToList();
 
                 var sum = permutation.Sum();
                 var str = string.Join("+", permutation);

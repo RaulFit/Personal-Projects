@@ -11,8 +11,9 @@ namespace Linq
             IsNull(word);
 
             string vowels = "aeiouAEIOU";
-            int vowelsCount = word.Count(vowels.Contains);
-            int consonantsCount = word.Count(e => !vowels.Contains(e));
+            int vowelsCount = word.Count(ch => vowels.Contains(ch));
+            int consonantsCount = word.Length - vowelsCount;
+
             return (vowelsCount, consonantsCount);
         }
 

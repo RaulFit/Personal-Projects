@@ -75,10 +75,22 @@ namespace Linq.Facts
         public void GenerateAllPalindromes_ValidStringShouldReturnAllPossiblePalindromes()
         {
             string result = """
-                a a b a a c
-                aa aa
+                
+                a
+                aa
                 aabaa
+
+                a
                 aba
+
+                b
+
+                a
+                aa
+
+                a
+
+                c
                 """;
             Assert.Equal(result, Linq.GenerateAllPalindromes("aabaac"));
         }

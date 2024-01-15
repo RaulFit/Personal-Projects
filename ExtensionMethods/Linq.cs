@@ -46,11 +46,7 @@ namespace Linq
                 .SelectMany(length => Enumerable.Range(0, word.Length - length + 1),
                 word.Substring).Where(word => word.SequenceEqual(word.Reverse()));
 
-            var lengthOne = string.Join(" ", palindromes.Where(p => p.Length == 1));
-            var lengthTwo = string.Join(" ", palindromes.Where(p => p.Length == 2));
-            var others = string.Join("\r\n", palindromes.Where(p => p.Length > 2));
-
-            return $"{lengthOne}\r\n{lengthTwo}\r\n{others}";
+            return string.Join("\r\n", palindromes);
         }
 
         public static string GenerateSubarraysWithSumLessOrEqualTo(int[] nums, int k)

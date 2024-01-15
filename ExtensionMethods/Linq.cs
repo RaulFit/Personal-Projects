@@ -28,7 +28,9 @@ namespace Linq
         public static char MostCommonChar(string word)
         {
             IsNull(word);
-            return word.GroupBy(e => e).OrderByDescending(group => group.Count()).SelectMany(e => e).FirstOrDefault();
+
+            var groupWithCountOne = word.Length > 0 ? word.GroupBy(ch => ch).Aggregate((a, b) => a.Count() >= b.Count() ? a : b) : default;
+            return groupWithCountOne != default ? groupWithCountOne.Key : '\0';
         }
 
         public static string GenerateAllPalindromes(string word)

@@ -11,7 +11,7 @@ namespace Linq
             IsNull(word);
 
             string vowels = "aeiouAEIOU";
-            int vowelsCount = word.Count(ch => vowels.Contains(ch));
+            int vowelsCount = word.Count(vowels.Contains);
             int consonantsCount = word.Length - vowelsCount;
 
             return (vowelsCount, consonantsCount);
@@ -21,8 +21,8 @@ namespace Linq
         {
             IsNull(word);
 
-            var uniqueChars = word.GroupBy(c => c).Where(group => group.Count() == 1).Select(group => group.Key);
-            return uniqueChars.FirstOrDefault();
+            var groupWithCountOne = word.GroupBy(c => c).FirstOrDefault(group => group.Count() == 1);
+            return groupWithCountOne != default ? groupWithCountOne.Key : '\0';
         }
 
         public static char MostCommonChar(string word)

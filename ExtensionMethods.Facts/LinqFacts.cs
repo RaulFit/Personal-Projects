@@ -111,9 +111,17 @@ namespace Linq.Facts
         public void GenerateSubarraysWithSumLessOrEqualToK_ShouldReturnAllPossibleArrays()
         {
             var result = """
-                1 2 3 4
-                12 23
+
+                1
+                12
                 123
+
+                2
+                23
+
+                3
+
+                4
                 """;
             Assert.Equal(result, Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[] {1, 2, 3, 4}, 6));
         }

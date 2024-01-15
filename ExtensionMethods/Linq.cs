@@ -61,11 +61,7 @@ namespace Linq
                 (start, length) => nums.Skip(start).Take(length)).Where(subArr => subArr.Sum() <= k)
                 .Select(subArr => string.Join("", subArr));
 
-            var lengthOne = string.Join(" ", subArrays.Where(p => p.Length == 1));
-            var lengthTwo = string.Join(" ", subArrays.Where(p => p.Length == 2));
-            var others = string.Join("\r\n", subArrays.Where(p => p.Length > 2));
-
-            return $"{lengthOne}\r\n{lengthTwo}\r\n{others}";
+            return string.Join("\r\n", subArrays);
         }
 
         public static string GenerateAllCombinationsEqualTo(int n, int k)

@@ -86,11 +86,11 @@ namespace Linq
 
         public static string GenerateTriplets(int[] nums)
         {
-            IEnumerable<string> result = from a in nums
-                                         from b in nums
-                                         from c in nums
-                                         where a < b && b < c && a*a + b*b == c*c
-                                         select $"{a}^2 + {b}^2 = {c}^2";
+            IEnumerable<string> result = nums
+        .SelectMany(a => nums, (a, b) => new { a, b })
+        .SelectMany(pair => nums, (pair, c) => new { pair.a, pair.b, c })
+        .Where(triplet => triplet.a < triplet.b && triplet.b < triplet.c && triplet.a * triplet.a + triplet.b * triplet.b == triplet.c * triplet.c)
+        .Select(triplet => $"{triplet.a}^2 + {triplet.b}^2 = {triplet.c}^2");
 
             return string.Join("\r\n", result);
         }

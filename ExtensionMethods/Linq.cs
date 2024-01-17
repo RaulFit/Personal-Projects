@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks.Dataflow;
 
 namespace Linq
@@ -35,8 +36,7 @@ namespace Linq
         {
             IsNull(word);
 
-            var groupWithCountOne = word.Length > 0 ? word.GroupBy(ch => ch).Aggregate((a, b) => a.Count() >= b.Count() ? a : b) : default;
-            return groupWithCountOne != default ? groupWithCountOne.Key : '\0';
+            return word.GroupBy(ch => ch).Aggregate('\0', (a, b) => b.Count() > word.Count(c => c == a) ? b.Key : a);
         }
 
         public static string GenerateAllPalindromes(string word)

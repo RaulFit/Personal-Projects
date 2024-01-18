@@ -1,7 +1,4 @@
-﻿using System.Net;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks.Dataflow;
+﻿using System.Runtime.CompilerServices;
 
 namespace Linq
 {
@@ -32,6 +29,20 @@ namespace Linq
             return groupWithCountOne != default ? groupWithCountOne.Key : '\0';
         }
 
+        public static int ConvertToInt(string num)
+        {
+            IsNull(num);
+
+            if (num.Skip(1).Any((i => i < '0' || i > '9')) || (num[0] != '-' && (num[0] < '0' || num[0] > '9')))
+            {
+                throw new FormatException("The string was not in a correct format!");
+            }
+
+            int result = num.Where(a => a != '-').Sum(a => num.IndexOf(a) != num.Length - 1 ? (a - 48) * 10 : a - 48);
+
+            return num[0] == '-' ? -result : result;
+        }
+
         public static char MostCommonChar(string word)
         {
             IsNull(word);
@@ -39,35 +50,21 @@ namespace Linq
             return word.GroupBy(ch => ch).Aggregate('\0', (a, b) => b.Count() > word.Count(c => c == a) ? b.Key : a);
         }
 
-        public static string GenerateAllPalindromes(string word)
+        public static IEnumerable<string> GenerateAllPalindromes(string word)
         {
             IsNull(word);
 
-            if (word.Length == 0)
-            {
-                return word;
-            }
-
-            var palindromes = Enumerable.Range(0, word.Length)
+            return Enumerable.Range(0, word.Length)
                 .SelectMany(length => Enumerable.Range(0, word.Length - length + 1),
-                word.Substring).Where(word => word.SequenceEqual(word.Reverse()));
-
-            return string.Join("\r\n", palindromes);
+                word.Substring).Where(word => word.SequenceEqual(word.Reverse()) && word.Count() > 0);
         }
 
-        public static string GenerateSubarraysWithSumLessOrEqualTo(int[] nums, int k)
+        public static IEnumerable<string> GenerateSubarraysWithSumLessOrEqualTo(int[] nums, int k)
         {
-            if (nums.Length == 0)
-            {
-                return "";
-            }
-
-            var subArrays = Enumerable.Range(0, nums.Length)
+            return Enumerable.Range(0, nums.Length)
                 .SelectMany(start => Enumerable.Range(0, nums.Length - start + 1),
-                (start, length) => nums.Skip(start).Take(length)).Where(subArr => subArr.Sum() <= k)
+                (start, length) => nums.Skip(start).Take(length)).Where(subArr => subArr.Sum() <= k && subArr.Count() > 0)
                 .Select(subArr => string.Join("", subArr));
-
-            return string.Join("\r\n", subArrays);
         }
 
         public static string GenerateAllCombinationsEqualTo(int n, int k)
@@ -90,15 +87,13 @@ namespace Linq
             return string.Join("\r\n", results);
         }
 
-        public static string GenerateTriplets(int[] nums)
+        public static IEnumerable<string> GenerateTriplets(int[] nums)
         {
-            IEnumerable<string> result = nums
-        .SelectMany(a => nums, (a, b) => new { a, b })
-        .SelectMany(pair => nums, (pair, c) => new { pair.a, pair.b, c })
-        .Where(triplet => triplet.a < triplet.b && triplet.b < triplet.c && triplet.a * triplet.a + triplet.b * triplet.b == triplet.c * triplet.c)
+            return nums
+        .SelectMany(a => nums.Where(b => b > a), (a, b) => (a, b))
+        .SelectMany(pair => nums.Where(c => c > pair.b), (pair, c) => (pair.a, pair.b, c))
+        .Where(triplet => triplet.a * triplet.a + triplet.b * triplet.b == triplet.c * triplet.c)
         .Select(triplet => $"{triplet.a}^2 + {triplet.b}^2 = {triplet.c}^2");
-
-            return string.Join("\r\n", result);
         }
 
         public class Product

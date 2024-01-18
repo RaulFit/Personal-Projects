@@ -54,6 +54,30 @@ namespace Linq.Facts
         }
 
         [Fact]
+        public void ConvertToInt_StringIsNull_ShouldThrowArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => Linq.ConvertToInt(null));
+        }
+
+        [Fact]
+        public void ConvertToInt_IncorrectFormat_ShouldThrowFormatException()
+        {
+            Assert.Throws<FormatException>(() => Linq.ConvertToInt("15-a"));
+        }
+
+        [Fact]
+        public void ConvertToInt_NoMinus_ShouldConvertStringToPositiveNumber()
+        {
+            Assert.Equal(12, Linq.ConvertToInt("12"));
+        }
+
+        [Fact]
+        public void ConvertToInt_WithMinus_ShouldConvertStringToNegativeNumber()
+        {
+            Assert.Equal(-12, Linq.ConvertToInt("-12"));
+        }
+
+        [Fact]
         public void MostCommonChar_EmptyString_ShouldReturnDefaultValue()
         {
             Assert.Equal('\0', Linq.MostCommonChar(""));
@@ -74,56 +98,29 @@ namespace Linq.Facts
         [Fact]
         public void GenerateAllPalindromes_ValidStringShouldReturnAllPossiblePalindromes()
         {
-            string result = """
-                
-                a
-                aa
-                aabaa
+            var results = new List<string>() { "a", "aa", "aabaa", "a", "aba", "b", "a", "aa", "a", "c"};
 
-                a
-                aba
-
-                b
-
-                a
-                aa
-
-                a
-
-                c
-                """;
-            Assert.Equal(result, Linq.GenerateAllPalindromes("aabaac"));
+            Assert.Equal(results, Linq.GenerateAllPalindromes("aabaac"));
         }
 
         [Fact]
         public void GenerateAllPalindromes_ShouldWorkWhenStringIsEmpty()
         {
-            Assert.Equal("", Linq.GenerateAllPalindromes(""));
+            Assert.Equal(new List<string>(), Linq.GenerateAllPalindromes(""));
         }
 
         [Fact]
         public void GenerateSubarraysWithSumLessOrEqualToK_EmptyArray_ShouldReturnEmptyString()
         {
-            Assert.Equal("", Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[]{ }, 6));
+            Assert.Equal(new List<string>(), Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[]{ }, 6));
         }
 
         [Fact]
         public void GenerateSubarraysWithSumLessOrEqualToK_ShouldReturnAllPossibleArrays()
         {
-            var result = """
-
-                1
-                12
-                123
-
-                2
-                23
-
-                3
-
-                4
-                """;
-            Assert.Equal(result, Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[] {1, 2, 3, 4}, 6));
+            var results = new List<string>() { "1", "12", "123", "2", "23", "3", "4" };
+    
+            Assert.Equal(results, Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[] {1, 2, 3, 4}, 6));
         }
 
         [Fact]
@@ -146,19 +143,16 @@ namespace Linq.Facts
         [Fact]
         public void GenerateTriplets_ArrayLengthLessThanThree_ShouldReturnEmptyString()
         {
-            Assert.Equal("", Linq.GenerateTriplets(new int[] {1, 2}));
+            Assert.Equal(new List<string>(), Linq.GenerateTriplets(new int[] {1, 2}));
         }
 
         [Fact]
         public void GenerateTriplets_ShouldReturnResult()
         {
-            int[] nums = new int[] { 3, 4, 5, 12, 13, 8, 15, 17};
-            var result = """
-                3^2 + 4^2 = 5^2
-                5^2 + 12^2 = 13^2
-                8^2 + 15^2 = 17^2
-                """;
-            Assert.Equal(result, Linq.GenerateTriplets(nums));
+            int[] nums = new int[] { 3, 4, 5, 12, 13, 8, 15, 17 };
+            var results = new List<string>() { "3^2 + 4^2 = 5^2", "5^2 + 12^2 = 13^2", "8^2 + 15^2 = 17^2" };
+
+            Assert.Equal(results, Linq.GenerateTriplets(nums));
         }
 
         [Fact]

@@ -10,13 +10,9 @@ namespace Linq
 
             string vowels = "aeiouAEIOU";
 
-            var counts = word
-            .Where(char.IsLetter)
-            .GroupBy(vowels.Contains)
-            .ToDictionary(g => g.Key, g => g.Count());
-
-            int vowelsCount = counts.GetValueOrDefault(true, 0);
-            int consonantsCount = counts.GetValueOrDefault(false, 0);
+            var letters = word.Where(char.IsLetter);
+            int vowelsCount = letters.Count(vowels.Contains);
+            int consonantsCount = letters.Count() - vowelsCount;
 
             return (vowelsCount, consonantsCount);
         }

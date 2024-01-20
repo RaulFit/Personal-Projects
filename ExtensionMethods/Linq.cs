@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace Linq
 {
@@ -29,12 +30,15 @@ namespace Linq
         {
             IsNull(num);
 
-            if (num.Skip(1).Any((i => i < '0' || i > '9')) || (num[0] != '-' && (num[0] < '0' || num[0] > '9')))
+            int result = num.Aggregate(0, (a, b) =>
             {
-                throw new FormatException("The string was not in a correct format!");
-            }
+                if (!char.IsNumber(b) && num.IndexOf(b) != 0 && b != '-')
+                {
+                    throw new FormatException("The string was not in a correct format");
+                }            
 
-            int result = num.Where(a => a != '-').Sum(a => num.IndexOf(a) != num.Length - 1 ? (a - 48) * 10 : a - 48);
+                return char.IsNumber(b) ? a * 10 + (b - '0') : 0;
+            });
 
             return num[0] == '-' ? -result : result;
         }

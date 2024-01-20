@@ -47,7 +47,8 @@ namespace Linq
         {
             IsNull(word);
 
-            return word.GroupBy(ch => ch).Aggregate('\0', (a, b) => b.Count() > word.Count(c => c == a) ? b.Key : a);
+            var res = word.GroupBy(ch => ch).MaxBy(group => group.Count());
+            return res != null ? res.Key : '\0';
         }
 
         public static IEnumerable<string> GenerateAllPalindromes(string word)

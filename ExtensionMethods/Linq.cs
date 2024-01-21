@@ -90,11 +90,14 @@ namespace Linq
 
         public static IEnumerable<string> GenerateTriplets(int[] nums)
         {
-            return nums
-        .SelectMany(a => nums.Where(b => b > a), (a, b) => (a, b))
-        .SelectMany(pair => nums.Where(c => c > pair.b), (pair, c) => (pair.a, pair.b, c))
-        .Where(triplet => triplet.a * triplet.a + triplet.b * triplet.b == triplet.c * triplet.c)
-        .Select(triplet => $"{triplet.a}^2 + {triplet.b}^2 = {triplet.c}^2");
+            int length = nums.Length;
+
+            return Enumerable.Range(0, length - 2)
+            .SelectMany(a => Enumerable.Range(a + 1, length - a - 1)
+            .SelectMany(b => Enumerable.Range(b + 1, length - b - 1), (b, c) => (nums[a], nums[b], nums[c])))
+            .Where(triplet => triplet.Item1 < triplet.Item2 && triplet.Item2 < triplet.Item3 &&
+            triplet.Item1 * triplet.Item1 + triplet.Item2 * triplet.Item2 == triplet.Item3 * triplet.Item3)
+            .Select(triplet => $"{triplet.Item1}^2 + {triplet.Item2}^2 = {triplet.Item3}^2");
         }
 
         public class Product

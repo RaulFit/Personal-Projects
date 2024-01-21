@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Runtime.CompilerServices;
+using static Linq.Linq;
 
 namespace Linq
 {
@@ -113,17 +114,17 @@ namespace Linq
 
         public static List<Product> GetProductsWithFeature(List<Product> products, List<Feature> features)
         {
-            return products.Where(prod => features.Any(feature => prod.Features.Contains(feature))).ToList();
+            return products.Where(prod => prod.Features.Intersect(features).Any()).ToList();
         }
 
         public static List<Product> GetProductsWithAllFeatures(List<Product> products, List<Feature> features)
         {
-            return products.Where(prod => features.All(feature => prod.Features.Contains(feature))).ToList();
+            return products.Where(prod => !features.Except(prod.Features).Any()).ToList();
         }
 
         public static List<Product> GetProductsWithNoFeatures(List<Product> products, List<Feature> features)
         {
-            return products.Where(prod => features.All(feature => !prod.Features.Contains(feature))).ToList();
+            return products.Where(prod => !prod.Features.Intersect(features).Any()).ToList();
         }
 
         public struct Prod

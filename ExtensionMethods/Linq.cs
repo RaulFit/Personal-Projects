@@ -69,24 +69,12 @@ namespace Linq
                 .Select(subArr => string.Join("", subArr));
         }
 
-        public static string GenerateAllCombinationsEqualTo(int n, int k)
+        public static IEnumerable<string> GenerateAllCombinationsEqualTo(int n, int k)
         {
-            var results = Enumerable.Range(0, 1 << n)
-            .Select(bits =>
-            {
-                var permutation = Enumerable.Range(0, n)
-                    .Select(n => (bits & (1 << n)) != 0 ? (n + 1) : -(n + 1))
-                    .ToList();
-
-                var sum = permutation.Sum();
-                var str = string.Join("+", permutation);
-
-                return new { sum, str };
-            })
-            .Where(intermediate => intermediate.sum == k)
-            .Select(intermediate => $"{intermediate.str}={k}".Replace("+-", "-"));
-
-            return string.Join("\r\n", results);
+            return Enumerable.Range(1, n).Aggregate(new List<string>() { "" }, (signs, i) =>
+                         signs.SelectMany(item => new List<string> { item + "+", item + "-" }).ToList())
+                         .Where(combination => Enumerable.Range(0, n).Aggregate(0, (sum, i) => combination[i] == '-' ? sum - (i + 1) : sum + i + 1) == k)
+                         .Select(combination => string.Join("", combination.Zip(Enumerable.Range(1, n), (sign, num) => $"{sign}{num}")) + $"={k}");
         }
 
         public static IEnumerable<string> GenerateTriplets(int[] nums)

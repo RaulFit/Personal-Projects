@@ -126,18 +126,15 @@ namespace Linq.Facts
         [Fact]
         public void GenerateAllCombinationsEqualTo_ShouldReturnAllPossibleCombinationsEqualToK()
         {
-            var result = """
-                -1+2+3+4-5=3
-                1-2+3-4+5=3
-                -1-2-3+4+5=3
-                """;
+            var result = new List<string>() { "+1-2+3-4+5=3", "-1+2+3+4-5=3", "-1-2-3+4+5=3" };
+
             Assert.Equal(result, Linq.GenerateAllCombinationsEqualTo(5, 3));
         }
 
         [Fact]
         public void GenerateAllCombinationsEqualTo_NoPossibleCombinations_ShouldReturnEmptyString()
         {
-            Assert.Equal("", Linq.GenerateAllCombinationsEqualTo(0, 2));
+            Assert.Equal(new List<string>(), Linq.GenerateAllCombinationsEqualTo(0, 2));
         }
 
         [Fact]

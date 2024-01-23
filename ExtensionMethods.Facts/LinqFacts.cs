@@ -398,5 +398,20 @@ namespace Linq.Facts
 
             Assert.Equivalent(final, Linq.KeepMaxScore(results));
         }
+
+        [Fact]
+        public void GetMostUsedWords_EmptyString_ShouldReturnEmptyCollection()
+        {
+            Assert.Equal(new List<string>(), Linq.GetMostUsedWords(""));
+        }
+
+        [Fact]
+        public void GetMostUsedWords_ValidString_ShouldOrderWordsDescendinglyByCount()
+        {
+            string text = "apple, pear, pear apple banana pear apple apple banana; pineapple";
+
+            var result = new List<string>() { "apple-4", "pear-3", "banana-2", "pineapple-1"};
+            Assert.Equal(result, Linq.GetMostUsedWords(text));
+        }
     }
 }

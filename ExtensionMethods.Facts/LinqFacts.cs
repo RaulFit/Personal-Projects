@@ -110,7 +110,7 @@ namespace Linq.Facts
         }
 
         [Fact]
-        public void GenerateSubarraysWithSumLessOrEqualToK_EmptyArray_ShouldReturnEmptyString()
+        public void GenerateSubarraysWithSumLessOrEqualToK_EmptyArray_ShouldReturnEmptyCollection()
         {
             Assert.Equal(new List<string>(), Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[]{ }, 6));
         }
@@ -132,13 +132,13 @@ namespace Linq.Facts
         }
 
         [Fact]
-        public void GenerateAllCombinationsEqualTo_NoPossibleCombinations_ShouldReturnEmptyString()
+        public void GenerateAllCombinationsEqualTo_NoPossibleCombinations_ShouldReturnEmptyCollection()
         {
             Assert.Equal(new List<string>(), Linq.GenerateAllCombinationsEqualTo(0, 2));
         }
 
         [Fact]
-        public void GenerateTriplets_ArrayLengthLessThanThree_ShouldReturnEmptyString()
+        public void GenerateTriplets_ArrayLengthLessThanThree_ShouldReturnEmptyCollection()
         {
             Assert.Equal(new List<string>(), Linq.GenerateTriplets(new int[] {1, 2}));
         }
@@ -398,6 +398,5 @@ namespace Linq.Facts
 
             Assert.Equivalent(final, Linq.KeepMaxScore(results));
         }
-
     }
 }

@@ -71,8 +71,10 @@ namespace Linq
 
         public static IEnumerable<string> GenerateAllCombinationsEqualTo(int n, int k)
         {
-            return Enumerable.Range(1, n).Aggregate(new List<string>() { "" }, (signs, i) =>
-                         signs.SelectMany(item => new List<string> { item + "+", item + "-" }).ToList())
+            IEnumerable<string> signs = new string[] { "" };
+
+            return Enumerable.Range(1, n).Aggregate(signs, (signs, i) =>
+                         signs.SelectMany(item => new string[]  { item + "+", item + "-" }))
                          .Where(combination => Enumerable.Range(0, n).Aggregate(0, (sum, i) => combination[i] == '-' ? sum - (i + 1) : sum + i + 1) == k)
                          .Select(combination => string.Join("", combination.Zip(Enumerable.Range(1, n), (sign, num) => $"{sign}{num}")) + $"={k}");
         }

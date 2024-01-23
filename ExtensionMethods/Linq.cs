@@ -157,12 +157,12 @@ namespace Linq
             return results.GroupBy(family => family.FamilyId).Select(group => group.Aggregate((a, b) => a.Score > b.Score ? a : b)).ToList();
         }
 
-        public static IEnumerable<string> GetMostUsedWords(string text)
+        public static IEnumerable<(string, int)> GetMostUsedWords(string text)
         {
             IsNull(text);
 
             char[] splitChars = new char[] { ' ', '.', ',', '?', '!', ':', ';' };
-            return text.Split(splitChars).Where(word => !string.IsNullOrEmpty(word)).GroupBy(word => word).OrderByDescending(word => word.Count()).Select(word => $"{word.Key}-{word.Count()}");
+            return text.Split(splitChars).Where(word => !string.IsNullOrEmpty(word)).GroupBy(word => word).Select(word => (word.Key, word.Count())).OrderByDescending(word => word.Item2);
         }
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

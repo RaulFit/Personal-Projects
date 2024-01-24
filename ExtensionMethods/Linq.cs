@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Runtime.CompilerServices;
-using static Linq.Linq;
+﻿using System.Runtime.CompilerServices;
 
 namespace Linq
 {
@@ -163,6 +161,21 @@ namespace Linq
 
             char[] splitChars = new char[] { ' ', '.', ',', '?', '!', ':', ';' };
             return text.Split(splitChars).Where(word => !string.IsNullOrEmpty(word)).GroupBy(word => word).Select(word => (word.Key, word.Count())).OrderByDescending(word => word.Item2);
+        }
+
+        public static bool IsValidSudoku(int[][] sudoku)
+        {
+            bool validRows = sudoku.All(row => row.Distinct().Count() == 9);
+
+            bool validColumns = Enumerable.Range(0, 9).All(i => Enumerable.Range(0, 9).Select(j => sudoku[j][i]).ToList().Distinct().Count() == 9);
+
+            bool validSquares = Enumerable.Range(0, 3).SelectMany(i => Enumerable.Range(0, 3)
+                                .Select(j => sudoku.Skip(i * 3).Take(3)
+                                .Select(row => row.Skip(j * 3).Take(3))))
+                                .Select(group => group.SelectMany(n => n))
+                                .All(group => group.ToList().Distinct().Count() == 9);
+
+            return validRows && validColumns && validSquares;
         }
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

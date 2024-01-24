@@ -413,5 +413,39 @@ namespace Linq.Facts
             var result = new List<(string, int)>() { ("apple", 4), ("pear", 3), ("banana", 2), ("pineapple", 1)};
             Assert.Equal(result, Linq.GetMostUsedWords(text));
         }
+
+        [Fact]
+        public void IsValidSudoku_InvalidSudoku_ShouldReturnFalse()
+        {
+            int[][] sudoku = new int[9][];
+            sudoku[0] = new int[] { 9, 9, 2, 1, 5, 4, 3, 8, 6 };
+            sudoku[1] = new int[] { 6, 4, 3, 8, 2, 7, 1, 5, 9 };
+            sudoku[2] = new int[] { 8, 5, 1, 3, 9, 6, 7, 2, 4 };
+            sudoku[3] = new int[] { 2, 6, 5, 9, 7, 3, 8, 4, 1 };
+            sudoku[4] = new int[] { 4, 8, 9, 5, 6, 1, 2, 7, 3 };
+            sudoku[5] = new int[] { 3, 1, 7, 4, 8, 2, 9, 6, 5 };
+            sudoku[6] = new int[] { 1, 3, 6, 7, 4, 8, 5, 9, 2 };
+            sudoku[7] = new int[] { 9, 7, 4, 2, 1, 5, 6, 3, 8 };
+            sudoku[8] = new int[] { 5, 2, 8, 6, 3, 9, 4, 1, 7 };
+
+            Assert.False(Linq.IsValidSudoku(sudoku));
+        }
+
+        [Fact]
+        public void IsValidSudoku_ValidSudoku_ShouldReturnTrue()
+        {
+            int[][] sudoku = new int[9][];
+            sudoku[0] = new int[] { 7, 9, 2, 1, 5, 4, 3, 8, 6 };
+            sudoku[1] = new int[] { 6, 4, 3, 8, 2, 7, 1, 5, 9 };
+            sudoku[2] = new int[] { 8, 5, 1, 3, 9, 6, 7, 2, 4 };
+            sudoku[3] = new int[] { 2, 6, 5, 9, 7, 3, 8, 4, 1 };
+            sudoku[4] = new int[] { 4, 8, 9, 5, 6, 1, 2, 7, 3 };
+            sudoku[5] = new int[] { 3, 1, 7, 4, 8, 2, 9, 6, 5 };
+            sudoku[6] = new int[] { 1, 3, 6, 7, 4, 8, 5, 9, 2 };
+            sudoku[7] = new int[] { 9, 7, 4, 2, 1, 5, 6, 3, 8 };
+            sudoku[8] = new int[] { 5, 2, 8, 6, 3, 9, 4, 1, 7 };
+
+            Assert.True(Linq.IsValidSudoku(sudoku));
+        }
     }
 }

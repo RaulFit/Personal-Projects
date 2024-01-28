@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Linq
 {
@@ -165,17 +166,21 @@ namespace Linq
 
         public static bool IsValidSudoku(int[][] sudoku)
         {
-            bool validRows = sudoku.All(row => row.Distinct().Count() == 9);
+            IEnumerable<IEnumerable<int>> rows = sudoku.Select(row => row);
 
-            bool validColumns = Enumerable.Range(0, 9).All(i => Enumerable.Range(0, 9).Select(j => sudoku[j][i]).ToList().Distinct().Count() == 9);
+            IEnumerable<IEnumerable<int>> columns = Enumerable.Range(0, sudoku.Length).Select(i => Enumerable.Range(0, sudoku.Length).Select(j => sudoku[j][i]));
 
-            bool validSquares = Enumerable.Range(0, 3).SelectMany(i => Enumerable.Range(0, 3)
+            IEnumerable<IEnumerable<int>> squares = Enumerable.Range(0, 3).SelectMany(i => Enumerable.Range(0, 3)
                                 .Select(j => sudoku.Skip(i * 3).Take(3)
                                 .Select(row => row.Skip(j * 3).Take(3))))
-                                .Select(group => group.SelectMany(n => n))
-                                .All(group => group.ToList().Distinct().Count() == 9);
+                                .Select(group => group.SelectMany(n => n));
 
-            return validRows && validColumns && validSquares;
+            return rows.Concat(columns).Concat(squares).All(IsValidGroup);
+        }
+
+        static bool IsValidGroup(IEnumerable<int> group)
+        {
+            return group.All(x => x > 0 && x <= 9) && group.Distinct().Count() == group.Count() && group.Count() == 9;
         }
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

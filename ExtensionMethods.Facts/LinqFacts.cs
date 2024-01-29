@@ -464,5 +464,23 @@ namespace Linq.Facts
 
             Assert.True(Linq.IsValidSudoku(sudoku));
         }
+
+        [Fact]
+        public void EvaluatePolishNotation_SimpleExpression_ShouldReturnExpectedResult()
+        {
+            Assert.Equal(5, Linq.EvaluatePolishNotation(new List<string>() { "2", "3", "+"}));
+        }
+
+        [Fact]
+        public void EvaluatePolishNotation_MultipleOperations_ShouldReturnExpectedResult()
+        {
+            Assert.Equal(4, Linq.EvaluatePolishNotation(new List<string>() { "2", "1", "+", "3", "*", "5", "-" }));
+        }
+
+        [Fact]
+        public void EvaluatePolishNotation_ComplexExpression_ShouldReturnExpectedResult()
+        {
+            Assert.Equal(22, Linq.EvaluatePolishNotation(new List<string>() { "10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+" }));
+        }
     }
 }

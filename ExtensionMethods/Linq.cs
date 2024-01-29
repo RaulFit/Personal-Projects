@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Data;
+using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Linq
@@ -182,6 +184,22 @@ namespace Linq
         {
             return group.All(x => x > 0 && x <= 9) && group.Distinct().Count() == group.Count() && group.Count() == 9;
         }
+
+        public static int EvaluatePolishNotation(List<string> expression)
+        {
+            Stack<int> data = new Stack<int>();
+
+            expression.ForEach(token => data.Push(int.TryParse(token, out int value) ? value : operations[token](data.Pop(), data.Pop())));
+            return data.Pop();
+        }
+
+        static readonly Dictionary<string, Func<int, int, int>> operations = new Dictionary<string, Func<int, int, int>>
+        {
+            {"+", (a, b) => a + b },
+            {"-", (a, b) => b - a },
+            {"*", (a, b) => a * b },
+            {"/", (a, b) => b / a }
+        };
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {

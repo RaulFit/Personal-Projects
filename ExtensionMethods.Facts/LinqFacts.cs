@@ -480,7 +480,7 @@ namespace Linq.Facts
         [Fact]
         public void EvaluatePolishNotation_ComplexExpression_ShouldReturnExpectedResult()
         {
-            Assert.Equal(22, Linq.EvaluatePolishNotation(new List<string>() { "10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+" }));
+            Assert.Equal(21.545454545454547, Linq.EvaluatePolishNotation(new List<string>() { "10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+" }));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Numerics;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -185,20 +186,35 @@ namespace Linq
             return group.All(x => x > 0 && x <= 9) && group.Distinct().Count() == group.Count() && group.Count() == 9;
         }
 
-        public static int EvaluatePolishNotation(List<string> expression)
+       
+        public static double EvaluatePolishNotation(List<string> expression)
         {
-            Stack<int> data = new Stack<int>();
+            IEnumerable<double> aggregator = new double[] { };
 
-            expression.ForEach(token => data.Push(int.TryParse(token, out int value) ? value : operations[token](data.Pop(), data.Pop())));
-            return data.Pop();
+            return expression.Aggregate(aggregator, (a, b) =>
+            {
+                if (double.TryParse(b, out double value))
+                {
+                    aggregator = aggregator.Concat(new[] { value });
+                }
+
+                else
+                {
+                    var numbers = aggregator.TakeLast(2);
+                    (double first, double second) = (Convert.ToDouble(numbers.ElementAt(0)), Convert.ToDouble(numbers.ElementAt(1)));
+                    aggregator = aggregator.SkipLast(2).Concat(new[] { operations[b](first, second) });
+                }
+
+                return aggregator;
+            }).Last();
         }
 
-        static readonly Dictionary<string, Func<int, int, int>> operations = new Dictionary<string, Func<int, int, int>>
+        static readonly Dictionary<string, Func<double, double, double>> operations = new Dictionary<string, Func<double, double, double>>
         {
             {"+", (a, b) => a + b },
-            {"-", (a, b) => b - a },
+            {"-", (a, b) => a - b },
             {"*", (a, b) => a * b },
-            {"/", (a, b) => b / a }
+            {"/", (a, b) => a / b }
         };
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")

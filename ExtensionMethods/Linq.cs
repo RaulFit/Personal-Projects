@@ -189,22 +189,18 @@ namespace Linq
        
         public static double EvaluatePolishNotation(List<string> expression)
         {
-            IEnumerable<double> aggregator = new double[] { };
+            IEnumerable<double> aggregator = new double[] { 0 };
 
             return expression.Aggregate(aggregator, (a, b) =>
             {
                 if (double.TryParse(b, out double value))
                 {
-                    aggregator = aggregator.Concat(new[] { value });
+                    aggregator = aggregator.Append(value);
+                    return aggregator;
                 }
 
-                else
-                {
-                    var numbers = aggregator.TakeLast(2);
-                    (double first, double second) = (Convert.ToDouble(numbers.ElementAt(0)), Convert.ToDouble(numbers.ElementAt(1)));
-                    aggregator = aggregator.SkipLast(2).Concat(new[] { operations[b](first, second) });
-                }
-
+                var result = aggregator.TakeLast(2).Aggregate(operations[b]);
+                aggregator = aggregator.SkipLast(2).Append(result);
                 return aggregator;
             }).Last();
         }

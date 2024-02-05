@@ -191,17 +191,15 @@ namespace Linq
         {
             IEnumerable<double> aggregator = new double[] { 0 };
 
-            return expression.Aggregate(aggregator, (a, b) =>
+            return expression.Aggregate(aggregator, (aggregator, b) =>
             {
                 if (double.TryParse(b, out double value))
                 {
-                    aggregator = aggregator.Append(value);
-                    return aggregator;
+                    return aggregator.Append(value);
                 }
 
                 var result = aggregator.TakeLast(2).Aggregate(operations[b]);
-                aggregator = aggregator.SkipLast(2).Append(result);
-                return aggregator;
+                return aggregator.SkipLast(2).Append(result);
             }).Last();
         }
 

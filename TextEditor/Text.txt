@@ -1,0 +1,1 @@
+Text was successfully read from file!

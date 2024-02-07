@@ -33,9 +33,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVLTree", "AVLTree\AVLTree.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVLTree.Facts", "AVLTree.Facts\AVLTree.Facts.csproj", "{0329DBFF-7CEF-4964-A3A9-2623823419F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionMethods", "ExtensionMethods\ExtensionMethods.csproj", "{27F5F530-4422-4213-938E-A5FA8D8BB754}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtensionMethods", "ExtensionMethods\ExtensionMethods.csproj", "{27F5F530-4422-4213-938E-A5FA8D8BB754}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionMethods.Facts", "ExtensionMethods.Facts\ExtensionMethods.Facts.csproj", "{BDDB33FC-1AE8-4B36-8A8E-BBA76F7C8695}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtensionMethods.Facts", "ExtensionMethods.Facts\ExtensionMethods.Facts.csproj", "{BDDB33FC-1AE8-4B36-8A8E-BBA76F7C8695}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor", "TextEditor\TextEditor.csproj", "{A0002AC6-8FEF-4595-A953-4E69071ACA6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,10 @@ Global
 		{BDDB33FC-1AE8-4B36-8A8E-BBA76F7C8695}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDDB33FC-1AE8-4B36-8A8E-BBA76F7C8695}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDDB33FC-1AE8-4B36-8A8E-BBA76F7C8695}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0002AC6-8FEF-4595-A953-4E69071ACA6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0002AC6-8FEF-4595-A953-4E69071ACA6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0002AC6-8FEF-4595-A953-4E69071ACA6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0002AC6-8FEF-4595-A953-4E69071ACA6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

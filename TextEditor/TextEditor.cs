@@ -2,20 +2,18 @@
 {
     class TextEditor
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            if (args.Length == 0)
+            Console.WriteLine("Enter the name of the text file in the format name.txt: ");
+            string? fileName = Console.ReadLine();
+
+            while (!Path.Exists(fileName))
             {
-                throw new ArgumentNullException("The specified path does not exist. Please provide a correct path");
+                Console.WriteLine("The specified file does not exist. Please enter a different file name: ");
+                fileName = Console.ReadLine();
             }
 
-            string filePath = args[0];
-
-            if (!File.Exists(filePath))
-            {
-                throw new ArgumentException("The specified path is incorrect or does not exist. Please provide a correct path");
-            }
-
+            string filePath = Path.GetFullPath(fileName);
             Console.WriteLine(File.ReadAllText(filePath));
         }
     }

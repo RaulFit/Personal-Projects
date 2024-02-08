@@ -1,9 +1,14 @@
-﻿namespace Editor
+﻿using System.Runtime.InteropServices;
+using TextEditor;
+
+namespace Editor
 {
     class TextEditor
     {
-        static void Main()
+        static void Main(string[] args)
         {
+            ConsoleMode.EnableVTProcessing();
+
             Console.WriteLine("Enter the name of the text file in the format name.txt: ");
             string? fileName = Console.ReadLine();
 

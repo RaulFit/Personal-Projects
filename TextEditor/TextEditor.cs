@@ -9,6 +9,19 @@ namespace Editor
         {
             ConsoleMode.EnableVTProcessing();
 
+            if (args.Length == 0 || !Path.Exists(args[0]))
+            {
+               ReadFile();
+            }
+
+            else
+            {
+                Console.WriteLine(File.ReadAllText(args[0]));
+            }
+        }
+
+        static void ReadFile()
+        {
             Console.WriteLine("Enter the name of the text file in the format name.txt: ");
             string? fileName = Console.ReadLine();
 
@@ -18,8 +31,7 @@ namespace Editor
                 fileName = Console.ReadLine();
             }
 
-            string filePath = Path.GetFullPath(fileName);
-            Console.WriteLine(File.ReadAllText(filePath));
+            Console.WriteLine(File.ReadAllText(fileName));
         }
     }
 }

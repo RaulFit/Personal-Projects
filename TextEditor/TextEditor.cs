@@ -1,7 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using TextEditor;
-
-namespace Editor
+﻿namespace TextEditor
 {
     class TextEditor
     {
@@ -18,6 +15,8 @@ namespace Editor
             {
                 Console.WriteLine(File.ReadAllText(args[0]));
             }
+
+            Cursor.PrintPosition();
         }
 
         static void ReadFile()

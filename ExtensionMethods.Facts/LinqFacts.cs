@@ -54,6 +54,30 @@ namespace Linq.Facts
         }
 
         [Fact]
+        public void ConvertToInt_StringIsNull_ShouldThrowArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => Linq.ConvertToInt(null));
+        }
+
+        [Fact]
+        public void ConvertToInt_IncorrectFormat_ShouldThrowFormatException()
+        {
+            Assert.Throws<FormatException>(() => Linq.ConvertToInt("15-a"));
+        }
+
+        [Fact]
+        public void ConvertToInt_NoMinus_ShouldConvertStringToPositiveNumber()
+        {
+            Assert.Equal(12, Linq.ConvertToInt("12"));
+        }
+
+        [Fact]
+        public void ConvertToInt_WithMinus_ShouldConvertStringToNegativeNumber()
+        {
+            Assert.Equal(-12, Linq.ConvertToInt("-12"));
+        }
+
+        [Fact]
         public void MostCommonChar_EmptyString_ShouldReturnDefaultValue()
         {
             Assert.Equal('\0', Linq.MostCommonChar(""));
@@ -74,71 +98,58 @@ namespace Linq.Facts
         [Fact]
         public void GenerateAllPalindromes_ValidStringShouldReturnAllPossiblePalindromes()
         {
-            string result = """
-                a a b a a c
-                aa aa
-                aabaa
-                aba
-                """;
-            Assert.Equal(result, Linq.GenerateAllPalindromes("aabaac"));
+            var results = new List<string>() { "a", "aa", "aabaa", "a", "aba", "b", "a", "aa", "a", "c"};
+
+            Assert.Equal(results, Linq.GenerateAllPalindromes("aabaac"));
         }
 
         [Fact]
         public void GenerateAllPalindromes_ShouldWorkWhenStringIsEmpty()
         {
-            Assert.Equal("", Linq.GenerateAllPalindromes(""));
+            Assert.Equal(new List<string>(), Linq.GenerateAllPalindromes(""));
         }
 
         [Fact]
-        public void GenerateSubarraysWithSumLessOrEqualToK_EmptyArray_ShouldReturnEmptyString()
+        public void GenerateSubarraysWithSumLessOrEqualToK_EmptyArray_ShouldReturnEmptyCollection()
         {
-            Assert.Equal("", Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[]{ }, 6));
+            Assert.Equal(new List<string>(), Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[]{ }, 6));
         }
 
         [Fact]
         public void GenerateSubarraysWithSumLessOrEqualToK_ShouldReturnAllPossibleArrays()
         {
-            var result = """
-                1 2 3 4
-                12 23
-                123
-                """;
-            Assert.Equal(result, Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[] {1, 2, 3, 4}, 6));
+            var results = new List<string>() { "1", "12", "123", "2", "23", "3", "4" };
+    
+            Assert.Equal(results, Linq.GenerateSubarraysWithSumLessOrEqualTo(new int[] {1, 2, 3, 4}, 6));
         }
 
         [Fact]
         public void GenerateAllCombinationsEqualTo_ShouldReturnAllPossibleCombinationsEqualToK()
         {
-            var result = """
-                -1+2+3+4-5=3
-                1-2+3-4+5=3
-                -1-2-3+4+5=3
-                """;
+            var result = new List<string>() { "+1-2+3-4+5=3", "-1+2+3+4-5=3", "-1-2-3+4+5=3" };
+
             Assert.Equal(result, Linq.GenerateAllCombinationsEqualTo(5, 3));
         }
 
         [Fact]
-        public void GenerateAllCombinationsEqualTo_NoPossibleCombinations_ShouldReturnEmptyString()
+        public void GenerateAllCombinationsEqualTo_NoPossibleCombinations_ShouldReturnEmptyCollection()
         {
-            Assert.Equal("", Linq.GenerateAllCombinationsEqualTo(0, 2));
+            Assert.Equal(new List<string>(), Linq.GenerateAllCombinationsEqualTo(0, 2));
         }
 
         [Fact]
-        public void GenerateTriplets_ArrayLengthLessThanThree_ShouldReturnEmptyString()
+        public void GenerateTriplets_ArrayLengthLessThanThree_ShouldReturnEmptyCollection()
         {
-            Assert.Equal("", Linq.GenerateTriplets(new int[] {1, 2}));
+            Assert.Equal(new List<string>(), Linq.GenerateTriplets(new int[] {1, 2}));
         }
 
         [Fact]
         public void GenerateTriplets_ShouldReturnResult()
         {
-            int[] nums = new int[] { 3, 4, 5, 12, 13, 8, 15, 17};
-            var result = """
-                3^2 + 4^2 = 5^2
-                5^2 + 12^2 = 13^2
-                8^2 + 15^2 = 17^2
-                """;
-            Assert.Equal(result, Linq.GenerateTriplets(nums));
+            int[] nums = new int[] { 3, 4, 5, 12, 13, 8, 15, 17 };
+            var results = new List<string>() { "3^2 + 4^2 = 5^2", "5^2 + 12^2 = 13^2", "8^2 + 15^2 = 17^2" };
+
+            Assert.Equal(results, Linq.GenerateTriplets(nums));
         }
 
         [Fact]
@@ -388,5 +399,88 @@ namespace Linq.Facts
             Assert.Equivalent(final, Linq.KeepMaxScore(results));
         }
 
+        [Fact]
+        public void GetMostUsedWords_EmptyString_ShouldReturnEmptyCollection()
+        {
+            Assert.Equal(new List<(string, int)>(), Linq.GetMostUsedWords(""));
+        }
+
+        [Fact]
+        public void GetMostUsedWords_ValidString_ShouldOrderWordsDescendinglyByCount()
+        {
+            string text = "apple, pear, pear apple banana pear apple apple banana; pineapple";
+
+            var result = new List<(string, int)>() { ("apple", 4), ("pear", 3), ("banana", 2), ("pineapple", 1)};
+            Assert.Equal(result, Linq.GetMostUsedWords(text));
+        }
+
+        [Fact]
+        public void IsValidSudoku_InvalidSudoku_ShouldReturnFalse()
+        {
+            int[][] sudoku = new int[9][];
+            sudoku[0] = new int[] { 9, 9, 2, 1, 5, 4, 3, 8, 6 };
+            sudoku[1] = new int[] { 6, 4, 3, 8, 2, 7, 1, 5, 9 };
+            sudoku[2] = new int[] { 8, 5, 1, 3, 9, 6, 7, 2, 4 };
+            sudoku[3] = new int[] { 2, 6, 5, 9, 7, 3, 8, 4, 1 };
+            sudoku[4] = new int[] { 4, 8, 9, 5, 6, 1, 2, 7, 3 };
+            sudoku[5] = new int[] { 3, 1, 7, 4, 8, 2, 9, 6, 5 };
+            sudoku[6] = new int[] { 1, 3, 6, 7, 4, 8, 5, 9, 2 };
+            sudoku[7] = new int[] { 9, 7, 4, 2, 1, 5, 6, 3, 8 };
+            sudoku[8] = new int[] { 5, 2, 8, 6, 3, 9, 4, 1, 7 };
+
+            Assert.False(Linq.IsValidSudoku(sudoku));
+        }
+
+        [Fact]
+        public void IsValidSudoku_ShouldReturnFalseWhenLineContainsLessThanNineElements()
+        {
+            int[][] sudoku = new int[9][];
+            sudoku[0] = new int[] { 7, 9, 2, 1, 5, 4, 3 };
+            sudoku[1] = new int[] { 6, 4, 3, 8, 2, 7, 1, 5, 9 };
+            sudoku[2] = new int[] { 8, 5, 1, 3, 9, 6, 7, 2, 4 };
+            sudoku[3] = new int[] { 2, 6, 5, 9, 7, 3, 8, 4, 1 };
+            sudoku[4] = new int[] { 4, 8, 9, 5, 6, 1, 2, 7, 3 };
+            sudoku[5] = new int[] { 3, 1, 7, 4, 8, 2, 9, 6, 5 };
+            sudoku[6] = new int[] { 1, 3, 6, 7, 4, 8, 5, 9, 2 };
+            sudoku[7] = new int[] { 9, 7, 4, 2, 1, 5, 6, 3, 8 };
+            sudoku[8] = new int[] { 5, 2, 8, 6, 3, 9, 4, 1, 7 };
+
+            Assert.False(Linq.IsValidSudoku(sudoku));
+        }
+
+        [Fact]
+        public void IsValidSudoku_ValidSudoku_ShouldReturnTrue()
+        {
+            int[][] sudoku = new int[9][];
+            sudoku[0] = new int[] { 7, 9, 2, 1, 5, 4, 3, 8, 6 };
+            sudoku[1] = new int[] { 6, 4, 3, 8, 2, 7, 1, 5, 9 };
+            sudoku[2] = new int[] { 8, 5, 1, 3, 9, 6, 7, 2, 4 };
+            sudoku[3] = new int[] { 2, 6, 5, 9, 7, 3, 8, 4, 1 };
+            sudoku[4] = new int[] { 4, 8, 9, 5, 6, 1, 2, 7, 3 };
+            sudoku[5] = new int[] { 3, 1, 7, 4, 8, 2, 9, 6, 5 };
+            sudoku[6] = new int[] { 1, 3, 6, 7, 4, 8, 5, 9, 2 };
+            sudoku[7] = new int[] { 9, 7, 4, 2, 1, 5, 6, 3, 8 };
+            sudoku[8] = new int[] { 5, 2, 8, 6, 3, 9, 4, 1, 7 };
+
+            Assert.True(Linq.IsValidSudoku(sudoku));
+        }
+
+        [Fact]
+        public void EvaluatePolishNotation_SimpleExpression_ShouldReturnExpectedResult()
+        {
+            Assert.Equal(5, Linq.EvaluatePolishNotation(new List<string>() { "2", "3", "+"}));
+        }
+
+        [Fact]
+        public void EvaluatePolishNotation_MultipleOperations_ShouldReturnExpectedResult()
+        {
+            Assert.Equal(4, Linq.EvaluatePolishNotation(new List<string>() { "2", "1", "+", "3", "*", "5", "-" }));
+        }
+
+        [Fact]
+        public void EvaluatePolishNotation_ComplexExpression_ShouldReturnExpectedResult()
+        {
+            Assert.Equal(21.545454545454547, Linq.EvaluatePolishNotation(new List<string>() { "10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+" }));
+        }
     }
 }

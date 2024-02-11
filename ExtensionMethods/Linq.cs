@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System.Data;
+using System.Numerics;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks.Dataflow;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Linq
 {
@@ -11,8 +13,11 @@ namespace Linq
             IsNull(word);
 
             string vowels = "aeiouAEIOU";
-            int vowelsCount = word.Count(vowels.Contains);
-            int consonantsCount = word.Count(e => !vowels.Contains(e));
+
+            var letters = word.Where(char.IsLetter);
+            int vowelsCount = letters.Count(vowels.Contains);
+            int consonantsCount = letters.Count() - vowelsCount;
+
             return (vowelsCount, consonantsCount);
         }
 
@@ -20,84 +25,72 @@ namespace Linq
         {
             IsNull(word);
 
-            var uniqueChars = word.GroupBy(c => c).Where(group => group.Count() == 1).Select(group => group.Key);
-            return uniqueChars.FirstOrDefault();
+            var groupWithCountOne = word.GroupBy(c => c).FirstOrDefault(group => group.Count() == 1);
+            return groupWithCountOne != default ? groupWithCountOne.Key : '\0';
+        }
+
+        public static int ConvertToInt(string num)
+        {
+            IsNull(num);
+
+            int result = num.Aggregate(0, (a, b) =>
+            {
+                if (!char.IsNumber(b) && num.IndexOf(b) != 0 && b != '-')
+                {
+                    throw new FormatException("The string was not in a correct format");
+                }            
+
+                return char.IsNumber(b) ? a * 10 + (b - '0') : 0;
+            });
+
+            return num[0] == '-' ? -result : result;
         }
 
         public static char MostCommonChar(string word)
         {
             IsNull(word);
-            return word.GroupBy(e => e).OrderByDescending(group => group.Count()).SelectMany(e => e).FirstOrDefault();
+
+            var res = word.GroupBy(ch => ch).MaxBy(group => group.Count());
+            return res != null ? res.Key : '\0';
         }
 
-        public static string GenerateAllPalindromes(string word)
+        public static IEnumerable<string> GenerateAllPalindromes(string word)
         {
             IsNull(word);
 
-            if (word.Length == 0)
-            {
-                return word;
-            }
-
-            var palindromes = Enumerable.Range(0, word.Length)
+            return Enumerable.Range(0, word.Length)
                 .SelectMany(length => Enumerable.Range(0, word.Length - length + 1),
-                word.Substring).Where(word => word.SequenceEqual(word.Reverse()));
-
-            var lengthOne = string.Join(" ", palindromes.Where(p => p.Length == 1));
-            var lengthTwo = string.Join(" ", palindromes.Where(p => p.Length == 2));
-            var others = string.Join("\r\n", palindromes.Where(p => p.Length > 2));
-
-            return $"{lengthOne}\r\n{lengthTwo}\r\n{others}";
+                word.Substring).Where(word => word.SequenceEqual(word.Reverse()) && word.Count() > 0);
         }
 
-        public static string GenerateSubarraysWithSumLessOrEqualTo(int[] nums, int k)
+        public static IEnumerable<string> GenerateSubarraysWithSumLessOrEqualTo(int[] nums, int k)
         {
-            if (nums.Length == 0)
-            {
-                return "";
-            }
-
-            var subArrays = Enumerable.Range(0, nums.Length)
+            return Enumerable.Range(0, nums.Length)
                 .SelectMany(start => Enumerable.Range(0, nums.Length - start + 1),
-                (start, length) => nums.Skip(start).Take(length)).Where(subArr => subArr.Sum() <= k)
+                (start, length) => nums.Skip(start).Take(length)).Where(subArr => subArr.Sum() <= k && subArr.Count() > 0)
                 .Select(subArr => string.Join("", subArr));
-
-            var lengthOne = string.Join(" ", subArrays.Where(p => p.Length == 1));
-            var lengthTwo = string.Join(" ", subArrays.Where(p => p.Length == 2));
-            var others = string.Join("\r\n", subArrays.Where(p => p.Length > 2));
-
-            return $"{lengthOne}\r\n{lengthTwo}\r\n{others}";
         }
 
-        public static string GenerateAllCombinationsEqualTo(int n, int k)
+        public static IEnumerable<string> GenerateAllCombinationsEqualTo(int n, int k)
         {
-            var permsNum = (int)Math.Pow(2, n);
-            var results = Enumerable.Range(0, permsNum)
-            .Select(bits =>
-            {
-                var permutation = Enumerable.Range(0, n)
-                .Select(n => (bits & ((int)Math.Pow(2, n))) != 0 ? (n + 1) : -(n + 1)).ToList();
+            IEnumerable<string> signs = new string[] { "" };
 
-                var sum = permutation.Sum();
-                var str = string.Join("+", permutation);
-
-                return new { sum, str };
-            })
-            .Where(intermediate => intermediate.sum == k)
-            .Select(intermediate => $"{intermediate.str}={k}".Replace("+-", "-"));
-
-            return string.Join("\r\n", results);
+            return Enumerable.Range(1, n).Aggregate(signs, (signs, i) =>
+                         signs.SelectMany(item => new string[]  { item + "+", item + "-" }))
+                         .Where(combination => Enumerable.Range(0, n).Aggregate(0, (sum, i) => combination[i] == '-' ? sum - (i + 1) : sum + i + 1) == k)
+                         .Select(combination => string.Join("", combination.Zip(Enumerable.Range(1, n), (sign, num) => $"{sign}{num}")) + $"={k}");
         }
 
-        public static string GenerateTriplets(int[] nums)
+        public static IEnumerable<string> GenerateTriplets(int[] nums)
         {
-            IEnumerable<string> result = from a in nums
-                                         from b in nums
-                                         from c in nums
-                                         where a < b && b < c && a*a + b*b == c*c
-                                         select $"{a}^2 + {b}^2 = {c}^2";
+            int length = nums.Length;
 
-            return string.Join("\r\n", result);
+            return Enumerable.Range(0, length - 2)
+            .SelectMany(a => Enumerable.Range(a + 1, length - a - 1)
+            .SelectMany(b => Enumerable.Range(b + 1, length - b - 1), (b, c) => (nums[a], nums[b], nums[c])))
+            .Where(triplet => triplet.Item1 < triplet.Item2 && triplet.Item2 < triplet.Item3 &&
+            triplet.Item1 * triplet.Item1 + triplet.Item2 * triplet.Item2 == triplet.Item3 * triplet.Item3)
+            .Select(triplet => $"{triplet.Item1}^2 + {triplet.Item2}^2 = {triplet.Item3}^2");
         }
 
         public class Product
@@ -113,17 +106,17 @@ namespace Linq
 
         public static List<Product> GetProductsWithFeature(List<Product> products, List<Feature> features)
         {
-            return products.Where(prod => features.Any(feature => prod.Features.Contains(feature))).ToList();
+            return products.Where(prod => prod.Features.Intersect(features).Any()).ToList();
         }
 
         public static List<Product> GetProductsWithAllFeatures(List<Product> products, List<Feature> features)
         {
-            return products.Where(prod => features.All(feature => prod.Features.Contains(feature))).ToList();
+            return products.Where(prod => !features.Except(prod.Features).Any()).ToList();
         }
 
         public static List<Product> GetProductsWithNoFeatures(List<Product> products, List<Feature> features)
         {
-            return products.Where(prod => features.All(feature => !prod.Features.Contains(feature))).ToList();
+            return products.Where(prod => !prod.Features.Intersect(features).Any()).ToList();
         }
 
         public struct Prod
@@ -165,6 +158,58 @@ namespace Linq
         {
             return results.GroupBy(family => family.FamilyId).Select(group => group.Aggregate((a, b) => a.Score > b.Score ? a : b)).ToList();
         }
+
+        public static IEnumerable<(string, int)> GetMostUsedWords(string text)
+        {
+            IsNull(text);
+
+            char[] splitChars = new char[] { ' ', '.', ',', '?', '!', ':', ';' };
+            return text.Split(splitChars).Where(word => !string.IsNullOrEmpty(word)).GroupBy(word => word).Select(word => (word.Key, word.Count())).OrderByDescending(word => word.Item2);
+        }
+
+        public static bool IsValidSudoku(int[][] sudoku)
+        {
+            IEnumerable<IEnumerable<int>> rows = sudoku.Select(row => row);
+
+            IEnumerable<IEnumerable<int>> columns = Enumerable.Range(0, sudoku.Length).Select(i => Enumerable.Range(0, sudoku.Length).Select(j => sudoku[j][i]));
+
+            IEnumerable<IEnumerable<int>> squares = Enumerable.Range(0, 3).SelectMany(i => Enumerable.Range(0, 3)
+                                .Select(j => sudoku.Skip(i * 3).Take(3)
+                                .Select(row => row.Skip(j * 3).Take(3))))
+                                .Select(group => group.SelectMany(n => n));
+
+            return rows.Concat(columns).Concat(squares).All(IsValidGroup);
+        }
+
+        static bool IsValidGroup(IEnumerable<int> group)
+        {
+            return group.All(x => x > 0 && x <= 9) && group.Distinct().Count() == group.Count() && group.Count() == 9;
+        }
+
+       
+        public static double EvaluatePolishNotation(List<string> expression)
+        {
+            IEnumerable<double> aggregator = new double[] { 0 };
+
+            return expression.Aggregate(aggregator, (aggregator, b) =>
+            {
+                if (double.TryParse(b, out double value))
+                {
+                    return aggregator.Append(value);
+                }
+
+                var result = aggregator.TakeLast(2).Aggregate(operations[b]);
+                return aggregator.SkipLast(2).Append(result);
+            }).Last();
+        }
+
+        static readonly Dictionary<string, Func<double, double, double>> operations = new Dictionary<string, Func<double, double, double>>
+        {
+            {"+", (a, b) => a + b },
+            {"-", (a, b) => a - b },
+            {"*", (a, b) => a * b },
+            {"/", (a, b) => a / b }
+        };
 
         private static void IsNull(string param, [CallerArgumentExpression(nameof(param))] string paramName = "")
         {

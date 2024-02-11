@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace Stock.Facts
+﻿namespace Stock.Facts
 {
     public class StockFacts
     {
@@ -8,7 +6,8 @@ namespace Stock.Facts
         public void IsInStock_ShouldReturnFalseWhenSpecifiedProductIsNotInStock()
         {
             var stock = new Stock();
-            Assert.False(stock.IsInStock("charger"));
+            var charger = new Product("charger", 2);
+            Assert.False(stock.IsInStock(charger));
         }
 
         [Fact]
@@ -22,40 +21,78 @@ namespace Stock.Facts
         public void AddProduct_ShouldAddSpecifiedProductInStock()
         {
             var stock = new Stock();
-            Assert.True(stock.AddProduct("charger", 10));
-            Assert.True(stock.IsInStock("charger"));
+            var charger = new Product("charger", 10);
+            Assert.True(stock.AddProduct(charger));
+            Assert.True(stock.IsInStock(charger));
         }
 
         [Fact]
         public void AddProduct_ShouldReturnFalseWhenSpecifiedProductIsAlreadyInStock()
         {
             var stock = new Stock();
-            Assert.True(stock.AddProduct("charger", 10));
-            Assert.False(stock.AddProduct("charger", 12));
-        }
-
-        [Fact]
-        public void Sell_ShouldSellASpecifiedQuantityOfProduct()
-        {
-            var stock = new Stock();
-            stock.AddProduct("phone", 15);
-            Assert.True(stock.Sell("phone", 7));
+            var charger = new Product("charger", 10);
+            var secondCharger = new Product("charger", 12);
+            Assert.True(stock.AddProduct(charger));
+            Assert.False(stock.AddProduct(secondCharger));
         }
 
         [Fact]
         public void Sell_ShouldReturnFalseWhenProductIsNotInStock()
         {
             var stock = new Stock();
-            stock.AddProduct("phone", 15);
-            Assert.False(stock.Sell("tablet", 7));
+            var phone = new Product("phone", 15);
+            var tablet = new Product("tablet", 13);
+            stock.AddProduct(phone);
+            string notification = "";
+
+            void Notify(Product product)
+            {
+                notification = $"{product.Quantity} {product.Name}s remaining!";
+            }
+
+            stock.Notify = Notify;
+
+            Assert.False(stock.Sell(tablet, 7));
         }
 
         [Fact]
-        public void Sell_ShouldThrowArgumentNullExceptionWhenProductNameIsNull()
+        public void Sell_ShouldSellASpecifiedQuantityOfProductsAndReportRemainingQuantity()
         {
             var stock = new Stock();
-            stock.AddProduct("phone", 15);
-            Assert.Throws<ArgumentNullException>(() => stock.Sell(null, 5));
+            var phone = new Product("phone", 15);
+            stock.AddProduct(phone);
+            string notification = "";
+
+            void Notify(Product product)
+            {
+                notification = $"{product.Quantity} {product.Name}s remaining!";
+            }
+
+            stock.Notify = Notify;
+
+            Assert.True(stock.Sell(phone, 7));
+            Assert.Equal(8, phone.Quantity);
+            Assert.Equal("8 phones remaining!", notification);
+        }
+
+        [Fact]
+        public void Sell_ShouldNotNotifyRemainingQuantityWhenMoreThanTenProductsRemaining()
+        {
+            var stock = new Stock();
+            var phone = new Product("phone", 20);
+            stock.AddProduct(phone);
+            string notification = "";
+
+            void Notify(Product product)
+            {
+                notification = $"{product.Quantity} {product.Name}s remaining!";
+            }
+
+            stock.Notify = Notify;
+
+            Assert.True(stock.Sell(phone, 7));
+            Assert.Equal(13, phone.Quantity);
+            Assert.Equal("", notification);
         }
     }
 }

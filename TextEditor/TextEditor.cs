@@ -5,21 +5,20 @@
         static void Main(string[] args)
         {
             ConsoleMode.EnableVTProcessing();
+            HelperFunctions.ClearScreen();
+            Cursor.MoveTo(1, 1);
 
-            if (args.Length == 0 || !Path.Exists(args[0]))
+            string[] input = (args.Length == 0 || !Path.Exists(args[0]) ? ReadFile() : File.ReadAllText(args[0])).Split("\n");
+
+            foreach (string line in input)
             {
-               ReadFile();
+                Console.WriteLine(line);
             }
 
-            else
-            {
-                Console.WriteLine(File.ReadAllText(args[0]));
-            }
-
-            Cursor.PrintPosition();
+            Cursor.Move(input);
         }
 
-        static void ReadFile()
+        static string ReadFile()
         {
             Console.WriteLine("Enter the name of the text file in the format name.txt: ");
             string? fileName = Console.ReadLine();
@@ -30,7 +29,7 @@
                 fileName = Console.ReadLine();
             }
 
-            Console.WriteLine(File.ReadAllText(fileName));
+            return File.ReadAllText(fileName);
         }
     }
 }

@@ -1,27 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TextEditor
+﻿namespace TextEditor
 {
     public static class Cursor
     {
         const string ESC = "\x1b[";
 
-        public static void MoveUp(int positions) => Console.Write($"{ESC}{positions}A");
+        public static void MoveTo(int row, int col) => Console.Write($"{ESC}{row};{col}H");
 
-        public static void MoveDown(int positions) => Console.Write($"{ESC}{positions}B");
+        public static void Move(string[] input)
+        {
+            (int row, int col) = (1, 1);
 
-        public static void MoveForward(int positions) => Console.Write($"{ESC}{positions}C");
+            while (true)
+            {
+                char ch = Console.ReadKey().KeyChar;
 
-        public static void MoveBackward(int positions) => Console.Write($"{ESC}{positions}D");
+                if (ch == 27)
+                {
+                    (char next1, char next2) = (Console.ReadKey().KeyChar, Console.ReadKey().KeyChar);
 
-        public static void SavePosition(int positions) => Console.Write($"{ESC}7");
+                    if (next1 == '[')
+                    {
+                        if (next2 == 'A')
+                        {
+                            row = Math.Max(1, row - 1);
+                        }
 
-        public static void RestorePosition(int positions) => Console.Write($"{ESC}8");
+                        else if (next2 == 'B')
+                        {
+                            row = Math.Min(input.Length, row + 1);
+                        }
 
-        public static void PrintPosition() => Console.Write($"{ESC}6n");
+                        else if (next2 == 'C')
+                        {
+                            col = row == input.Length ? Math.Min(input[row - 1].Length + 1, col + 1) : Math.Min(input[row - 1].Length, col + 1);
+                        }
+
+                        else if (next2 == 'D')
+                        {
+                            col = Math.Max(1, col - 1);
+                        }
+                    }
+                }
+
+                MoveTo(row, col);
+            }
+        }
     }
 }

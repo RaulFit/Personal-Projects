@@ -29,6 +29,8 @@
                 fileName = Console.ReadLine();
             }
 
+            HelperFunctions.ClearScreen();
+            Cursor.MoveTo(1, 1);
             return File.ReadAllText(fileName);
         }
     }

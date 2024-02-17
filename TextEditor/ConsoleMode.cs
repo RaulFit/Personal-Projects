@@ -1,9 +1,13 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace TextEditor
 {
-    static class ConsoleMode
+    public class ConsoleMode
     {
+
+        // ReSharper disable InconsistentNaming
+
         private const int STD_INPUT_HANDLE = -10;
 
         private const int STD_OUTPUT_HANDLE = -11;
@@ -13,6 +17,8 @@ namespace TextEditor
         private const uint DISABLE_NEWLINE_AUTO_RETURN = 0x0008;
 
         private const uint ENABLE_VIRTUAL_TERMINAL_INPUT = 0x0200;
+
+        // ReSharper restore InconsistentNaming
 
         [DllImport("kernel32.dll")]
         private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
@@ -37,7 +43,6 @@ namespace TextEditor
                 Console.ReadKey();
                 return;
             }
-
             if (!GetConsoleMode(iStdOut, out uint outConsoleMode))
             {
                 Console.WriteLine("failed to get output console mode");
@@ -54,7 +59,6 @@ namespace TextEditor
                 Console.ReadKey();
                 return;
             }
-
             if (!SetConsoleMode(iStdOut, outConsoleMode))
             {
                 Console.WriteLine($"failed to set output console mode, error code: {GetLastError()}");

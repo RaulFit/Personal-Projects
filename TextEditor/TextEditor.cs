@@ -129,7 +129,7 @@ namespace TextEditor
                 row++;
             }
 
-            else if (arrow == 'C' && col < text[row].Length - 1)
+            else if (arrow == 'C' && col < text[row].Length)
             {
                 col++;
             }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Reflection;
-
-namespace TextEditor
+﻿namespace TextEditor
 {
     class TextEditor
     {
@@ -15,7 +12,6 @@ namespace TextEditor
         static void Main(string[] args)
         {
             OpenFile(args);
-            ConsoleMode.EnableVTProcessing();
 
             while (true)
             {

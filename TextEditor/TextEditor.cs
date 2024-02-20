@@ -1,4 +1,7 @@
-﻿namespace TextEditor
+﻿using System.IO;
+using System;
+
+namespace TextEditor
 {
     class TextEditor
     {
@@ -11,6 +14,7 @@
 
         static void Main(string[] args)
         {
+            ConsoleMode.EnableVTProcessing();
             OpenFile(args);
 
             while (true)
@@ -69,7 +73,7 @@
                 {
                     Console.WriteLine(text[index][offsetCol..(lenToDraw + offsetCol)]);
                 }
-                
+
             }
         }
 

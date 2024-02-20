@@ -1,4 +1,7 @@
-﻿namespace TextEditor
+﻿using System;
+using System.Reflection;
+
+namespace TextEditor
 {
     class TextEditor
     {
@@ -31,16 +34,20 @@
 
         private static void DrawContent()
         {
-            for (int i = 0; i < Console.WindowHeight; i++)
+            int len = Math.Min(Console.WindowHeight - 1, text.Length - 1);
+
+            for (int i = 0; i < len; i++)
             {
                 int rowIndex = i + offsetRow;
-
-                if (rowIndex >= text.Length)
-                {
-                    return;
-                }
-
                 DrawRow(rowIndex);
+            }
+
+            int lastIndex = len + offsetRow;
+            int lenToDraw = text[lastIndex].Length - offsetCol;
+
+            if (lenToDraw > 0)
+            {
+                Console.Write(text[lastIndex][offsetCol..(lenToDraw + offsetCol)]);
             }
         }
 
@@ -60,16 +67,7 @@
 
             if (lenToDraw > 0)
             {
-                if (index == Console.WindowHeight + offsetRow - 1)
-                {
-                    Console.Write(text[index][offsetCol..(lenToDraw + offsetCol)]);
-                }
-
-                else
-                {
-                    Console.WriteLine(text[index][offsetCol..(lenToDraw + offsetCol)]);
-                }
-
+                Console.WriteLine(text[index][offsetCol..(lenToDraw + offsetCol)]);
             }
         }
 
@@ -104,11 +102,21 @@
 
             if (ch.Key == ConsoleKey.UpArrow && row > 0)
             {
+                if (col > text[row - 1].Length)
+                {
+                    col = text[row - 1].Length;
+                }
+
                 row--;
             }
 
             else if (ch.Key == ConsoleKey.DownArrow && row < text.Length - 1)
             {
+                if (col > text[row + 1].Length)
+                {
+                    col = text[row + 1].Length;
+                }
+
                 row++;
             }
 

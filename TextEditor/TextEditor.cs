@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System;
-
-namespace TextEditor
+﻿namespace TextEditor
 {
     class TextEditor
     {
@@ -14,7 +11,6 @@ namespace TextEditor
 
         static void Main(string[] args)
         {
-            ConsoleMode.EnableVTProcessing();
             OpenFile(args);
 
             while (true)
@@ -104,37 +100,24 @@ namespace TextEditor
 
         private static void HandleInput()
         {
-            char ch = Console.ReadKey().KeyChar;
+            var ch = Console.ReadKey(true);
 
-            if (ch == 27)
-            {
-                (char next1, char next2) = (Console.ReadKey().KeyChar, Console.ReadKey().KeyChar);
-
-                if (next1 == '[')
-                {
-                    HandleArrows(next2);
-                }
-            }
-        }
-
-        private static void HandleArrows(char arrow)
-        {
-            if (arrow == 'A' && row > 0)
+            if (ch.Key == ConsoleKey.UpArrow && row > 0)
             {
                 row--;
             }
 
-            else if (arrow == 'B' && row < text.Length - 1)
+            else if (ch.Key == ConsoleKey.DownArrow && row < text.Length - 1)
             {
                 row++;
             }
 
-            else if (arrow == 'C' && col < text[row].Length)
+            else if (ch.Key == ConsoleKey.RightArrow && col < text[row].Length)
             {
                 col++;
             }
 
-            else if (arrow == 'D' && col > 0)
+            else if (ch.Key == ConsoleKey.LeftArrow && col > 0)
             {
                 col--;
             }

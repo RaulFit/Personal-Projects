@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace TextEditor
@@ -102,7 +103,7 @@ namespace TextEditor
 
             if (ch.Key == ConsoleKey.UpArrow && row > 0)
             {
-                if (col > text[row - 1].Length)
+                if (col > text[row - 1].Length || col == text[row].Length)
                 {
                     col = text[row - 1].Length;
                 }
@@ -112,7 +113,7 @@ namespace TextEditor
 
             else if (ch.Key == ConsoleKey.DownArrow && row < text.Length - 1)
             {
-                if (col > text[row + 1].Length)
+                if (col > text[row + 1].Length || col == text[row].Length)
                 {
                     col = text[row + 1].Length;
                 }

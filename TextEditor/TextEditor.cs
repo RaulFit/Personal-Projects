@@ -1,8 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Reflection;
-
-namespace TextEditor
+﻿namespace TextEditor
 {
     class TextEditor
     {
@@ -100,33 +96,71 @@ namespace TextEditor
         private static void HandleInput()
         {
             var ch = Console.ReadKey(true);
+            HandleArrows(ch.Key);
+            HandleKeys(ch.Key);
+        }
 
-            if (ch.Key == ConsoleKey.UpArrow && row > 0)
+        private static void HandleKeys(ConsoleKey ch)
+        {
+            if (ch == ConsoleKey.Home)
+            {
+                col = 0;
+            }
+
+            else if (ch == ConsoleKey.End)
+            {
+                col = text[row].Length;
+            }
+
+            else if (ch == ConsoleKey.PageDown)
+            {
+                row = Console.WindowHeight + offsetRow - 1;
+                int end = row + Console.WindowHeight;
+                for (int i = row; i < end && i < text.Length - 1; i++)
+                {
+                    HandleArrows(ConsoleKey.DownArrow);
+                }
+            }
+
+            else if (ch == ConsoleKey.PageUp)
+            {
+                row = offsetRow;
+                int end = row - Console.WindowHeight;
+                for (int i = row; i > end && i > 0; i--)
+                {
+                    HandleArrows(ConsoleKey.UpArrow);
+                }
+            }
+        }
+
+        private static void HandleArrows(ConsoleKey ch)
+        {
+            if (ch == ConsoleKey.UpArrow && row > 0)
             {
                 if (col > text[row - 1].Length || col == text[row].Length)
                 {
-                    col = text[row - 1].Length;
+                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length);
                 }
 
                 row--;
             }
 
-            else if (ch.Key == ConsoleKey.DownArrow && row < text.Length - 1)
+            else if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
             {
                 if (col > text[row + 1].Length || col == text[row].Length)
                 {
-                    col = text[row + 1].Length;
+                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row + 1].Length);
                 }
 
                 row++;
             }
 
-            else if (ch.Key == ConsoleKey.RightArrow && col < text[row].Length)
+            else if (ch == ConsoleKey.RightArrow && col < text[row].Length)
             {
                 col++;
             }
 
-            else if (ch.Key == ConsoleKey.LeftArrow && col > 0)
+            else if (ch == ConsoleKey.LeftArrow && col > 0)
             {
                 col--;
             }

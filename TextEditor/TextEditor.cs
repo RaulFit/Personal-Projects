@@ -8,6 +8,7 @@
         static int offsetRow = 0;
         static int col = 0;
         static int offsetCol = 0;
+        static string rowIndex = "";
 
         static void Main(string[] args)
         {
@@ -41,6 +42,10 @@
 
             int lastIndex = len + offsetRow;
             int lenToDraw = text[lastIndex].Length - offsetCol;
+            Console.Write($"{ESC}32m");
+            rowIndex = (lastIndex + 1) + " ";
+            Console.Write(rowIndex);
+            Console.Write($"{ESC}0m");
 
             if (lenToDraw > 0)
             {
@@ -51,6 +56,10 @@
         private static void DrawRow(int index)
         {
             int lenToDraw = text[index].Length - offsetCol;
+            Console.Write($"{ESC}32m");
+            rowIndex = (index + 1) + " ";
+            Console.Write(rowIndex);
+            Console.Write($"{ESC}0m");
 
             if (lenToDraw <= 0)
             {
@@ -59,7 +68,7 @@
 
             if (lenToDraw > Console.WindowWidth)
             {
-                lenToDraw = Console.WindowWidth;
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
             }
 
             if (lenToDraw > 0)
@@ -104,12 +113,20 @@
         {
             if (ch == ConsoleKey.Home)
             {
-                col = 0;
+                if (offsetCol == 0)
+                {
+                    col = text[row].Length > 0 ? text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))) + rowIndex.Length - 1: rowIndex.Length - 1;
+                }
+                else
+                {
+                    col = text[row].Length > 0 ? text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))) : 0;
+                }
+                
             }
 
             else if (ch == ConsoleKey.End)
             {
-                col = text[row].Length;
+                col = text[row].Length + rowIndex.Length - 1;
             }
 
             else if (ch == ConsoleKey.PageDown)
@@ -137,9 +154,9 @@
         {
             if (ch == ConsoleKey.UpArrow && row > 0)
             {
-                if (col > text[row - 1].Length || col == text[row].Length)
+                if (col > text[row - 1].Length || col == text[row].Length + rowIndex.Length - 1)
                 {
-                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length);
+                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length+ rowIndex.Length - 1);
                 }
 
                 row--;
@@ -147,21 +164,26 @@
 
             else if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
             {
-                if (col > text[row + 1].Length || col == text[row].Length)
+                if (col > text[row + 1].Length || col == text[row].Length + rowIndex.Length - 1)
                 {
-                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row + 1].Length);
+                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row + 1].Length + rowIndex.Length -1);
                 }
 
                 row++;
             }
 
-            else if (ch == ConsoleKey.RightArrow && col < text[row].Length)
+            else if (ch == ConsoleKey.RightArrow && col < text[row].Length + row.ToString().Length + 1)
             {
                 col++;
             }
 
             else if (ch == ConsoleKey.LeftArrow && col > 0)
             {
+                if (offsetCol == 0 && col < rowIndex.Length)
+                {
+                    col = rowIndex.Length;
+                }
+
                 col--;
             }
         }

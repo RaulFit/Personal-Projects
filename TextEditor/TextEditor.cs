@@ -41,11 +41,9 @@
             }
 
             int lastIndex = len + offsetRow;
-            int lenToDraw = text[lastIndex].Length - offsetCol;
-            Console.Write($"{ESC}32m");
             rowIndex = (lastIndex + 1) + " ";
-            Console.Write(rowIndex);
-            Console.Write($"{ESC}0m");
+            int lenToDraw = text[lastIndex].Length - offsetCol;
+            DrawRowIndex();
 
             if (lenToDraw > 0)
             {
@@ -55,11 +53,9 @@
 
         private static void DrawRow(int index)
         {
-            int lenToDraw = text[index].Length - offsetCol;
-            Console.Write($"{ESC}32m");
             rowIndex = (index + 1) + " ";
-            Console.Write(rowIndex);
-            Console.Write($"{ESC}0m");
+            int lenToDraw = text[index].Length - offsetCol;
+            DrawRowIndex();
 
             if (lenToDraw <= 0)
             {
@@ -77,7 +73,14 @@
             }
         }
 
-        private static void DrawCursor() => Console.SetCursorPosition(col - offsetCol, row - offsetRow);
+        private static void DrawRowIndex()
+        {
+            Console.Write($"{ESC}32m");
+            Console.Write(rowIndex);
+            Console.Write($"{ESC}0m");
+        }
+
+        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1), row - offsetRow);
 
         private static void Scroll()
         {
@@ -113,20 +116,20 @@
         {
             if (ch == ConsoleKey.Home)
             {
-                if (offsetCol == 0)
-                {
-                    col = text[row].Length > 0 ? text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))) + rowIndex.Length - 1: rowIndex.Length - 1;
-                }
-                else
-                {
-                    col = text[row].Length > 0 ? text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))) : 0;
-                }
-                
+                col = text[row].Length > 0 ? text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))) : 0;
             }
 
             else if (ch == ConsoleKey.End)
             {
-                col = text[row].Length + rowIndex.Length - 1;
+                if (text[row].Length > Console.WindowWidth)
+                {
+                    col = text[row].Length + rowIndex.Length - 1;
+                }
+
+                else
+                {
+                    col = text[row].Length;
+                }
             }
 
             else if (ch == ConsoleKey.PageDown)
@@ -154,9 +157,9 @@
         {
             if (ch == ConsoleKey.UpArrow && row > 0)
             {
-                if (col > text[row - 1].Length || col == text[row].Length + rowIndex.Length - 1)
+                if (col > text[row - 1].Length || col == text[row].Length)
                 {
-                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length+ rowIndex.Length - 1);
+                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length);
                 }
 
                 row--;
@@ -164,26 +167,21 @@
 
             else if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
             {
-                if (col > text[row + 1].Length || col == text[row].Length + rowIndex.Length - 1)
+                if (col > text[row + 1].Length || col == text[row].Length)
                 {
-                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row + 1].Length + rowIndex.Length -1);
+                    col = Math.Min(Console.WindowWidth + offsetCol - rowIndex.Length, text[row + 1].Length);
                 }
 
                 row++;
             }
 
-            else if (ch == ConsoleKey.RightArrow && col < text[row].Length + row.ToString().Length + 1)
+            else if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Console.WindowWidth && col < text[row].Length + rowIndex.Length - 1)))
             {
                 col++;
             }
 
             else if (ch == ConsoleKey.LeftArrow && col > 0)
             {
-                if (offsetCol == 0 && col < rowIndex.Length)
-                {
-                    col = rowIndex.Length;
-                }
-
                 col--;
             }
         }

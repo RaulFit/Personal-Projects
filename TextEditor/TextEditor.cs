@@ -64,7 +64,7 @@
 
             if (lenToDraw > Console.WindowWidth)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
+                lenToDraw = Console.WindowWidth - rowIndex.Length - 1;
             }
 
             if (lenToDraw > 0)
@@ -75,12 +75,18 @@
 
         private static void DrawRowIndex()
         {
-            Console.Write($"{ESC}32m");
-            Console.Write(rowIndex);
-            Console.Write($"{ESC}0m");
+            if (Console.WindowHeight + offsetRow - 1 < 100)
+            {
+                Console.Write($"{ESC}32m{rowIndex, 3}{ESC}0m");
+            }
+
+            else
+            {
+                Console.Write($"{ESC}32m{rowIndex, 4}{ESC}0m");
+            }
         }
 
-        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1), row - offsetRow);
+        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), row - offsetRow);
 
         private static void Scroll()
         {

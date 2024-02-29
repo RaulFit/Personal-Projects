@@ -18,7 +18,14 @@
             {
                 Scroll();
                 RefreshScreen();
-                HandleInput();
+                var ch = Console.ReadKey(true);
+
+                if (ch.Key == ConsoleKey.Escape)
+                {
+                    return;
+                }
+
+                HandleInput(ch.Key);
             }
         }
 
@@ -42,7 +49,7 @@
 
             int lastIndex = len + offsetRow;
             rowIndex = (lastIndex + 1) + " ";
-            int lenToDraw = text[lastIndex].Length - offsetCol;
+            int lenToDraw = Math.Min(text[lastIndex].Length - offsetCol, Console.WindowHeight - rowIndex.Length);
             DrawRowIndex();
 
             if (lenToDraw > 0)
@@ -64,7 +71,7 @@
 
             if (lenToDraw > Console.WindowWidth)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length - 1;
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
             }
 
             if (lenToDraw > 0)
@@ -111,11 +118,10 @@
             }
         }
 
-        private static void HandleInput()
+        private static void HandleInput(ConsoleKey ch)
         {
-            var ch = Console.ReadKey(true);
-            HandleArrows(ch.Key);
-            HandleKeys(ch.Key);
+            HandleArrows(ch);
+            HandleKeys(ch);
         }
 
         private static void HandleKeys(ConsoleKey ch)

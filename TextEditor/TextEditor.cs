@@ -13,7 +13,7 @@
         static void Main(string[] args)
         {
             OpenFile(args);
-
+            Console.Clear();
             while (true)
             {
                 Scroll();
@@ -31,7 +31,6 @@
 
         private static void RefreshScreen()
         {
-            Console.Clear();
             Console.SetCursorPosition(0, 0);
             DrawContent();
             DrawCursor();
@@ -49,8 +48,13 @@
 
             int lastIndex = len + offsetRow;
             rowIndex = (lastIndex + 1) + " ";
-            int lenToDraw = Math.Min(text[lastIndex].Length - offsetCol, Console.WindowHeight - rowIndex.Length);
+            int lenToDraw = text[lastIndex].Length - offsetCol;
             DrawRowIndex();
+
+            if (lenToDraw > Console.WindowWidth)
+            {
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
+            }
 
             if (lenToDraw > 0)
             {
@@ -82,14 +86,17 @@
 
         private static void DrawRowIndex()
         {
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.CursorLeft = 0;
+
             if (Console.WindowHeight + offsetRow - 1 < 100)
             {
-                Console.Write($"{ESC}32m{rowIndex, 3}{ESC}0m");
+                Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
             }
 
             else
             {
-                Console.Write($"{ESC}32m{rowIndex, 4}{ESC}0m");
+                Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
             }
         }
 

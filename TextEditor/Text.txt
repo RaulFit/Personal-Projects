@@ -24,7 +24,6 @@
 
         private static void RefreshScreen()
         {
-            Console.Clear();
             Console.SetCursorPosition(0, 0);
             DrawContent();
             DrawCursor();
@@ -44,6 +43,11 @@
             rowIndex = (lastIndex + 1) + " ";
             int lenToDraw = text[lastIndex].Length - offsetCol;
             DrawRowIndex();
+
+            if (lenToDraw > Console.WindowWidth)
+            {
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
+            }
 
             if (lenToDraw > 0)
             {
@@ -75,12 +79,21 @@
 
         private static void DrawRowIndex()
         {
-            Console.Write($"{ESC}32m");
-            Console.Write(rowIndex);
-            Console.Write($"{ESC}0m");
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.CursorLeft = 0;
+
+            if (Console.WindowHeight + offsetRow < 100)
+            {
+                Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
+            }
+
+            else
+            {
+                Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
+            }
         }
 
-        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1), row - offsetRow);
+        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), row - offsetRow);
 
         private static void Scroll()
         {

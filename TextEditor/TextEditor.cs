@@ -13,19 +13,12 @@
         static void Main(string[] args)
         {
             OpenFile(args);
-            Console.Clear();
+
             while (true)
             {
                 Scroll();
                 RefreshScreen();
-                var ch = Console.ReadKey(true);
-
-                if (ch.Key == ConsoleKey.Escape)
-                {
-                    return;
-                }
-
-                HandleInput(ch.Key);
+                HandleInput();
             }
         }
 
@@ -75,7 +68,7 @@
 
             if (lenToDraw > Console.WindowWidth)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
+                lenToDraw = Console.WindowWidth - rowIndex.Length - 1;
             }
 
             if (lenToDraw > 0)
@@ -89,7 +82,7 @@
             Console.Write(new string(' ', Console.WindowWidth));
             Console.CursorLeft = 0;
 
-            if (Console.WindowHeight + offsetRow - 1 < 100)
+            if (Console.WindowHeight + offsetRow < 100)
             {
                 Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
             }
@@ -125,10 +118,11 @@
             }
         }
 
-        private static void HandleInput(ConsoleKey ch)
+        private static void HandleInput()
         {
-            HandleArrows(ch);
-            HandleKeys(ch);
+            var ch = Console.ReadKey(true);
+            HandleArrows(ch.Key);
+            HandleKeys(ch.Key);
         }
 
         private static void HandleKeys(ConsoleKey ch)

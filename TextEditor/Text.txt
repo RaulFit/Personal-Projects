@@ -68,7 +68,7 @@
 
             if (lenToDraw > Console.WindowWidth)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
+                lenToDraw = Console.WindowWidth - rowIndex.Length - 1;
             }
 
             if (lenToDraw > 0)

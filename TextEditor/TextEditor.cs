@@ -13,6 +13,7 @@
         static void Main(string[] args)
         {
             OpenFile(args);
+            Console.Clear();
 
             while (true)
             {
@@ -79,6 +80,7 @@
 
         private static void DrawRowIndex()
         {
+            Console.CursorLeft = 0;
             Console.Write(new string(' ', Console.WindowWidth));
             Console.CursorLeft = 0;
 

@@ -13,7 +13,6 @@
         static void Main(string[] args)
         {
             OpenFile(args);
-            Console.Clear();
 
             while (true)
             {
@@ -45,11 +44,6 @@
             int lenToDraw = text[lastIndex].Length - offsetCol;
             DrawRowIndex();
 
-            if (lenToDraw > Console.WindowWidth)
-            {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
-            }
-
             if (lenToDraw > 0)
             {
                 Console.Write(text[lastIndex][offsetCol..(lenToDraw + offsetCol)]);
@@ -69,7 +63,7 @@
 
             if (lenToDraw > Console.WindowWidth)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length - 1;
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
             }
 
             if (lenToDraw > 0)
@@ -80,22 +74,14 @@
 
         private static void DrawRowIndex()
         {
-            Console.CursorLeft = 0;
             Console.Write(new string(' ', Console.WindowWidth));
             Console.CursorLeft = 0;
-
-            if (Console.WindowHeight + offsetRow < 100)
-            {
-                Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
-            }
-
-            else
-            {
-                Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
-            }
+            Console.Write($"{ESC}32m");
+            Console.Write(rowIndex);
+            Console.Write($"{ESC}0m");
         }
 
-        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), row - offsetRow);
+        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1), row - offsetRow);
 
         private static void Scroll()
         {

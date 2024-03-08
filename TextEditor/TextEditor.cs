@@ -25,6 +25,8 @@
         private static void RefreshScreen()
         {
             Console.SetCursorPosition(0, 0);
+            ClearScreen();
+            Console.SetCursorPosition(0, 0);
             DrawContent();
             DrawCursor();
         }
@@ -44,10 +46,25 @@
             int lenToDraw = text[lastIndex].Length - offsetCol;
             DrawRowIndex();
 
+            if (lenToDraw > Console.WindowWidth)
+            {
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
+            }
+
             if (lenToDraw > 0)
             {
                 Console.Write(text[lastIndex][offsetCol..(lenToDraw + offsetCol)]);
             }
+        }
+
+        private static void ClearScreen()
+        {
+            for (int i = 0; i < Console.WindowHeight - 1; i++)
+            {
+                Console.WriteLine(new string(' ', Console.WindowWidth));
+            }
+
+            Console.Write(new string(' ', Console.WindowWidth));
         }
 
         private static void DrawRow(int index)
@@ -63,7 +80,7 @@
 
             if (lenToDraw > Console.WindowWidth)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
+                lenToDraw = Console.WindowWidth - rowIndex.Length - 1;
             }
 
             if (lenToDraw > 0)
@@ -74,14 +91,18 @@
 
         private static void DrawRowIndex()
         {
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.CursorLeft = 0;
-            Console.Write($"{ESC}32m");
-            Console.Write(rowIndex);
-            Console.Write($"{ESC}0m");
+            if (Console.WindowHeight + offsetRow < 100)
+            {
+                Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
+            }
+
+            else
+            {
+                Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
+            }
         }
 
-        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1), row - offsetRow);
+        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), row - offsetRow);
 
         private static void Scroll()
         {

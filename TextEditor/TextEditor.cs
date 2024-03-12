@@ -8,6 +8,7 @@
         static int offsetRow = 0;
         static int col = 0;
         static int offsetCol = 0;
+        static int prevCol = 0;
         static string rowIndex = "";
 
         static void Main(string[] args)
@@ -179,9 +180,15 @@
         {
             if (ch == ConsoleKey.UpArrow && row > 0)
             {
-                if (col > text[row - 1].Length || col == text[row].Length)
+                if (col >= text[row - 1].Length)
                 {
+                    prevCol = col;
                     col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length);
+                }
+
+                else if (text[row - 1].Length > text[row].Length)
+                {
+                    col = prevCol > text[row - 1].Length ? text[row - 1].Length : prevCol;
                 }
 
                 row--;
@@ -189,9 +196,15 @@
 
             else if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
             {
-                if (col > text[row + 1].Length || col == text[row].Length)
+                if (col >= text[row + 1].Length)
                 {
+                    prevCol = col;
                     col = Math.Min(Console.WindowWidth + offsetCol - rowIndex.Length, text[row + 1].Length);
+                }
+
+                else if (text[row + 1].Length > text[row].Length)
+                {
+                    col = prevCol > text[row + 1].Length ? text[row + 1].Length : prevCol;
                 }
 
                 row++;
@@ -200,11 +213,13 @@
             else if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Console.WindowWidth && col < text[row].Length + rowIndex.Length - 1)))
             {
                 col++;
+                prevCol = col;
             }
 
             else if (ch == ConsoleKey.LeftArrow && col > 0)
             {
                 col--;
+                prevCol = col;
             }
         }
 

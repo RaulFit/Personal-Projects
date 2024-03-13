@@ -180,9 +180,13 @@
         {
             if (ch == ConsoleKey.UpArrow && row > 0)
             {
-                if (col >= text[row - 1].Length)
+                if (col > prevCol)
                 {
                     prevCol = col;
+                }
+
+                if (col >= text[row - 1].Length)
+                {
                     col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length);
                 }
 
@@ -196,9 +200,13 @@
 
             else if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
             {
-                if (col >= text[row + 1].Length)
+                if (col > prevCol)
                 {
                     prevCol = col;
+                }
+
+                if (col >= text[row + 1].Length)
+                {
                     col = Math.Min(Console.WindowWidth + offsetCol - rowIndex.Length, text[row + 1].Length);
                 }
 

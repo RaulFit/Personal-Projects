@@ -97,9 +97,16 @@
                 Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
             }
 
-            else
+            else if (Console.WindowHeight + offsetRow < 1000)
             {
                 Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
+                Console.CursorLeft = rowIndex.Length;
+            }
+
+            else if (Console.WindowHeight + offsetRow < 10000)
+            {
+                Console.Write($"{ESC}32m{rowIndex,5}{ESC}0m");
+                Console.CursorLeft = rowIndex.Length;
             }
         }
 

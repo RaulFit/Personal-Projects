@@ -14,6 +14,7 @@
         static void Main(string[] args)
         {
             OpenFile(args);
+            Console.Clear();
 
             while (true)
             {
@@ -26,10 +27,39 @@
         private static void RefreshScreen()
         {
             Console.SetCursorPosition(0, 0);
-            ClearScreen();
-            Console.SetCursorPosition(0, 0);
             DrawContent();
             DrawCursor();
+        }
+
+        private static void Scroll()
+        {
+            if (row >= Console.WindowHeight + offsetRow)
+            {
+                offsetRow = row - Console.WindowHeight + 1;
+                Console.SetCursorPosition(0, 0);
+                ClearScreen();
+            }
+
+            else if (row < offsetRow)
+            {
+                offsetRow = row;
+                Console.SetCursorPosition(0, 0);
+                ClearScreen();
+            }
+
+            if (col >= Console.WindowWidth + offsetCol)
+            {
+                offsetCol = col - Console.WindowWidth + 1;
+                Console.SetCursorPosition(0, 0);
+                ClearScreen();
+            }
+
+            else if (col < offsetCol)
+            {
+                offsetCol = col;
+                Console.SetCursorPosition(0, 0);
+                ClearScreen();
+            }
         }
 
         private static void DrawContent()
@@ -111,29 +141,6 @@
         }
 
         private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), row - offsetRow);
-
-        private static void Scroll()
-        {
-            if (row >= Console.WindowHeight + offsetRow)
-            {
-                offsetRow = row - Console.WindowHeight + 1;
-            }
-
-            else if (row < offsetRow)
-            {
-                offsetRow = row;
-            }
-
-            if (col >= Console.WindowWidth + offsetCol)
-            {
-                offsetCol = col - Console.WindowWidth + 1;
-            }
-
-            else if (col < offsetCol)
-            {
-                offsetCol = col;
-            }
-        }
 
         private static void HandleInput()
         {

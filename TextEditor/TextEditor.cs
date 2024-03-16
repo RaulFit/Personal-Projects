@@ -109,9 +109,9 @@
                 Console.WriteLine();
             }
 
-            if (lenToDraw > Console.WindowWidth)
+            if (lenToDraw > Console.WindowWidth - rowIndex.Length)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length - 1;
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
             }
 
             if (lenToDraw > 0)

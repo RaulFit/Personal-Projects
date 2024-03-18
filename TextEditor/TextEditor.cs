@@ -10,11 +10,14 @@
         static int offsetCol = 0;
         static int prevCol = 0;
         static string rowIndex = "";
+        static bool shouldRefresh = false;
 
         static void Main(string[] args)
         {
             OpenFile(args);
             Console.Clear();
+            Console.SetCursorPosition(0, 0);
+            DrawContent();
 
             while (true)
             {
@@ -26,11 +29,18 @@
 
         private static void RefreshScreen()
         {
-            Console.Write($"{ESC}?25l");
-            Console.SetCursorPosition(0, 0);
-            DrawContent();
+            if (shouldRefresh)
+            {
+                Console.Write($"{ESC}?25l");
+                Console.SetCursorPosition(0, 0);
+                ClearScreen();
+                Console.SetCursorPosition(0, 0);
+                DrawContent();
+                Console.Write($"{ESC}?25h");
+                shouldRefresh = false;
+            }
+
             DrawCursor();
-            Console.Write($"{ESC}?25h");
         }
 
         private static void Scroll()
@@ -38,33 +48,25 @@
             if (row >= Console.WindowHeight + offsetRow)
             {
                 offsetRow = row - Console.WindowHeight + 1;
-                Console.Write($"{ESC}?25l");
-                Console.SetCursorPosition(0, 0);
-                ClearScreen();
+                shouldRefresh = true;
             }
 
             else if (row < offsetRow)
             {
                 offsetRow = row;
-                Console.Write($"{ESC}?25l");
-                Console.SetCursorPosition(0, 0);
-                ClearScreen();
+                shouldRefresh = true;
             }
 
             if (col >= Console.WindowWidth + offsetCol)
             {
                 offsetCol = col - Console.WindowWidth + 1;
-                Console.Write($"{ESC}?25l");
-                Console.SetCursorPosition(0, 0);
-                ClearScreen();
+                shouldRefresh = true;
             }
 
             else if (col < offsetCol)
             {
                 offsetCol = col;
-                Console.Write($"{ESC}?25l");
-                Console.SetCursorPosition(0, 0);
-                ClearScreen();
+                shouldRefresh = true;
             }
         }
 

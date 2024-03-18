@@ -26,9 +26,11 @@
 
         private static void RefreshScreen()
         {
+            Console.Write($"{ESC}?25l");
             Console.SetCursorPosition(0, 0);
             DrawContent();
             DrawCursor();
+            Console.Write($"{ESC}?25h");
         }
 
         private static void Scroll()
@@ -36,6 +38,7 @@
             if (row >= Console.WindowHeight + offsetRow)
             {
                 offsetRow = row - Console.WindowHeight + 1;
+                Console.Write($"{ESC}?25l");
                 Console.SetCursorPosition(0, 0);
                 ClearScreen();
             }
@@ -43,6 +46,7 @@
             else if (row < offsetRow)
             {
                 offsetRow = row;
+                Console.Write($"{ESC}?25l");
                 Console.SetCursorPosition(0, 0);
                 ClearScreen();
             }
@@ -50,6 +54,7 @@
             if (col >= Console.WindowWidth + offsetCol)
             {
                 offsetCol = col - Console.WindowWidth + 1;
+                Console.Write($"{ESC}?25l");
                 Console.SetCursorPosition(0, 0);
                 ClearScreen();
             }
@@ -57,6 +62,7 @@
             else if (col < offsetCol)
             {
                 offsetCol = col;
+                Console.Write($"{ESC}?25l");
                 Console.SetCursorPosition(0, 0);
                 ClearScreen();
             }

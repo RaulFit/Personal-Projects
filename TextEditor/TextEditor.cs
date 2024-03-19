@@ -11,6 +11,7 @@
         static int prevCol = 0;
         static string rowIndex = "";
         static bool shouldRefresh = false;
+        static int windowWidth = Console.WindowWidth;
 
         static void Main(string[] args)
         {
@@ -117,13 +118,22 @@
                 Console.WriteLine();
             }
 
-            if (lenToDraw > Console.WindowWidth - rowIndex.Length)
+            if (lenToDraw >= Console.WindowWidth - rowIndex.Length)
             {
                 lenToDraw = Console.WindowWidth - rowIndex.Length;
+
+                if (index < 10)
+                {
+                    lenToDraw--;
+                }
             }
 
             if (lenToDraw > 0)
             {
+                if(text[index][offsetCol..(lenToDraw + offsetCol)].Length > Console.WindowWidth)
+                {
+                    Console.WriteLine(text[index][offsetCol..(lenToDraw + offsetCol)]);
+                }
                 Console.WriteLine(text[index][offsetCol..(lenToDraw + offsetCol)]);
             }
         }
@@ -155,6 +165,13 @@
             var ch = Console.ReadKey(true);
             HandleArrows(ch.Key);
             HandleKeys(ch.Key);
+
+            if (windowWidth != Console.WindowWidth)
+            {
+                shouldRefresh = true;
+                RefreshScreen();
+                windowWidth = Console.WindowWidth;
+            }
         }
 
         private static void HandleKeys(ConsoleKey ch)
@@ -168,7 +185,7 @@
             {
                 if (text[row].Length > Console.WindowWidth)
                 {
-                    col = text[row].Length + rowIndex.Length - 1;
+                    col = text[row].Length + rowIndex.Length;
                 }
 
                 else

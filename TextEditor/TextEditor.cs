@@ -142,22 +142,7 @@
 
         private static void DrawRowIndex()
         {
-            if (Console.WindowHeight + offsetRow < 100)
-            {
                 Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
-            }
-
-            else if (Console.WindowHeight + offsetRow < 1000)
-            {
-                Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
-                Console.CursorLeft = rowIndex.Length;
-            }
-
-            else if (Console.WindowHeight + offsetRow < 10000)
-            {
-                Console.Write($"{ESC}32m{rowIndex,5}{ESC}0m");
-                Console.CursorLeft = rowIndex.Length;
-            }
         }
 
         private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), row - offsetRow);

@@ -142,16 +142,106 @@
 
         private static void DrawRowIndex()
         {
+            int lastNumber = Console.WindowHeight + offsetRow;
+
+            if (lastNumber < 100)
+            {
                 Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
+            }
+            
+            else if (lastNumber >= 100 && lastNumber < 1000)
+            {
+                Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
+                Console.CursorLeft = rowIndex.Length;
+            }
         }
 
-        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), row - offsetRow);
+        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), Math.Max(row - offsetRow, 0));
 
         private static void HandleInput()
         {
             var ch = Console.ReadKey(true);
+
+            if (char.IsDigit(ch.KeyChar) && ch.Key != ConsoleKey.D0)
+            {
+                HandleSimpleMovement(ch);
+                return;
+            }
+
+            MoveTo(ch.Key, 1);
+            HandleSpecialKeys(ch);
             HandleArrows(ch.Key);
             HandleKeys(ch.Key);
+        }
+
+        private static void HandleSimpleMovement(ConsoleKeyInfo ch)
+        {
+            string num = ch.KeyChar.ToString();
+            while (true)
+            {
+                ch = Console.ReadKey(true);
+                if (char.IsDigit(ch.KeyChar))
+                {
+                    num += ch.KeyChar.ToString();
+                    continue;
+                }
+
+                if (int.TryParse(num, out int number))
+                {
+                    MoveTo(ch.Key, number);
+                }
+
+                break;
+            }
+        }
+
+        private static void HandleSpecialKeys(ConsoleKeyInfo ch)
+        {
+            if (ch.KeyChar.ToString() == "$")
+            {
+                col = text[row].Length > Console.WindowWidth ? text[row].Length + rowIndex.Length : text[row].Length;
+            }
+
+            else if (ch.KeyChar.ToString() == "0")
+            {
+                col = 0;
+            }
+
+            else if (ch.KeyChar.ToString() == "^")
+            {
+                HandleKeys(ConsoleKey.Home);
+            }
+        }
+
+        private static void MoveTo(ConsoleKey ch, int number)
+        {
+            if (ch == ConsoleKey.J)
+            {
+                Move(ConsoleKey.DownArrow, number);
+            }
+
+            else if (ch == ConsoleKey.K)
+            {
+                Move(ConsoleKey.UpArrow, number);
+            }
+
+            else if (ch == ConsoleKey.H)
+            {
+                Move(ConsoleKey.LeftArrow, number);
+            }
+
+            else if (ch == ConsoleKey.L)
+            {
+                Move(ConsoleKey.RightArrow, number);
+            }
+        }
+
+        private static void Move(ConsoleKey ch, int num)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                HandleArrows(ch);
+            }
         }
 
         private static void HandleKeys(ConsoleKey ch)

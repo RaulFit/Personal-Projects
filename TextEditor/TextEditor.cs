@@ -12,6 +12,8 @@
         static string rowIndex = "";
         static bool shouldRefresh = false;
         static int windowWidth = Console.WindowWidth;
+        static bool lineNumbers = false;
+        static bool relativeLines = false;
 
         static void Main(string[] args)
         {
@@ -24,7 +26,8 @@
             {
                 Scroll();
                 RefreshScreen();
-                HandleInput();
+                var ch = Console.ReadKey(true);
+                HandleInput(ch);
             }
         }
 
@@ -42,6 +45,188 @@
             }
 
             DrawCursor();
+        }
+
+        private static void DrawContent()
+        {
+            int len = Math.Min(Console.WindowHeight - 1, text.Length - 1);
+
+            for (int i = 0; i < len; i++)
+            {
+                int rowIndex = i + offsetRow;
+                DrawRow(rowIndex);
+            }
+
+            int lastIndex = len + offsetRow;
+            rowIndex = (lastIndex + 1) + " ";
+            int lenToDraw = text[lastIndex].Length - offsetCol;
+            DrawRowIndex();
+
+            if (lenToDraw >= Console.WindowWidth - rowIndex.Length && lineNumbers)
+            {
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
+            }
+
+            else if (lenToDraw >= Console.WindowWidth)
+            {
+                lenToDraw = Console.WindowWidth;
+            }
+
+            if (lenToDraw > 0)
+            {
+                Console.Write(text[lastIndex][offsetCol..(lenToDraw + offsetCol)]);
+            }
+
+            if (relativeLines)
+            {
+                DrawIndexes();
+            }
+        }
+
+        private static void DrawIndexes()
+        {
+            Console.Write($"{ESC}?25l");
+            Console.SetCursorPosition(0, 0);
+            int num = row -  offsetRow;
+            int i;
+            for (i = offsetRow; i < Console.WindowHeight + offsetRow - 1; i++)
+            {
+                Console.Write(new string(' ', rowIndex.Length));
+                Console.CursorLeft = 0;
+                DrawIndex(i, ref num);
+                Console.CursorTop++;
+                Console.CursorLeft = 0;
+            }
+
+            DrawIndex(i, ref num);
+            Console.CursorLeft = 0;
+            Console.Write($"{ESC}0m");
+            Console.Write($"{ESC}?25h");
+        }
+
+        private static void DrawIndex(int index, ref int num)
+        {
+            Console.Write($"{ESC}32m");
+
+            if (index < row)
+            {
+                string idx = num + " ";
+                if (row < 100)
+                {
+                    Console.Write($"{idx,3}");
+                }
+                else
+                {
+                    Console.Write($"{idx,4}");
+                }
+                num--;
+            }
+
+            else if (index > row)
+            {
+                num++;
+                string idx = num + " ";
+                if (row < 100)
+                {
+                    Console.Write($"{idx,3}");
+                }
+                else
+                {
+                    Console.Write($"{idx,4}");
+                }
+            }
+
+            else
+            {
+                Console.Write($"{ESC}31m");
+                string idx = row + " ";
+                if (row < 100)
+                {
+                    Console.Write($"{idx,3}");
+                }
+                else
+                {
+                    Console.Write($"{idx,4}");
+                }
+            }
+        }
+
+        private static void ClearScreen()
+        {
+            for (int i = 0; i < Console.WindowHeight - 1; i++)
+            {
+                Console.WriteLine(new string(' ', Console.WindowWidth));
+            }
+
+            Console.Write(new string(' ', Console.WindowWidth));
+        }
+
+        private static void DrawRow(int index)
+        {
+            rowIndex = (index + 1) + " ";
+            DrawRowIndex();
+
+            int lenToDraw = text[index].Length - offsetCol;
+
+            if (lenToDraw <= 0)
+            {
+                Console.WriteLine();
+            }
+
+            if (lenToDraw >= Console.WindowWidth - rowIndex.Length && lineNumbers)
+            {
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
+
+                if (index < 10)
+                {
+                    lenToDraw--;
+                }
+            }
+
+            else if (lenToDraw >= Console.WindowWidth)
+            {
+                lenToDraw = Console.WindowWidth;
+            }
+
+            if (lenToDraw > 0)
+            {
+                Console.WriteLine(text[index][offsetCol..(lenToDraw + offsetCol)]);
+            }
+        }
+
+        private static void DrawRowIndex()
+        {
+            if (lineNumbers && !relativeLines)
+            {
+                int lastNumber = Console.WindowHeight + offsetRow;
+
+                if (lastNumber < 100)
+                {
+                    Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
+                }
+
+                else if (lastNumber >= 100 && lastNumber < 1000)
+                {
+                    Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
+                    Console.CursorLeft = rowIndex.Length;
+                }
+            }
+
+            else if (relativeLines)
+            {
+                Console.CursorLeft = rowIndex.Length + 1;
+            }
+        }
+
+        private static void DrawCursor()
+        {
+            if (lineNumbers)
+            {
+                Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), Math.Max(row - offsetRow, 0));
+                return;
+            }
+
+            Console.SetCursorPosition(Math.Min(col - offsetCol, Console.WindowWidth - 1), Math.Max(row - offsetRow, 0));
         }
 
         private static void Scroll()
@@ -77,91 +262,8 @@
             }
         }
 
-        private static void DrawContent()
+        private static void HandleInput(ConsoleKeyInfo ch)
         {
-            int len = Math.Min(Console.WindowHeight - 1, text.Length - 1);
-
-            for (int i = 0; i < len; i++)
-            {
-                int rowIndex = i + offsetRow;
-                DrawRow(rowIndex);
-            }
-
-            int lastIndex = len + offsetRow;
-            rowIndex = (lastIndex + 1) + " ";
-            int lenToDraw = text[lastIndex].Length - offsetCol;
-            DrawRowIndex();
-
-            if (lenToDraw >= Console.WindowWidth - rowIndex.Length)
-            {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
-            }
-
-            if (lenToDraw > 0)
-            {
-                Console.Write(text[lastIndex][offsetCol..(lenToDraw + offsetCol)]);
-            }
-        }
-
-        private static void ClearScreen()
-        {
-            for (int i = 0; i < Console.WindowHeight - 1; i++)
-            {
-                Console.WriteLine(new string(' ', Console.WindowWidth));
-            }
-
-            Console.Write(new string(' ', Console.WindowWidth));
-        }
-
-        private static void DrawRow(int index)
-        {
-            rowIndex = (index + 1) + " ";
-            int lenToDraw = text[index].Length - offsetCol;
-            DrawRowIndex();
-
-            if (lenToDraw <= 0)
-            {
-                Console.WriteLine();
-            }
-
-            if (lenToDraw >= Console.WindowWidth - rowIndex.Length)
-            {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
-
-                if (index < 10)
-                {
-                    lenToDraw--;
-                }
-            }
-
-            if (lenToDraw > 0)
-            {
-                Console.WriteLine(text[index][offsetCol..(lenToDraw + offsetCol)]);
-            }
-        }
-
-        private static void DrawRowIndex()
-        {
-            int lastNumber = Console.WindowHeight + offsetRow;
-
-            if (lastNumber < 100)
-            {
-                Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
-            }
-            
-            else if (lastNumber >= 100 && lastNumber < 1000)
-            {
-                Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
-                Console.CursorLeft = rowIndex.Length;
-            }
-        }
-
-        private static void DrawCursor() => Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), Math.Max(row - offsetRow, 0));
-
-        private static void HandleInput()
-        {
-            var ch = Console.ReadKey(true);
-
             if (char.IsDigit(ch.KeyChar) && ch.Key != ConsoleKey.D0)
             {
                 HandleSimpleMovement(ch);
@@ -199,7 +301,15 @@
         {
             if (ch.KeyChar.ToString() == "$")
             {
-                col = text[row].Length > Console.WindowWidth ? text[row].Length + rowIndex.Length : text[row].Length;
+                if (lineNumbers)
+                {
+                    col = text[row].Length > Console.WindowWidth ? text[row].Length + rowIndex.Length : text[row].Length;
+                }
+
+                else
+                {
+                    col = text[row].Length;
+                }
             }
 
             else if (ch.KeyChar.ToString() == "0")
@@ -255,7 +365,7 @@
             {
                 if (text[row].Length > Console.WindowWidth)
                 {
-                    col = text[row].Length + rowIndex.Length;
+                    col = lineNumbers ? text[row].Length + rowIndex.Length : text[row].Length;
                 }
 
                 else
@@ -285,6 +395,7 @@
             }
         }
 
+        
         private static void HandleArrows(ConsoleKey ch)
         {
             if (ch == ConsoleKey.UpArrow && row > 0)
@@ -305,6 +416,11 @@
                 }
 
                 row--;
+
+                if (relativeLines)
+                {
+                    DrawIndexes();
+                }
             }
 
             else if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
@@ -325,11 +441,20 @@
                 }
 
                 row++;
+
+                if (relativeLines)
+                {
+                    DrawIndexes();
+                }
             }
 
             else if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Console.WindowWidth && col < text[row].Length + rowIndex.Length - 1)))
             {
                 col++;
+                if (col > text[row].Length && !lineNumbers)
+                {
+                    col = text[row].Length;
+                }
                 prevCol = col;
             }
 
@@ -353,11 +478,36 @@
                     fileName = Console.ReadLine();
                 }
 
+                ShowLineNumbers();
+
                 text = File.ReadAllLines(Path.GetFullPath(fileName));
                 return;
             }
 
+            ShowLineNumbers();
             text = File.ReadAllLines(args[0]);
+        }
+
+        static void ShowLineNumbers()
+        {
+            Console.Write("Show line numbers? (Press Y for yes): ");
+
+            var ch = Console.ReadKey();
+
+            if (ch.KeyChar.ToString() == "Y")
+            {
+                lineNumbers = true;
+
+                Console.WriteLine();
+                Console.Write("Show line numbers relative to the current line? (Press Y for yes):");
+
+                ch = Console.ReadKey();
+
+                if (ch.KeyChar.ToString() == "Y")
+                {
+                    relativeLines = true;
+                }
+            }
         }
     }
 }

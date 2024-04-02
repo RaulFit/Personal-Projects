@@ -115,9 +115,10 @@
                 {
                     Console.Write($"{idx,3}");
                 }
-                else
+                else if (row >= 100 && row < 1000)
                 {
                     Console.Write($"{idx,4}");
+                    Console.CursorLeft = idx.ToString().Length;
                 }
                 num--;
             }
@@ -130,9 +131,10 @@
                 {
                     Console.Write($"{idx,3}");
                 }
-                else
+                else if (row >= 100 && row < 1000)
                 {
                     Console.Write($"{idx,4}");
+                    Console.CursorLeft = idx.ToString().Length;
                 }
             }
 
@@ -144,9 +146,10 @@
                 {
                     Console.Write($"{idx,3}");
                 }
-                else
+                else if (row >= 100 && row < 1000)
                 {
                     Console.Write($"{idx,4}");
+                    Console.CursorLeft = idx.ToString().Length;
                 }
             }
         }
@@ -175,7 +178,15 @@
 
             if (lenToDraw >= Console.WindowWidth - rowIndex.Length && lineNumbers)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
+                if (relativeLines)
+                {
+                    lenToDraw = Console.WindowWidth - row.ToString().Length - 2;
+                }
+
+                else
+                {
+                    lenToDraw = Console.WindowWidth - rowIndex.Length;
+                }
 
                 if (index < 10)
                 {

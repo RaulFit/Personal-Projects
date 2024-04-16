@@ -1,4 +1,7 @@
-﻿namespace TextEditor
+﻿using System.Formats.Tar;
+using System.Xml;
+
+namespace TextEditor
 {
     class TextEditor
     {
@@ -285,6 +288,7 @@
             HandleSpecialKeys(ch);
             HandleArrows(ch.Key);
             HandleKeys(ch.Key);
+            MoveWord(ch);
         }
 
         private static void HandleSimpleMovement(ConsoleKeyInfo ch)
@@ -306,6 +310,65 @@
 
                 break;
             }
+        }
+
+        private static void MoveWord(ConsoleKeyInfo ch)
+        {
+            if (ch.Key == ConsoleKey.W)
+            {
+                MoveForward();
+                while ((col == text[row].Length || !char.IsLetter(text[row][col])) && row < text.Length - 1)
+                {
+                    row++;
+                    col = 0;
+                    MoveForward();
+                }
+            }
+
+            if (ch.Key == ConsoleKey.B)
+            {
+                MoveBackwards();
+                while ((col == text[row].Length || !char.IsLetter(text[row][col])) && row > 0)
+                {
+                    row--;
+                    col = text[row].Length;
+                    MoveBackwards();
+                }
+            }
+        }
+
+        private static void MoveForward()
+        {
+            while (col < text[row].Length && char.IsLetter(text[row][col]))
+            {
+                col++;
+            }
+
+            while (col < text[row].Length && !char.IsLetter(text[row][col]))
+            {
+                col++;
+            }
+        }
+
+        private static void MoveBackwards()
+        {
+            col--;
+            if (col >= text[row].Length)
+            {
+                col = text[row].Length - 1;
+            }
+
+            while(col > 0 && !char.IsLetter(text[row][col]))
+            {
+                col--;
+            }
+
+            while (col > 0 && char.IsLetter(text[row][col]))
+            {
+                col--;
+            }
+
+            col++;
         }
 
         private static void HandleSpecialKeys(ConsoleKeyInfo ch)

@@ -1,7 +1,4 @@
-﻿using System.Formats.Tar;
-using System.Xml;
-
-namespace TextEditor
+﻿namespace TextEditor
 {
     class TextEditor
     {
@@ -52,7 +49,7 @@ namespace TextEditor
 
         private static void DrawContent()
         {
-            int len = Math.Min(Console.WindowHeight - 1, text.Length - 1);
+            int len = Math.Min(Console.WindowHeight, text.Length);
 
             for (int i = 0; i < len; i++)
             {
@@ -60,14 +57,27 @@ namespace TextEditor
                 DrawRow(rowIndex);
             }
 
-            int lastIndex = len + offsetRow;
-            rowIndex = (lastIndex + 1) + " ";
-            int lenToDraw = text[lastIndex].Length - offsetCol;
+            if (relativeLines)
+            {
+                DrawIndexes();
+            }
+        }
+
+        private static void DrawRow(int index)
+        {
+            rowIndex = (index + 1) + " ";
             DrawRowIndex();
 
-            if (lenToDraw >= Console.WindowWidth - rowIndex.Length && lineNumbers)
+            int lenToDraw = text[index].Length - offsetCol;
+
+            if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
             {
                 lenToDraw = Console.WindowWidth - rowIndex.Length;
+
+                if (relativeLines)
+                {
+                    lenToDraw = Console.WindowWidth - row.ToString().Length - 2;
+                }
             }
 
             else if (lenToDraw >= Console.WindowWidth)
@@ -77,12 +87,13 @@ namespace TextEditor
 
             if (lenToDraw > 0)
             {
-                Console.Write(text[lastIndex][offsetCol..(lenToDraw + offsetCol)]);
+                Console.Write(text[index][offsetCol..(lenToDraw + offsetCol)]);
             }
 
-            if (relativeLines)
+            if (index < Console.WindowHeight + offsetRow)
             {
-                DrawIndexes();
+                Console.CursorTop++;
+                Console.CursorLeft = 0;
             }
         }
 
@@ -110,51 +121,26 @@ namespace TextEditor
         private static void DrawIndex(int index, ref int num)
         {
             Console.Write($"{ESC}32m");
+            num = index > row ? num + 1 : num;
+            string idx = row == index ? row + " " : num + " ";
 
-            if (index < row)
-            {
-                string idx = num + " ";
-                if (row < 100)
-                {
-                    Console.Write($"{idx,3}");
-                }
-                else if (row >= 100 && row < 1000)
-                {
-                    Console.Write($"{idx,4}");
-                    Console.CursorLeft = idx.ToString().Length;
-                }
-                num--;
-            }
-
-            else if (index > row)
-            {
-                num++;
-                string idx = num + " ";
-                if (row < 100)
-                {
-                    Console.Write($"{idx,3}");
-                }
-                else if (row >= 100 && row < 1000)
-                {
-                    Console.Write($"{idx,4}");
-                    Console.CursorLeft = idx.ToString().Length;
-                }
-            }
-
-            else
+            if (row == index)
             {
                 Console.Write($"{ESC}31m");
-                string idx = row + " ";
-                if (row < 100)
-                {
-                    Console.Write($"{idx,3}");
-                }
-                else if (row >= 100 && row < 1000)
-                {
-                    Console.Write($"{idx,4}");
-                    Console.CursorLeft = idx.ToString().Length;
-                }
             }
+
+            if (row < 100)
+            {
+                Console.Write($"{idx,3}");
+            }
+
+            else if (row >= 100 && row < 1000)
+            {
+                Console.Write($"{idx,4}");
+                Console.CursorLeft = idx.ToString().Length;
+            }
+
+            num = index < row ? num - 1 : num;
         }
 
         private static void ClearScreen()
@@ -167,53 +153,11 @@ namespace TextEditor
             Console.Write(new string(' ', Console.WindowWidth));
         }
 
-        private static void DrawRow(int index)
-        {
-            rowIndex = (index + 1) + " ";
-            DrawRowIndex();
-
-            int lenToDraw = text[index].Length - offsetCol;
-
-            if (lenToDraw <= 0)
-            {
-                Console.WriteLine();
-            }
-
-            if (lenToDraw >= Console.WindowWidth - rowIndex.Length && lineNumbers)
-            {
-                if (relativeLines)
-                {
-                    lenToDraw = Console.WindowWidth - row.ToString().Length - 2;
-                }
-
-                else
-                {
-                    lenToDraw = Console.WindowWidth - rowIndex.Length;
-                }
-
-                if (index < 10)
-                {
-                    lenToDraw--;
-                }
-            }
-
-            else if (lenToDraw >= Console.WindowWidth)
-            {
-                lenToDraw = Console.WindowWidth;
-            }
-
-            if (lenToDraw > 0)
-            {
-                Console.WriteLine(text[index][offsetCol..(lenToDraw + offsetCol)]);
-            }
-        }
-
         private static void DrawRowIndex()
         {
-            if (lineNumbers && !relativeLines)
+            if (lineNumbers)
             {
                 int lastNumber = Console.WindowHeight + offsetRow;
-
                 if (lastNumber < 100)
                 {
                     Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
@@ -224,11 +168,6 @@ namespace TextEditor
                     Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
                     Console.CursorLeft = rowIndex.Length;
                 }
-            }
-
-            else if (relativeLines)
-            {
-                Console.CursorLeft = rowIndex.Length + 1;
             }
         }
 

@@ -90,7 +90,7 @@
                 Console.Write(text[index][offsetCol..(lenToDraw + offsetCol)]);
             }
 
-            if (index < Console.WindowHeight + offsetRow)
+            if (index < Console.WindowHeight + offsetRow - 1)
             {
                 Console.CursorTop++;
                 Console.CursorLeft = 0;

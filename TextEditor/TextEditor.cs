@@ -101,7 +101,7 @@
         {
             Console.Write($"{ESC}?25l");
             Console.SetCursorPosition(0, 0);
-            int num = row -  offsetRow;
+            int num = row - offsetRow;
             int i;
             for (i = offsetRow; i < Console.WindowHeight + offsetRow - 1; i++)
             {
@@ -245,48 +245,85 @@
                 if (int.TryParse(num, out int number))
                 {
                     MoveTo(ch.Key, number);
+                    MoveWords(ch, number);
                 }
 
                 break;
             }
         }
 
+        private static void MoveWords(ConsoleKeyInfo ch, int num)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                MoveWord(ch);
+            }
+        }
+
         private static void MoveWord(ConsoleKeyInfo ch)
         {
-            if (ch.Key == ConsoleKey.W)
+            if (ch.KeyChar.ToString() == "w")
             {
-                MoveForward();
-                while ((col == text[row].Length || !char.IsLetter(text[row][col])) && row < text.Length - 1)
+                MoveForward(ch.KeyChar.ToString());
+                while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row < text.Length - 1)
                 {
                     row++;
                     col = 0;
-                    MoveForward();
+                    MoveForward(ch.KeyChar.ToString());
                 }
             }
 
-            if (ch.Key == ConsoleKey.B)
+            if (ch.KeyChar.ToString() == "b")
             {
                 MoveBackwards();
-                while ((col == text[row].Length || !char.IsLetter(text[row][col])) && row > 0)
+                while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row > 0)
                 {
                     row--;
                     col = text[row].Length;
                     MoveBackwards();
                 }
             }
+
+            if (ch.KeyChar.ToString() == "W")
+            {
+                MoveForward(ch.KeyChar.ToString());
+                while ((col == text[row].Length || char.IsWhiteSpace(text[row][col]) || char.IsPunctuation(text[row][col])) && row < text.Length - 1)
+                {
+                    row++;
+                    col = 0;
+                    MoveForward(ch.KeyChar.ToString());
+                }
+            }
         }
 
-        private static void MoveForward()
+        private static void MoveForward(string separator)
         {
-            while (col < text[row].Length && char.IsLetter(text[row][col]))
+            if (separator == "w")
             {
-                col++;
+                while (col < text[row].Length && !char.IsWhiteSpace(text[row][col]))
+                {
+                    col++;
+                }
+
+                while (col < text[row].Length && char.IsWhiteSpace(text[row][col]))
+                {
+                    col++;
+                }
             }
 
-            while (col < text[row].Length && !char.IsLetter(text[row][col]))
+            if (separator == "W")
             {
-                col++;
+                while (col < text[row].Length && !char.IsPunctuation(text[row][col]) && !char.IsWhiteSpace(text[row][col]))
+                {
+                    col++;
+                }
+
+                while (col < text[row].Length && (char.IsPunctuation(text[row][col]) || char.IsWhiteSpace(text[row][col])))
+                {
+                    col++;
+                }
             }
+            
         }
 
         private static void MoveBackwards()
@@ -297,12 +334,12 @@
                 col = text[row].Length - 1;
             }
 
-            while(col > 0 && !char.IsLetter(text[row][col]))
+            while (col > 0 && char.IsWhiteSpace(text[row][col]))
             {
                 col--;
             }
 
-            while (col > 0 && char.IsLetter(text[row][col]))
+            while (col > 0 && !char.IsWhiteSpace(text[row][col]))
             {
                 col--;
             }
@@ -408,7 +445,7 @@
             }
         }
 
-        
+
         private static void HandleArrows(ConsoleKey ch)
         {
             if (ch == ConsoleKey.UpArrow && row > 0)

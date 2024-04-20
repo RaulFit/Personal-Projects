@@ -264,12 +264,12 @@
         {
             if (ch.KeyChar.ToString() == "w")
             {
-                MoveForwardLowerCase();
+                MoveForward(ch.KeyChar.ToString());
                 while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row < text.Length - 1)
                 {
                     row++;
                     col = 0;
-                    MoveForwardLowerCase();
+                    MoveForward(ch.KeyChar.ToString());
                 }
             }
 
@@ -286,70 +286,44 @@
 
             if (ch.KeyChar.ToString() == "W")
             {
-                MoveForwardUpperCase();
-                while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row < text.Length - 1)
+                MoveForward(ch.KeyChar.ToString());
+                while ((col == text[row].Length || char.IsWhiteSpace(text[row][col]) || char.IsPunctuation(text[row][col])) && row < text.Length - 1)
                 {
                     row++;
                     col = 0;
-                    MoveForwardUpperCase();
+                    MoveForward(ch.KeyChar.ToString());
                 }
             }
         }
 
-        private static void MoveForwardLowerCase()
+        private static void MoveForward(string separator)
         {
-            if (col < text[row].Length && char.IsPunctuation(text[row][col]))
+            if (separator == "w")
             {
-                while (col < text[row].Length && char.IsPunctuation(text[row][col]))
+                while (col < text[row].Length && !char.IsWhiteSpace(text[row][col]))
+                {
+                    col++;
+                }
+
+                while (col < text[row].Length && char.IsWhiteSpace(text[row][col]))
                 {
                     col++;
                 }
             }
 
-            else if (col < text[row].Length && char.IsLetter(text[row][col]))
+            if (separator == "W")
             {
-                while (col < text[row].Length && char.IsLetter(text[row][col]))
+                while (col < text[row].Length && !char.IsPunctuation(text[row][col]) && !char.IsWhiteSpace(text[row][col]))
+                {
+                    col++;
+                }
+
+                while (col < text[row].Length && (char.IsPunctuation(text[row][col]) || char.IsWhiteSpace(text[row][col])))
                 {
                     col++;
                 }
             }
-
-            else if (col < text[row].Length)
-            {
-                while (col < text[row].Length && !char.IsLetter(text[row][col]) && !char.IsPunctuation(text[row][col]))
-                {
-                    col++;
-                }
-            }
-
-            while (col < text[row].Length && char.IsWhiteSpace(text[row][col]))
-            {
-                col++;
-            }
-        }
-
-        private static void MoveForwardUpperCase()
-        {
-            if (col < text[row].Length && char.IsLetter(text[row][col]))
-            {
-                while (col < text[row].Length && char.IsLetter(text[row][col]))
-                {
-                    col++;
-                }
-            }
-
-            else if (col < text[row].Length)
-            {
-                while (col < text[row].Length && !char.IsLetter(text[row][col]))
-                {
-                    col++;
-                }
-            }
-
-            while (col < text[row].Length && (char.IsWhiteSpace(text[row][col]) || char.IsPunctuation(text[row][col])))
-            {
-                col++;
-            }
+            
         }
 
         private static void MoveBackwards()
@@ -369,6 +343,7 @@
             {
                 col--;
             }
+
             col++;
         }
 
@@ -469,6 +444,7 @@
                 }
             }
         }
+
 
         private static void HandleArrows(ConsoleKey ch)
         {

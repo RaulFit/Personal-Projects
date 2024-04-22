@@ -228,6 +228,7 @@
             HandleArrows(ch.Key);
             HandleKeys(ch.Key);
             MoveWord(ch);
+            MoveChar(ch, 1);
         }
 
         private static void HandleSimpleMovement(ConsoleKeyInfo ch)
@@ -246,9 +247,43 @@
                 {
                     MoveTo(ch.Key, number);
                     MoveWords(ch, number);
+                    MoveChar(ch, number);
                 }
 
                 break;
+            }
+        }
+
+        private static void FindCharLowerCase(ConsoleKeyInfo ch)
+        {
+            int index = text[row].IndexOf(ch.KeyChar.ToString(), Math.Min(col + 1, text[row].Length - 1));
+            col = index != -1 ? index : col;
+        }
+
+        private static void FindCharUpperCase(ConsoleKeyInfo ch)
+        {
+            int index = text[row].LastIndexOf(ch.KeyChar.ToString(), Math.Max(col - 1, 0));
+            col = index != -1 ? index : col;
+        }
+
+        private static void MoveChar(ConsoleKeyInfo ch, int num)
+        {
+            if (ch.KeyChar.ToString() == "f")
+            {
+                var chToFind = Console.ReadKey(true);
+                for (int i = 0; i < num; i++)
+                {
+                    FindCharLowerCase(chToFind);
+                }
+            }
+
+            if (ch.KeyChar.ToString() == "F")
+            {
+                var chToFind = Console.ReadKey(true);
+                for (int i = 0; i < num; i++)
+                {
+                    FindCharUpperCase(chToFind);
+                }
             }
         }
 

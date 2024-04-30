@@ -20,7 +20,8 @@
             OpenFile(args);
             Console.Clear();
             Console.SetCursorPosition(0, 0);
-            DrawContent();
+            DrawFinder(args[0]);
+            Console.SetCursorPosition(1, Console.WindowHeight - 2);
 
             while (true)
             {
@@ -45,6 +46,95 @@
             }
 
             DrawCursor();
+        }
+
+        private static void DrawFinder(string name)
+        {
+            Console.SetCursorPosition(0, 0);
+            PrintVerticalBorders(Console.WindowHeight - 5);
+            Console.SetCursorPosition(0, 0);
+            PrintHorizontalBorder(Console.WindowWidth / 2 - 4);
+            Console.Write("Results");
+            PrintHorizontalBorder(Console.WindowWidth / 2 - 3);
+            Console.SetCursorPosition(0, Console.WindowHeight - 5);
+            PrintHorizontalBorder(Console.WindowWidth);
+            Console.SetCursorPosition(0, Console.WindowHeight - 3);
+            PrintHorizontalBorder(Console.WindowWidth / 2 - 5);
+            Console.Write("Find Files");
+            PrintHorizontalBorder(Console.WindowWidth / 2 - 5);
+            Console.SetCursorPosition(0, Console.CursorTop + 1);
+            PrintVerticalBorders(1);
+            PrintHorizontalBorder(Console.WindowWidth);
+            Console.SetCursorPosition(1, Console.WindowHeight - 6);
+            string[] files = GetAllFiles(name);
+            PrintFiles(files);
+            SearchFile();
+        }
+
+        private static void SearchFile()
+        {
+            Console.SetCursorPosition(1, Console.WindowHeight - 2);
+            string word = "";
+            while (true)
+            {
+                var ch = Console.ReadKey(true);
+                word += ch.KeyChar.ToString();
+                Console.SetCursorPosition(1, 3);
+                Console.Write(word);
+                Console.SetCursorPosition(1, Console.WindowHeight - 2);
+            }
+        }
+
+        private static void PrintFiles(string[] files)
+        {
+            for (int i = 0; i < files.Length; i++)
+            {
+                Console.Write($"{files[i].Substring(files[i].LastIndexOf('\\') + 1)}");
+                Console.CursorTop--;
+                Console.CursorLeft = 1;
+            }
+        }
+
+        private static string[] GetAllFiles(string name)
+        {
+            string path = Path.GetFullPath(name);
+            return Directory.GetFiles(path.Substring(0, path.LastIndexOf('\\')));
+        }
+
+        private static void PrintVerticalBorders(int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                PrintBorder(true);
+                Console.CursorLeft = Console.WindowWidth - 1;
+                PrintBorder(true);
+                Console.CursorTop++;
+                Console.CursorLeft = 0;
+            }
+        }
+
+        private static void PrintHorizontalBorder(int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                PrintBorder(false);
+            }
+        }
+
+        private static void PrintBorder(bool vertical)
+        {
+            Console.Write("\x1b" + "(0");
+            Console.Write(ESC + "31m");
+            if (vertical)
+            {
+                Console.Write("x");
+            }
+            else
+            {
+                Console.Write("q");
+            }
+            Console.Write(ESC + "0m");
+            Console.Write("\x1b" + "(B");
         }
 
         private static void DrawContent()

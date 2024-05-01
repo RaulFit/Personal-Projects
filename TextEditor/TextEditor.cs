@@ -5,15 +5,14 @@
         const string ESC = "\x1b[";
         static string[] text = { };
         static int row = 0;
-        static int col = 0;
         static int offsetRow = 0;
+        static int col = 0;
         static int offsetCol = 0;
 
         static void Main(string[] args)
         {
-            ConsoleMode.EnableVTProcessing();
             OpenFile(args);
-           
+
             while (true)
             {
                 Scroll();
@@ -22,9 +21,59 @@
             }
         }
 
-        private static void ClearScreen() => Console.Write($"{ESC}2J");
+        private static void RefreshScreen()
+        {
+            Console.Write("\x1b[2J");
+            Console.Write("\x1b[1;1H");
+            DrawContent();
+            DrawCursor();
+        }
 
-        private static void MoveTo(int row, int col) => Console.Write($"{ESC}{row};{col}H");
+        private static void DrawContent()
+        {
+            for (int i = 0; i < Console.WindowHeight; i++)
+            {
+                int rowIndex = i + offsetRow;
+
+                if (rowIndex >= text.Length)
+                {
+                    return;
+                }
+
+                DrawRow(rowIndex);
+            }
+        }
+
+        private static void DrawRow(int index)
+        {
+            int lenToDraw = text[index].Length - offsetCol;
+
+            if (lenToDraw <= 0)
+            {
+                Console.WriteLine();
+            }
+
+            if (lenToDraw > Console.WindowWidth)
+            {
+                lenToDraw = Console.WindowWidth;
+            }
+
+            if (lenToDraw > 0)
+            {
+                if (index == Console.WindowHeight + offsetRow - 1)
+                {
+                    Console.Write(text[index][offsetCol..(lenToDraw + offsetCol)]);
+                }
+
+                else
+                {
+                    Console.WriteLine(text[index][offsetCol..(lenToDraw + offsetCol - 1)]);
+                }
+
+            }
+        }
+
+        private static void DrawCursor() => Console.SetCursorPosition(col - offsetCol, row - offsetRow);
 
         private static void Scroll()
         {
@@ -48,42 +97,6 @@
                 offsetCol = col;
             }
         }
-
-        private static void RefreshScreen()
-        {
-            ClearScreen();
-            MoveTo(1, 1);
-            DrawContent();
-            DrawCursor();
-        }
-
-        private static void DrawContent()
-        {
-            int length = Math.Min(Console.WindowHeight, text.Length);
-
-            for (int i = 0; i < length; i++)
-            {
-                int rowIndex = i + offsetRow;
-                int lengthToDraw = text[rowIndex].Length - offsetCol;
-
-                if (lengthToDraw < 0)
-                {
-                    lengthToDraw = 0;
-                }
-
-                if (lengthToDraw > Console.WindowWidth)
-                {
-                    lengthToDraw = Console.WindowWidth;
-                }
-
-                if (lengthToDraw > 0)
-                {
-                    Console.WriteLine(text[rowIndex][offsetCol..(lengthToDraw + offsetCol - 1)]);
-                }
-            }
-        }
-
-        private static void DrawCursor() => MoveTo(row - offsetRow + 1, col - offsetCol + 1);
 
         private static void HandleInput()
         {
@@ -112,7 +125,7 @@
                 row++;
             }
 
-            else if (arrow == 'C' && col < text[row].Length - 1)
+            else if (arrow == 'C' && col < text[row].Length)
             {
                 col++;
             }

@@ -46,7 +46,7 @@ namespace TextEditor
                     Console.SetCursorPosition(1, Console.WindowHeight - 6);
                     while (ch.Key != ConsoleKey.Enter)
                     {
-                        ch = Console.ReadKey();
+                        ch = Console.ReadKey(true);
                         SelectFile(ch, GetCurrentFiles());
                     }
 
@@ -57,8 +57,10 @@ namespace TextEditor
                     RunNavigator();
                 }
 
+                Console.Write($"{ESC}?25l");
                 RefreshFiles();
                 ColorMatchingLetters();
+                Console.Write($"{ESC}?25h");
             }
         }
 
@@ -95,7 +97,7 @@ namespace TextEditor
         private static void DrawFinder()
         {
             Console.SetCursorPosition(0, 0);
-            PrintVerticalBorders(Console.WindowHeight - 5);
+            PrintVerticalBorders(Console.WindowHeight - 4);
             Console.SetCursorPosition(0, 0);
             PrintHorizontalBorder(Console.WindowWidth / 2 - 4);
             Console.Write("Results");
@@ -110,8 +112,34 @@ namespace TextEditor
             PrintVerticalBorders(1);
             PrintHorizontalBorder(Console.WindowWidth);
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
-            files = Directory.GetFiles(Environment.CurrentDirectory).Select(f => f.Substring(f.LastIndexOf('\\') + 1)).ToArray();
+            files = Directory.GetFiles(Environment.CurrentDirectory).Select(f => Path.GetFileName(f)).ToArray();
             PrintFiles(files);
+            DrawCorners();
+            Console.SetCursorPosition(1, Console.WindowHeight - 2);
+        }
+
+        private static void DrawCorners()
+        {
+            Console.Write("\x1b" + "(0");
+            Console.Write(ESC + "31m");
+            Console.SetCursorPosition(0, 0);
+            Console.Write("l");
+            Console.SetCursorPosition(Console.WindowWidth - 1, 0);
+            Console.Write("k");
+            Console.SetCursorPosition(0, Console.WindowHeight - 5);
+            Console.Write("m");
+            Console.SetCursorPosition(Console.WindowWidth - 1, Console.WindowHeight - 5);
+            Console.Write("j");
+            Console.SetCursorPosition(0, Console.WindowHeight - 3);
+            Console.Write("l");
+            Console.SetCursorPosition(Console.WindowWidth - 1, Console.WindowHeight - 3);
+            Console.Write("k");
+            Console.SetCursorPosition(0, Console.WindowHeight - 1);
+            Console.Write("m");
+            Console.SetCursorPosition(Console.WindowWidth - 1, Console.WindowHeight - 1);
+            Console.Write("j");
+            Console.Write(ESC + "0m");
+            Console.Write("\x1b" + "(B");
         }
 
         private static void PrintFiles(string[] files)
@@ -134,9 +162,10 @@ namespace TextEditor
             {
                 for (int j = 0; j < filteredFiles[i].Length; j++)
                 {
+                    
                     Console.CursorLeft++;
                     Console.Write($"{ESC}0m");
-                    if (match.Contains(filteredFiles[i][j]))
+                    if (match.ToLower().Contains(filteredFiles[i][j].ToString().ToLower()))
                     {
                         Console.CursorLeft--;
                         Console.Write($"{ESC}32m");
@@ -194,10 +223,10 @@ namespace TextEditor
             }
 
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
-            PrintFiles(filteredFiles.ToArray());
+            PrintFiles(GetCurrentFiles().ToArray());
         }
 
-        private static string[] FilterFiles() => files.Where(file => GetLevenshteinDistance(file, match) <= 7).ToArray();
+        private static string[] FilterFiles() => files.Where(file => GetLevenshteinDistance(file.ToLower(), match.ToLower()) <= 7).ToArray();
 
         private static int GetLevenshteinDistance(string str1, string str2)
         {
@@ -727,6 +756,7 @@ namespace TextEditor
             else if (ch == ConsoleKey.P)
             {
                 row = col = 0;
+                match = "";
                 OpenFinder();
             }
         }

@@ -1,4 +1,6 @@
-﻿namespace TextEditor
+﻿using System.Configuration;
+
+namespace TextEditor
 {
     class TextEditor
     {
@@ -14,15 +16,57 @@
         static int windowWidth = Console.WindowWidth;
         static bool lineNumbers = false;
         static bool relativeLines = false;
+        static string match = "";
+        static string[] files = new string[] { };
+        static string[] filteredFiles = new string[] { };
 
         static void Main(string[] args)
         {
-            OpenFile(args);
+            if (args.Length > 0 && Path.Exists(args[0]))
+            {
+                text = File.ReadAllLines(Path.GetFullPath(args[0]));
+                lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
+                relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
+                RunNavigator();
+            }
+
+            OpenFinder();
+        }
+
+        private static void OpenFinder()
+        {
+            Console.Clear();
+            DrawFinder();
+            while (true)
+            {
+                var ch = Console.ReadKey();
+                SearchFile(ch);
+                if (ch.Key == ConsoleKey.UpArrow)
+                {
+                    Console.SetCursorPosition(1, Console.WindowHeight - 6);
+                    while (ch.Key != ConsoleKey.Enter)
+                    {
+                        ch = Console.ReadKey();
+                        SelectFile(ch, GetCurrentFiles());
+                    }
+
+                    text = File.ReadAllLines(Path.GetFullPath(GetCurrentFiles().ElementAt(row)));
+                    lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
+                    relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
+                    row = col = 0;
+                    RunNavigator();
+                }
+
+                RefreshFiles();
+                ColorMatchingLetters();
+            }
+        }
+
+        private static void RunNavigator()
+        {
             Console.Clear();
             Console.SetCursorPosition(0, 0);
-            DrawFinder(args[0]);
-            Console.SetCursorPosition(1, Console.WindowHeight - 2);
-
+            DrawContent();
             while (true)
             {
                 Scroll();
@@ -48,7 +92,7 @@
             DrawCursor();
         }
 
-        private static void DrawFinder(string name)
+        private static void DrawFinder()
         {
             Console.SetCursorPosition(0, 0);
             PrintVerticalBorders(Console.WindowHeight - 5);
@@ -66,41 +110,128 @@
             PrintVerticalBorders(1);
             PrintHorizontalBorder(Console.WindowWidth);
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
-            string[] files = GetAllFiles(name);
+            files = Directory.GetFiles(Environment.CurrentDirectory).Select(f => f.Substring(f.LastIndexOf('\\') + 1)).ToArray();
             PrintFiles(files);
-            SearchFile();
-        }
-
-        private static void SearchFile()
-        {
-            Console.SetCursorPosition(1, Console.WindowHeight - 2);
-            string word = "";
-            while (true)
-            {
-                var ch = Console.ReadKey(true);
-                word += ch.KeyChar.ToString();
-                Console.SetCursorPosition(1, 3);
-                Console.Write(word);
-                Console.SetCursorPosition(1, Console.WindowHeight - 2);
-            }
         }
 
         private static void PrintFiles(string[] files)
         {
             for (int i = 0; i < files.Length; i++)
             {
-                Console.Write($"{files[i].Substring(files[i].LastIndexOf('\\') + 1)}");
-                Console.CursorTop--;
-                Console.CursorLeft = 1;
+                Console.Write(files[i]);
+                Console.SetCursorPosition(1, Console.CursorTop - 1);
+            }
+
+            Console.SetCursorPosition(Console.WindowWidth - 6, Console.WindowHeight - 2);
+            Console.Write($"{files.Length} / {TextEditor.files.Length}");
+            Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
+        }
+
+        private static void ColorMatchingLetters()
+        {
+            Console.SetCursorPosition(1, Console.WindowHeight - 6);
+            for (int i = 0; i < filteredFiles.Length; i++)
+            {
+                for (int j = 0; j < filteredFiles[i].Length; j++)
+                {
+                    Console.CursorLeft++;
+                    Console.Write($"{ESC}0m");
+                    if (match.Contains(filteredFiles[i][j]))
+                    {
+                        Console.CursorLeft--;
+                        Console.Write($"{ESC}32m");
+                        Console.Write(filteredFiles[i][j]);
+                    }
+                }
+                Console.SetCursorPosition(1, Console.CursorTop - 1);
+            }
+            Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
+            Console.Write($"{ESC}0m");
+        }
+
+        private static void SelectFile(ConsoleKeyInfo ch, string[] files)
+        {
+            if (ch.Key == ConsoleKey.UpArrow && row < files.Length - 1)
+            {
+                row++;
+                Console.SetCursorPosition(1, Console.CursorTop - 1);
+            }
+
+            if (ch.Key == ConsoleKey.DownArrow && row > 0)
+            {
+                row--;
+                Console.SetCursorPosition(1, Console.CursorTop + 1);
             }
         }
 
-        private static string[] GetAllFiles(string name)
+        private static string[] GetCurrentFiles() => filteredFiles.Length > 0 ? filteredFiles : files;
+
+        private static void SearchFile(ConsoleKeyInfo ch)
         {
-            string path = Path.GetFullPath(name);
-            return Directory.GetFiles(path.Substring(0, path.LastIndexOf('\\')));
+            if (ch.Key == ConsoleKey.Backspace)
+            {
+                if (Console.CursorLeft == 0)
+                {
+                    Console.CursorLeft++;
+                }
+                Console.Write(' ');
+                match = match.Length > 0 ? match.Remove(match.Length - 1, 1) : match;
+                filteredFiles = FilterFiles();
+                return;
+            }
+
+            match += ch.KeyChar.ToString();
+            filteredFiles = FilterFiles();
         }
 
+        private static void RefreshFiles()
+        {
+            Console.SetCursorPosition(1, Console.WindowHeight - 6);
+            for (int i = 0; i < files.Length; i++)
+            {
+                Console.Write(new string(' ', Console.WindowWidth - 2));
+                Console.SetCursorPosition(1, Console.CursorTop - 1);
+            }
+
+            Console.SetCursorPosition(1, Console.WindowHeight - 6);
+            PrintFiles(filteredFiles.ToArray());
+        }
+
+        private static string[] FilterFiles() => files.Where(file => GetLevenshteinDistance(file, match) <= 7).ToArray();
+
+        private static int GetLevenshteinDistance(string str1, string str2)
+        {
+            int m = str1.Length;
+            int n = str2.Length;
+            int[,] dp = new int[m + 1, n + 1];
+
+            for (int i = 0; i <= m; i++)
+            {
+                dp[i, 0] = i;
+            }
+
+            for (int j = 0; j <= n; j++)
+            {
+                dp[0, j] = j;
+            }
+
+            for (int i = 1; i <= m; i++)
+            {
+                for (int j = 1; j <= n; j++)
+                {
+                    if (str1[i - 1] == str2[j - 1])
+                    {
+                        dp[i, j] = dp[i - 1, j - 1];
+                    }
+                    else
+                    {
+                        dp[i, j] = 1 + Math.Min(dp[i, j - 1], Math.Min(dp[i - 1, j], dp[i - 1, j - 1]));
+                    }
+                }
+            }
+            return dp[m, n];
+        }
+        
         private static void PrintVerticalBorders(int length)
         {
             for (int i = 0; i < length; i++)
@@ -108,8 +239,7 @@
                 PrintBorder(true);
                 Console.CursorLeft = Console.WindowWidth - 1;
                 PrintBorder(true);
-                Console.CursorTop++;
-                Console.CursorLeft = 0;
+                Console.SetCursorPosition(0, Console.CursorTop + 1);
             }
         }
 
@@ -593,6 +723,12 @@
                     HandleArrows(ConsoleKey.UpArrow);
                 }
             }
+
+            else if (ch == ConsoleKey.P)
+            {
+                row = col = 0;
+                OpenFinder();
+            }
         }
 
         private static void HandleArrows(ConsoleKey ch)
@@ -661,51 +797,6 @@
             {
                 col--;
                 prevCol = col;
-            }
-        }
-
-        static void OpenFile(string[] args)
-        {
-            if (args.Length == 0 || !Path.Exists(args[0]))
-            {
-                Console.WriteLine("Enter the name of the text file in the format name.txt: ");
-                string? fileName = Console.ReadLine();
-
-                while (!Path.Exists(fileName))
-                {
-                    Console.WriteLine($"{ESC}31mThe specified file does not exist. Please enter a different file name: {ESC}0m");
-                    fileName = Console.ReadLine();
-                }
-
-                ShowLineNumbers();
-
-                text = File.ReadAllLines(Path.GetFullPath(fileName));
-                return;
-            }
-
-            ShowLineNumbers();
-            text = File.ReadAllLines(args[0]);
-        }
-
-        static void ShowLineNumbers()
-        {
-            Console.Write("Show line numbers? (Press Y for yes): ");
-
-            var ch = Console.ReadKey();
-
-            if (ch.KeyChar.ToString() == "Y")
-            {
-                lineNumbers = true;
-
-                Console.WriteLine();
-                Console.Write("Show line numbers relative to the current line? (Press Y for yes):");
-
-                ch = Console.ReadKey();
-
-                if (ch.KeyChar.ToString() == "Y")
-                {
-                    relativeLines = true;
-                }
             }
         }
     }

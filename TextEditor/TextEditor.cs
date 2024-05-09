@@ -226,39 +226,32 @@ namespace TextEditor
             PrintFiles(GetCurrentFiles().ToArray());
         }
 
-        private static string[] FilterFiles() => files.Where(file => GetLevenshteinDistance(file.ToLower(), match.ToLower()) <= 7).ToArray();
+        private static string[] FilterFiles() => files.Where(file => FuzzySearch(match.ToLower(), file.ToLower())).ToArray();
 
-        private static int GetLevenshteinDistance(string str1, string str2)
+        private static bool FuzzySearch(string pat, string text)
         {
-            int m = str1.Length;
-            int n = str2.Length;
-            int[,] dp = new int[m + 1, n + 1];
+            int m = pat.Length;
+            int n = text.Length;
 
-            for (int i = 0; i <= m; i++)
+            for (int i = 0; i <= n - m; i++)
             {
-                dp[i, 0] = i;
-            }
+                int j;
 
-            for (int j = 0; j <= n; j++)
-            {
-                dp[0, j] = j;
-            }
-
-            for (int i = 1; i <= m; i++)
-            {
-                for (int j = 1; j <= n; j++)
+                for (j = 0; j < m; j++)
                 {
-                    if (str1[i - 1] == str2[j - 1])
+                    if (text[i + j] != pat[j])
                     {
-                        dp[i, j] = dp[i - 1, j - 1];
-                    }
-                    else
-                    {
-                        dp[i, j] = 1 + Math.Min(dp[i, j - 1], Math.Min(dp[i - 1, j], dp[i - 1, j - 1]));
+                        break;
                     }
                 }
+
+                if (j == m)
+                {
+                    return true;
+                }
             }
-            return dp[m, n];
+
+            return false;
         }
         
         private static void PrintVerticalBorders(int length)

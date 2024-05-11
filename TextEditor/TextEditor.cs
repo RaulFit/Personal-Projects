@@ -47,7 +47,23 @@ namespace TextEditor
                     while (ch.Key != ConsoleKey.Enter)
                     {
                         ch = Console.ReadKey(true);
-                        SelectFile(ch, GetCurrentFiles());
+                        if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
+                        {
+                            SelectFile(ch, GetCurrentFiles());
+                        }
+
+                        else if (ch.Key != ConsoleKey.Enter)
+                        {
+                            Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
+                            row = col = 0;
+                            Console.Write(ch.KeyChar.ToString());
+                            SearchFile(ch);
+                            Console.Write($"{ESC}?25l");
+                            RefreshFiles();
+                            ColorMatchingLetters();
+                            Console.Write($"{ESC}?25h");
+                            Console.SetCursorPosition(1, Console.WindowHeight - 6);
+                        }
                     }
 
                     text = File.ReadAllLines(Path.GetFullPath(GetCurrentFiles().ElementAt(row)));
@@ -162,7 +178,7 @@ namespace TextEditor
             {
                 for (int j = 0; j < filteredFiles[i].Length; j++)
                 {
-                    
+
                     Console.CursorLeft++;
                     Console.Write($"{ESC}0m");
                     if (match.ToLower().Contains(filteredFiles[i][j].ToString().ToLower()))
@@ -206,6 +222,11 @@ namespace TextEditor
                 Console.Write(' ');
                 match = match.Length > 0 ? match.Remove(match.Length - 1, 1) : match;
                 filteredFiles = FilterFiles();
+                return;
+            }
+
+            if (ch.Key == ConsoleKey.UpArrow)
+            {
                 return;
             }
 
@@ -253,7 +274,7 @@ namespace TextEditor
 
             return false;
         }
-        
+
         private static void PrintVerticalBorders(int length)
         {
             for (int i = 0; i < length; i++)
@@ -750,6 +771,7 @@ namespace TextEditor
             {
                 row = col = 0;
                 match = "";
+                filteredFiles = new string[] { };
                 OpenFinder();
             }
         }

@@ -176,16 +176,16 @@ namespace TextEditor
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
             for (int i = 0; i < filteredFiles.Length; i++)
             {
+                int start = 0;
                 for (int j = 0; j < filteredFiles[i].Length; j++)
                 {
-
-                    Console.CursorLeft++;
                     Console.Write($"{ESC}0m");
-                    if (match.ToLower().Contains(filteredFiles[i][j].ToString().ToLower()))
+                    if (match.Substring(start).ToLower().Contains(char.ToLower(filteredFiles[i][j])))
                     {
-                        Console.CursorLeft--;
+                        Console.CursorLeft = filteredFiles[i].ToLower().IndexOf(char.ToLower(match[start]), j) + 1;
+                        start++;
                         Console.Write($"{ESC}32m");
-                        Console.Write(filteredFiles[i][j]);
+                        Console.Write(filteredFiles[i][Console.CursorLeft - 1]);
                     }
                 }
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
@@ -247,10 +247,20 @@ namespace TextEditor
             PrintFiles(GetCurrentFiles().ToArray());
         }
 
-        private static string[] FilterFiles() => files.Where(file => FuzzySearch(match.ToLower(), file.ToLower())).ToArray();
+        private static string[] FilterFiles()
+        {
+            string lowerMatch = match.ToLower();
+            if (lowerMatch.Distinct().Count() == 1 && lowerMatch.Count() > 1)
+            {
+                return files.Where(file => file.ToLower().Count(a => a == lowerMatch[0]) == lowerMatch.Count()).ToArray();
+            }
+
+            return files.Where(file => FuzzySearch(match.ToLower(), file.ToLower())).ToArray();
+        }
 
         private static bool FuzzySearch(string pat, string text)
         {
+
             int m = pat.Length;
             int n = text.Length;
 

@@ -246,43 +246,27 @@ namespace TextEditor
             PrintFiles(GetCurrentFiles().ToArray());
         }
 
-        private static string[] FilterFiles()
-        {
-            string lowerMatch = match.ToLower();
-            if (lowerMatch.Distinct().Count() == 1 && lowerMatch.Count() > 1)
-            {
-                return files.Where(file => file.ToLower().Count(a => a == lowerMatch[0]) % lowerMatch.Count() == 0
-                && file.ToLower().Count(a => a == lowerMatch[0]) > 0).ToArray();
-            }
-
-            return files.Where(file => FuzzySearch(match.ToLower(), file.ToLower())).ToArray();
-        }
-
+        private static string[] FilterFiles() => files.Where(file => FuzzySearch(match.ToLower(), file.ToLower())).ToArray();
+       
         private static bool FuzzySearch(string pat, string text)
         {
-
-            int m = pat.Length;
-            int n = text.Length;
-
-            for (int i = 0; i <= n - m; i++)
+            string pattern = "";
+            int i = 0;
+            while (i < pat.Length)
             {
-                int j;
-
-                for (j = 0; j < m; j++)
+                for (int j = 0; j < text.Length && i < pat.Length; j++)
                 {
-                    if (text[i + j] != pat[j])
+                    if (text[j] == pat[i])
                     {
-                        break;
+                        pattern += text[j];
+                        i++;
                     }
                 }
 
-                if (j == m)
-                {
-                    return true;
-                }
+                break;
             }
 
-            return false;
+            return pat == pattern;
         }
 
         private static void PrintVerticalBorders(int length)

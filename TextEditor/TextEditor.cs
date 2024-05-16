@@ -174,17 +174,16 @@ namespace TextEditor
         private static void ColorMatchingLetters()
         {
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
+            Console.Write($"{ESC}32m");
             for (int i = 0; i < filteredFiles.Length; i++)
             {
                 int start = 0;
                 for (int j = 0; j < filteredFiles[i].Length; j++)
                 {
-                    Console.Write($"{ESC}0m");
                     if (match.Substring(start).ToLower().Contains(char.ToLower(filteredFiles[i][j])))
                     {
                         Console.CursorLeft = filteredFiles[i].ToLower().IndexOf(char.ToLower(match[start]), j) + 1;
                         start++;
-                        Console.Write($"{ESC}32m");
                         Console.Write(filteredFiles[i][Console.CursorLeft - 1]);
                     }
                 }

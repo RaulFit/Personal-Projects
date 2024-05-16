@@ -251,7 +251,8 @@ namespace TextEditor
             string lowerMatch = match.ToLower();
             if (lowerMatch.Distinct().Count() == 1 && lowerMatch.Count() > 1)
             {
-                return files.Where(file => file.ToLower().Count(a => a == lowerMatch[0]) == lowerMatch.Count()).ToArray();
+                return files.Where(file => file.ToLower().Count(a => a == lowerMatch[0]) % lowerMatch.Count() == 0
+                && file.ToLower().Count(a => a == lowerMatch[0]) > 0).ToArray();
             }
 
             return files.Where(file => FuzzySearch(match.ToLower(), file.ToLower())).ToArray();

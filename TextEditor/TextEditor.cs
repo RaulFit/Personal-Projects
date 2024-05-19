@@ -17,8 +17,11 @@ namespace TextEditor
         static bool lineNumbers = false;
         static bool relativeLines = false;
         static string match = "";
-        static string[] files = new string[] { };
-        static string[] filteredFiles = new string[] { };
+        static string[] files = { };
+        static string[] filteredFiles = { };
+        static int startIndex = 0;
+        static int endIndex = 0;
+        static int currentIndex = 0;
 
         static void Main(string[] args)
         {
@@ -41,6 +44,7 @@ namespace TextEditor
             {
                 var ch = Console.ReadKey();
                 SearchFile(ch);
+
                 if (ch.Key == ConsoleKey.UpArrow)
                 {
                     Console.SetCursorPosition(1, Console.WindowHeight - 6);
@@ -49,14 +53,14 @@ namespace TextEditor
                         ch = Console.ReadKey(true);
                         if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
                         {
-                            SelectFile(ch, GetCurrentFiles());
+                            SelectFile(ch, filteredFiles);
                         }
 
                         else if (ch.Key != ConsoleKey.Enter)
                         {
                             Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
-                            row = col = 0;
                             Console.Write(ch.KeyChar.ToString());
+                            currentIndex = 0;
                             SearchFile(ch);
                             Console.Write($"{ESC}?25l");
                             RefreshFiles();
@@ -65,11 +69,10 @@ namespace TextEditor
                             Console.SetCursorPosition(1, Console.WindowHeight - 6);
                         }
                     }
-
-                    text = File.ReadAllLines(Path.GetFullPath(GetCurrentFiles().ElementAt(row)));
+                    
+                    text = File.ReadAllLines(Path.GetFullPath(filteredFiles.ElementAt(currentIndex)));
                     lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
                     relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
-                    row = col = 0;
                     RunNavigator();
                 }
 
@@ -128,8 +131,11 @@ namespace TextEditor
             PrintVerticalBorders(1);
             PrintHorizontalBorder(Console.WindowWidth);
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
-            files = Directory.GetFiles(Environment.CurrentDirectory).Select(f => Path.GetFileName(f)).ToArray();
-            PrintFiles(files);
+            files = Directory.GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.AllDirectories).Select(Path.GetFullPath).ToArray();
+            filteredFiles = new string[files.Length];
+            files.CopyTo(filteredFiles, 0);
+            endIndex = Math.Min(files.Length - 1, Console.WindowHeight - 6);
+            PrintFiles(filteredFiles.Select(f => Path.GetFileName(f)).ToArray());
             DrawCorners();
             Console.SetCursorPosition(1, Console.WindowHeight - 2);
         }
@@ -160,14 +166,14 @@ namespace TextEditor
 
         private static void PrintFiles(string[] files)
         {
-            for (int i = 0; i < files.Length; i++)
+            for (int i = startIndex; i < endIndex; i++)
             {
                 Console.Write(files[i]);
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
             }
 
-            Console.SetCursorPosition(Console.WindowWidth - 6, Console.WindowHeight - 2);
-            Console.Write($"{files.Length} / {TextEditor.files.Length}");
+            Console.SetCursorPosition(Console.WindowWidth - 6 - new string(files.Length.ToString()).Length, Console.WindowHeight - 2);
+            Console.Write($"{filteredFiles.Length} / {TextEditor.files.Length}");
             Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
         }
 
@@ -175,16 +181,17 @@ namespace TextEditor
         {
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
             Console.Write($"{ESC}32m");
-            for (int i = 0; i < filteredFiles.Length; i++)
+            for (int i = startIndex; i < endIndex && Console.CursorTop > 0; i++)
             {
                 int start = 0;
-                for (int j = 0; j < filteredFiles[i].Length; j++)
+                string fileName = Path.GetFileName(filteredFiles[i]);
+                for (int j = 0; j < fileName.Length; j++)
                 {
-                    if (match.Substring(start).ToLower().Contains(char.ToLower(filteredFiles[i][j])))
+                    if (match.Substring(start).ToLower().Contains(char.ToLower(fileName[j])))
                     {
-                        Console.CursorLeft = filteredFiles[i].ToLower().IndexOf(char.ToLower(match[start]), j) + 1;
+                        Console.CursorLeft = fileName.ToLower().IndexOf(char.ToLower(match[start]), j) + 1;
                         start++;
-                        Console.Write(filteredFiles[i][Console.CursorLeft - 1]);
+                        Console.Write(fileName[Console.CursorLeft - 1]);
                     }
                 }
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
@@ -195,20 +202,43 @@ namespace TextEditor
 
         private static void SelectFile(ConsoleKeyInfo ch, string[] files)
         {
-            if (ch.Key == ConsoleKey.UpArrow && row < files.Length - 1)
+            int top = Console.CursorTop;
+            if (ch.Key == ConsoleKey.UpArrow)
             {
-                row++;
-                Console.SetCursorPosition(1, Console.CursorTop - 1);
+                if (top == 1 && endIndex < files.Length - 1 && currentIndex < files.Length - 1)
+                {
+                    startIndex++;
+                    endIndex++;
+                    RefreshFiles();
+                    ColorMatchingLetters();
+                }
+
+                if (currentIndex < filteredFiles.Length - 1)
+                {
+                    currentIndex++;
+                    Console.SetCursorPosition(1, Math.Max(1, top - 1));
+                }
             }
 
-            if (ch.Key == ConsoleKey.DownArrow && row > 0)
+            if (ch.Key == ConsoleKey.DownArrow)
             {
-                row--;
-                Console.SetCursorPosition(1, Console.CursorTop + 1);
+                if (top == Console.WindowHeight - 6 && startIndex > 0)
+                {
+                    
+                    startIndex--;
+                    endIndex--;
+                    RefreshFiles();
+                    ColorMatchingLetters();
+                }
+
+                if (currentIndex > 0)
+                {
+                    currentIndex--;
+                }
+
+                Console.SetCursorPosition(1, Math.Min(Console.WindowHeight - 6, top + 1));
             }
         }
-
-        private static string[] GetCurrentFiles() => filteredFiles.Length > 0 ? filteredFiles : files;
 
         private static void SearchFile(ConsoleKeyInfo ch)
         {
@@ -221,6 +251,9 @@ namespace TextEditor
                 Console.Write(' ');
                 match = match.Length > 0 ? match.Remove(match.Length - 1, 1) : match;
                 filteredFiles = FilterFiles();
+                currentIndex = 0;
+                startIndex = 0;
+                endIndex = Math.Min(Console.WindowHeight - 6, filteredFiles.Length);
                 return;
             }
 
@@ -231,23 +264,26 @@ namespace TextEditor
 
             match += ch.KeyChar.ToString();
             filteredFiles = FilterFiles();
+            currentIndex = 0;
+            startIndex = 0;
+            endIndex = Math.Min(Console.WindowHeight - 6, filteredFiles.Length);
         }
 
         private static void RefreshFiles()
         {
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
-            for (int i = 0; i < files.Length; i++)
+            for (int i = 0; i < Console.WindowHeight - 6; i++)
             {
                 Console.Write(new string(' ', Console.WindowWidth - 2));
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
             }
 
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
-            PrintFiles(GetCurrentFiles().ToArray());
+            PrintFiles(filteredFiles.Select(f => Path.GetFileName(f)).ToArray());
         }
 
-        private static string[] FilterFiles() => files.Where(file => FuzzySearch(match.ToLower(), file.ToLower())).ToArray();
-       
+        private static string[] FilterFiles() => files.Where(file => FuzzySearch(match.ToLower(), Path.GetFileName(file).ToLower())).ToArray();
+
         private static bool FuzzySearch(string pat, string text)
         {
             string pattern = "";
@@ -763,7 +799,10 @@ namespace TextEditor
 
             else if (ch == ConsoleKey.P)
             {
+                currentIndex = 0;
                 row = col = 0;
+                startIndex = 0;
+                endIndex = Math.Min(Console.WindowHeight - 6, files.Length - 1);
                 match = "";
                 filteredFiles = new string[] { };
                 OpenFinder();

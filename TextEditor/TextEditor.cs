@@ -172,7 +172,10 @@ namespace TextEditor
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
             }
 
-            Console.SetCursorPosition(Console.WindowWidth - 6 - new string(files.Length.ToString()).Length, Console.WindowHeight - 2);
+            int filesLength = new string(filteredFiles.Length.ToString()).Length;
+            Console.SetCursorPosition(Console.WindowWidth - 10, Console.WindowHeight - 2);
+            Console.Write(new string(' ', 9));
+            Console.SetCursorPosition(Console.WindowWidth - 6 - filesLength, Console.WindowHeight - 2);
             Console.Write($"{filteredFiles.Length} / {TextEditor.files.Length}");
             Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
         }
@@ -183,21 +186,36 @@ namespace TextEditor
             Console.Write($"{ESC}32m");
             for (int i = startIndex; i < endIndex && Console.CursorTop > 0; i++)
             {
-                int start = 0;
-                string fileName = Path.GetFileName(filteredFiles[i]);
-                for (int j = 0; j < fileName.Length; j++)
-                {
-                    if (match.Substring(start).ToLower().Contains(char.ToLower(fileName[j])))
-                    {
-                        Console.CursorLeft = fileName.ToLower().IndexOf(char.ToLower(match[start]), j) + 1;
-                        start++;
-                        Console.Write(fileName[Console.CursorLeft - 1]);
-                    }
-                }
+                ColorPattern(filteredFiles[i], 0);
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
             }
             Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
             Console.Write($"{ESC}0m");
+        }
+
+        private static void ColorPattern(string file, int start)
+        {
+            string fileName = Path.GetFileName(file);
+            string lowerFileName = fileName.ToLower();
+            string lowerMatch = match.ToLower();
+            if (lowerFileName.Contains(lowerMatch))
+            {
+                Console.CursorLeft = lowerFileName.IndexOf(lowerMatch) + 1;
+                Console.Write(new string(' ', lowerMatch.Length));
+                Console.CursorLeft = lowerFileName.IndexOf(lowerMatch) + 1;
+                Console.Write(fileName.Substring(Console.CursorLeft - 1, match.Length));
+                return;
+            }
+
+            for (int j = 0; j < fileName.Length; j++)
+            {
+                if (lowerMatch.Substring(start).Contains(lowerFileName[j]))
+                {
+                    Console.CursorLeft = lowerFileName.IndexOf(lowerMatch[start], j) + 1;
+                    start++;
+                    Console.Write(fileName[Console.CursorLeft - 1]);
+                }
+            }
         }
 
         private static void SelectFile(ConsoleKeyInfo ch, string[] files)

@@ -300,7 +300,13 @@ namespace TextEditor
             PrintFiles(filteredFiles.Select(f => Path.GetFileName(f)).ToArray());
         }
 
-        private static string[] FilterFiles() => files.Where(file => FuzzySearch(match.ToLower(), Path.GetFileName(file).ToLower())).ToArray();
+        private static string[] FilterFiles()
+        {
+            string[] caseInsensitiveFiles = files.Where(file => FuzzySearch(match, Path.GetFileName(file))).ToArray();
+
+            return caseInsensitiveFiles.Length > 0 ? caseInsensitiveFiles : 
+                files.Where(file => FuzzySearch(match.ToLower(), Path.GetFileName(file).ToLower())).ToArray();
+        }
 
         private static bool FuzzySearch(string pat, string text)
         {

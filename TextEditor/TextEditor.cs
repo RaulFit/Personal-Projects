@@ -22,7 +22,6 @@ namespace TextEditor
         static int startIndex = 0;
         static int endIndex = 0;
         static int currentIndex = 0;
-        static bool caseInsensitive = false;
 
         static void Main(string[] args)
         {
@@ -208,12 +207,6 @@ namespace TextEditor
                 return;
             }
 
-            if (caseInsensitive)
-            {
-                lowerFileName = fileName;
-                lowerMatch = match;
-            }
-
             for (int j = 0; j < fileName.Length && start < lowerMatch.Length; j++)
             {
                 if (lowerMatch[start] == lowerFileName[j])
@@ -313,11 +306,9 @@ namespace TextEditor
 
             if (caseInsensitiveFiles.Length > 0)
             {
-                caseInsensitive = true;
                 return caseInsensitiveFiles;
             }
 
-            caseInsensitive = false;
             return files.Where(file => FuzzySearch(match.ToLower(), Path.GetFileName(file).ToLower())).ToArray();
         }
 
@@ -838,6 +829,7 @@ namespace TextEditor
             {
                 currentIndex = 0;
                 row = col = 0;
+                offsetRow = offsetCol = 0;
                 startIndex = 0;
                 endIndex = Math.Min(Console.WindowHeight - 6, files.Length - 1);
                 match = "";

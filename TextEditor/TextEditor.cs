@@ -22,6 +22,7 @@ namespace TextEditor
         static int startIndex = 0;
         static int endIndex = 0;
         static int currentIndex = 0;
+        static bool caseInsensitive = false;
 
         static void Main(string[] args)
         {
@@ -207,6 +208,12 @@ namespace TextEditor
                 return;
             }
 
+            if (caseInsensitive)
+            {
+                lowerFileName = fileName;
+                lowerMatch = match;
+            }
+
             for (int j = 0; j < fileName.Length && start < lowerMatch.Length; j++)
             {
                 if (lowerMatch[start] == lowerFileName[j])
@@ -306,9 +313,11 @@ namespace TextEditor
 
             if (caseInsensitiveFiles.Length > 0)
             {
+                caseInsensitive = true;
                 return caseInsensitiveFiles;
             }
 
+            caseInsensitive = false;
             return files.Where(file => FuzzySearch(match.ToLower(), Path.GetFileName(file).ToLower())).ToArray();
         }
 
@@ -452,12 +461,12 @@ namespace TextEditor
 
             if (row < 100)
             {
-                Console.Write($"{idx,3}");
+                Console.Write($"{idx}");
             }
 
             else if (row >= 100 && row < 1000)
             {
-                Console.Write($"{idx,4}");
+                Console.Write($"{idx}");
                 Console.CursorLeft = idx.ToString().Length;
             }
 
@@ -481,12 +490,12 @@ namespace TextEditor
                 int lastNumber = Console.WindowHeight + offsetRow;
                 if (lastNumber < 100)
                 {
-                    Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
+                    Console.Write($"{ESC}32m{rowIndex}{ESC}0m");
                 }
 
                 else if (lastNumber >= 100 && lastNumber < 1000)
                 {
-                    Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
+                    Console.Write($"{ESC}32m{rowIndex}{ESC}0m");
                     Console.CursorLeft = rowIndex.Length;
                 }
             }
@@ -829,7 +838,6 @@ namespace TextEditor
             {
                 currentIndex = 0;
                 row = col = 0;
-                offsetRow = offsetCol = 0;
                 startIndex = 0;
                 endIndex = Math.Min(Console.WindowHeight - 6, files.Length - 1);
                 match = "";

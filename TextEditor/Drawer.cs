@@ -27,7 +27,7 @@
 
         public static void DrawContent()
         {
-            int len = Math.Min(Console.WindowHeight - 1, Navigator.text.Length - 1);
+            int len = Math.Min(Console.WindowHeight, Navigator.text.Length);
 
             for (int i = 0; i < len; i++)
             {
@@ -35,46 +35,43 @@
                 DrawRow(rowIndex);
             }
 
-            int lastIndex = len + Navigator.offsetRow;
-            rowIndex = (lastIndex + 1) + " ";
-            int lenToDraw = Navigator.text[lastIndex].Length - Navigator.offsetCol;
-            DrawRowIndex();
-
-            if (lenToDraw >= Console.WindowWidth - rowIndex.Length)
+            if (relativeLines)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
-            }
-
-            if (lenToDraw > 0)
-            {
-                Console.Write(Navigator.text[lastIndex][Navigator.offsetCol..(lenToDraw + Navigator.offsetCol)]);
+                DrawIndexes();
             }
         }
 
-        public static void DrawRow(int index)
+        private static void DrawRow(int index)
         {
             rowIndex = (index + 1) + " ";
-            int lenToDraw = Navigator.text[index].Length - Navigator.offsetCol;
             DrawRowIndex();
 
-            if (lenToDraw <= 0)
-            {
-                Console.WriteLine();
-            }
+            int lenToDraw = Navigator.text[index].Length - Navigator.offsetCol;
 
-            if (lenToDraw >= Console.WindowWidth - rowIndex.Length)
+            if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
             {
                 lenToDraw = Console.WindowWidth - rowIndex.Length;
 
-                if (index < 10)
+                if (relativeLines)
                 {
-                    lenToDraw--;
+                    lenToDraw = Console.WindowWidth - Navigator.row.ToString().Length - 2;
                 }
+            }
+
+            else if (lenToDraw >= Console.WindowWidth)
+            {
+                lenToDraw = Console.WindowWidth;
             }
 
             if (lenToDraw > 0)
             {
-                Console.WriteLine(Navigator.text[index][Navigator.offsetCol..(lenToDraw + Navigator.offsetCol)]);
+                Console.Write(Navigator.text[index][Navigator.offsetCol..(lenToDraw + Navigator.offsetCol)]);
+            }
+
+            if (index < Console.WindowHeight + Navigator.offsetRow - 1)
+            {
+                Console.CursorTop++;
+                Console.CursorLeft = 0;
             }
         }
 
@@ -138,7 +135,17 @@
         {
             if (lineNumbers)
             {
-                Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
+                int lastNumber = Console.WindowHeight + Navigator.offsetRow;
+                if (lastNumber < 100)
+                {
+                    Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
+                }
+
+                else if (lastNumber >= 100 && lastNumber < 1000)
+                {
+                    Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
+                    Console.CursorLeft = rowIndex.Length;
+                }
             }
         }
 
@@ -146,7 +153,7 @@
         {
             if (lineNumbers)
             {
-                Console.SetCursorPosition(Math.Min(Navigator.col - Navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1), Navigator.row - Navigator.offsetRow);
+                Console.SetCursorPosition(Math.Min(Navigator.col - Navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1), Math.Max(Navigator.row - Navigator.offsetRow, 0));
                 return;
             }
 

@@ -318,13 +318,7 @@
 
                 if (c.Key == ConsoleKey.F)
                 {
-                    Finder.currentIndex = 0;
-                    row = col = 0;
-                    offsetCol = offsetRow = prevCol = 0;
-                    Finder.startIndex = 0;
-                    Finder.endIndex = Math.Min(Console.WindowHeight - 6, Files.files.Length - 1);
-                    Finder.match = "";
-                    Files.filteredFiles = [];
+                    Finder.ResetSettings();
                     Finder.OpenFinder();
                 }
             }

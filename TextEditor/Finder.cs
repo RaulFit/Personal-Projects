@@ -61,6 +61,7 @@ namespace TextEditor
                     Navigator.text = File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
                     Drawer.lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
                     Drawer.relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
+                    ResetSettings();
                     Navigator.RunNavigator();
                 }
 
@@ -76,6 +77,22 @@ namespace TextEditor
                 }
             }
         }
+
+        public static void ResetSettings()
+        {
+            Navigator.row = 0;
+            Navigator.offsetRow = 0;
+            Navigator.col = 0;
+            Navigator.offsetCol = 0;
+            Navigator.prevCol = 0;
+            Drawer.rowIndex = "";
+            Drawer.shouldRefresh = false;
+            Drawer.windowWidth = Console.WindowWidth;
+            match = "";
+            startIndex = 0;
+            endIndex = 0;
+            currentIndex = 0;
+    }
 
         private static void DrawFinder()
         {

@@ -74,7 +74,7 @@
                 if (Finder.match.Length > 0)
                 {
                     Console.Write(' ');
-                    string remainingText = Finder.match.Substring(Console.CursorLeft - 1);
+                    string remainingText = Finder.match.Substring(Math.Min(Finder.match.Length, Console.CursorLeft - 1));
                     Finder.match = Finder.match.Length > 0 ? Finder.match.Remove(Console.CursorLeft - 2, 1) : Finder.match;
                     Console.CursorLeft--;
                     int prevPos = Console.CursorLeft;
@@ -91,7 +91,7 @@
                 return;
             }
 
-            if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.Enter)
+            if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow || ch.Key == ConsoleKey.Enter)
             {
                 return;
             }

@@ -33,7 +33,7 @@ namespace TextEditor
                     continue;
                 }
 
-                if (ch.Key == ConsoleKey.UpArrow)
+                if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
                 {
                     Console.SetCursorPosition(1, Console.WindowHeight - 6);
                     while (ch.Key != ConsoleKey.Enter)

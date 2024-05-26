@@ -347,7 +347,7 @@
 
                 if (Drawer.relativeLines)
                 {
-                    Drawer.DrawIndexes();
+                    Drawer.DrawRelativeIndexes();
                 }
             }
 
@@ -372,7 +372,7 @@
 
                 if (Drawer.relativeLines)
                 {
-                    Drawer.DrawIndexes();
+                    Drawer.DrawRelativeIndexes();
                 }
             }
 

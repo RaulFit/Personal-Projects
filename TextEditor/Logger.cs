@@ -10,6 +10,7 @@ namespace TextEditor
 
             using (StreamWriter writer = new StreamWriter(logPath, true))
             {
+
                 writer.WriteLine($"{DateTime.Now} : {messsage}");
             }
         }

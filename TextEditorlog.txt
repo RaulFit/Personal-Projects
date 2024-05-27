@@ -1,0 +1,128 @@
+5/27/2024 1:44:21 PM : DownArrow : 0 namespace TextEditor
+5/27/2024 1:44:22 PM : DownArrow : 1 {
+5/27/2024 1:44:22 PM : DownArrow : 2     class Navigator
+5/27/2024 1:44:22 PM : DownArrow : 3     {
+5/27/2024 1:44:22 PM : DownArrow : 4         public static string[] text = { };
+5/27/2024 1:44:22 PM : DownArrow : 5         public static int row = 0;
+5/27/2024 1:44:22 PM : DownArrow : 6         public static int offsetRow = 0;
+5/27/2024 1:44:22 PM : DownArrow : 7         public static int col = 0;
+5/27/2024 1:44:22 PM : DownArrow : 8         public static int offsetCol = 0;
+5/27/2024 1:44:22 PM : DownArrow : 9         public static int prevCol = 0;
+5/27/2024 1:44:22 PM : DownArrow : 10 
+5/27/2024 1:44:22 PM : DownArrow : 11         public static void RunNavigator()
+5/27/2024 1:44:22 PM : DownArrow : 12         {
+5/27/2024 1:44:22 PM : DownArrow : 13             Console.Clear();
+5/27/2024 1:44:22 PM : DownArrow : 14             Console.SetCursorPosition(0, 0);
+5/27/2024 1:44:22 PM : DownArrow : 15             Drawer.DrawContent();
+5/27/2024 1:44:22 PM : DownArrow : 16             while (true)
+5/27/2024 1:44:22 PM : DownArrow : 17             {
+5/27/2024 1:44:22 PM : DownArrow : 18                 Drawer.Scroll();
+5/27/2024 1:44:22 PM : DownArrow : 19                 Drawer.RefreshScreen();
+5/27/2024 1:44:22 PM : DownArrow : 20                 var ch = Console.ReadKey(true);
+5/27/2024 1:44:22 PM : DownArrow : 21                 HandleInput(ch);
+5/27/2024 1:44:22 PM : DownArrow : 22             }
+5/27/2024 1:44:22 PM : DownArrow : 23         }
+5/27/2024 1:44:22 PM : DownArrow : 24 
+5/27/2024 1:44:22 PM : DownArrow : 25         public static void HandleInput(ConsoleKeyInfo ch)
+5/27/2024 1:44:22 PM : DownArrow : 26         {
+5/27/2024 1:44:22 PM : DownArrow : 27             if (char.IsDigit(ch.KeyChar) && ch.Key != ConsoleKey.D0)
+5/27/2024 1:44:22 PM : DownArrow : 28             {
+5/27/2024 1:44:22 PM : DownArrow : 29                 HandleSimpleMovement(ch);
+5/27/2024 1:44:22 PM : DownArrow : 29                 return;
+5/27/2024 1:44:22 PM : DownArrow : 29             }
+5/27/2024 1:44:23 PM : DownArrow : 29 
+5/27/2024 1:44:23 PM : DownArrow : 29             MoveTo(ch.Key, 1);
+5/27/2024 1:44:23 PM : DownArrow : 29             HandleSpecialKeys(ch);
+5/27/2024 1:44:23 PM : DownArrow : 29             HandleArrows(ch.Key);
+5/27/2024 1:44:23 PM : DownArrow : 29             HandleKeys(ch.Key);
+5/27/2024 1:44:23 PM : DownArrow : 29             MoveWord(ch);
+5/27/2024 1:44:23 PM : DownArrow : 29             MoveChar(ch, 1);
+5/27/2024 1:44:23 PM : DownArrow : 29         }
+5/27/2024 1:44:23 PM : DownArrow : 29 
+5/27/2024 1:44:23 PM : DownArrow : 29         private static void HandleSimpleMovement(ConsoleKeyInfo ch)
+5/27/2024 1:44:23 PM : DownArrow : 29         {
+5/27/2024 1:44:23 PM : DownArrow : 29             string num = ch.KeyChar.ToString();
+5/27/2024 1:44:23 PM : DownArrow : 29             while (true)
+5/27/2024 1:44:23 PM : DownArrow : 29             {
+5/27/2024 1:44:23 PM : DownArrow : 29                 ch = Console.ReadKey(true);
+5/27/2024 1:44:23 PM : DownArrow : 29                 if (char.IsDigit(ch.KeyChar))
+5/27/2024 1:44:23 PM : DownArrow : 29                 {
+5/27/2024 1:44:23 PM : DownArrow : 29                     num += ch.KeyChar.ToString();
+5/27/2024 1:44:23 PM : DownArrow : 29                     continue;
+5/27/2024 1:44:23 PM : DownArrow : 29                 }
+5/27/2024 1:44:23 PM : DownArrow : 29 
+5/27/2024 1:44:23 PM : DownArrow : 29                 if (int.TryParse(num, out int number))
+5/27/2024 1:44:23 PM : DownArrow : 29                 {
+5/27/2024 1:44:23 PM : DownArrow : 29                     MoveTo(ch.Key, number);
+5/27/2024 1:44:23 PM : DownArrow : 29                     MoveWords(ch, number);
+5/27/2024 1:44:23 PM : DownArrow : 29                     MoveChar(ch, number);
+5/27/2024 1:44:23 PM : DownArrow : 29                 }
+5/27/2024 1:44:23 PM : DownArrow : 29 
+5/27/2024 1:44:23 PM : DownArrow : 29                 break;
+5/27/2024 1:44:23 PM : DownArrow : 29             }
+5/27/2024 1:44:24 PM : DownArrow : 29         }
+5/27/2024 1:44:24 PM : DownArrow : 29 
+5/27/2024 1:44:24 PM : DownArrow : 29         private static void FindCharLowerCase(ConsoleKeyInfo ch)
+5/27/2024 1:44:24 PM : DownArrow : 29         {
+5/27/2024 1:44:24 PM : DownArrow : 29             int index = text[row].IndexOf(ch.KeyChar.ToString(), Math.Min(col + 1, text[row].Length - 1));
+5/27/2024 1:44:24 PM : DownArrow : 29             col = index != -1 ? index : col;
+5/27/2024 1:44:24 PM : DownArrow : 29         }
+5/27/2024 1:44:24 PM : DownArrow : 29 
+5/27/2024 1:44:24 PM : DownArrow : 29         private static void FindCharUpperCase(ConsoleKeyInfo ch)
+5/27/2024 1:44:24 PM : DownArrow : 29         {
+5/27/2024 1:44:24 PM : DownArrow : 29             int index = text[row].LastIndexOf(ch.KeyChar.ToString(), Math.Max(col - 1, 0));
+5/27/2024 1:44:24 PM : DownArrow : 29             col = index != -1 ? index : col;
+5/27/2024 1:44:24 PM : DownArrow : 29         }
+5/27/2024 1:44:24 PM : DownArrow : 29 
+5/27/2024 1:44:24 PM : DownArrow : 29         private static void MoveChar(ConsoleKeyInfo ch, int num)
+5/27/2024 1:44:24 PM : DownArrow : 29         {
+5/27/2024 1:44:24 PM : DownArrow : 29             if (ch.KeyChar.ToString() == "f")
+5/27/2024 1:44:24 PM : DownArrow : 29             {
+5/27/2024 1:44:24 PM : DownArrow : 29                 var chToFind = Console.ReadKey(true);
+5/27/2024 1:44:24 PM : DownArrow : 29                 for (int i = 0; i < num; i++)
+5/27/2024 1:44:24 PM : DownArrow : 29                 {
+5/27/2024 1:44:24 PM : DownArrow : 29                     FindCharLowerCase(chToFind);
+5/27/2024 1:44:24 PM : DownArrow : 29                 }
+5/27/2024 1:44:24 PM : DownArrow : 29             }
+5/27/2024 1:44:24 PM : DownArrow : 29 
+5/27/2024 1:44:24 PM : DownArrow : 29             if (ch.KeyChar.ToString() == "F")
+5/27/2024 1:44:24 PM : DownArrow : 29             {
+5/27/2024 1:44:24 PM : DownArrow : 29                 var chToFind = Console.ReadKey(true);
+5/27/2024 1:44:24 PM : DownArrow : 29                 for (int i = 0; i < num; i++)
+5/27/2024 1:44:24 PM : DownArrow : 29                 {
+5/27/2024 1:44:25 PM : DownArrow : 29                     FindCharUpperCase(chToFind);
+5/27/2024 1:44:25 PM : DownArrow : 29                 }
+5/27/2024 1:44:25 PM : DownArrow : 29             }
+5/27/2024 1:44:25 PM : DownArrow : 29         }
+5/27/2024 1:44:25 PM : DownArrow : 29 
+5/27/2024 1:44:25 PM : DownArrow : 29         private static void MoveWords(ConsoleKeyInfo ch, int num)
+5/27/2024 1:44:25 PM : DownArrow : 29         {
+5/27/2024 1:44:25 PM : DownArrow : 29             for (int i = 0; i < num; i++)
+5/27/2024 1:44:25 PM : DownArrow : 29             {
+5/27/2024 1:44:25 PM : DownArrow : 29                 MoveWord(ch);
+5/27/2024 1:44:25 PM : DownArrow : 29             }
+5/27/2024 1:44:25 PM : DownArrow : 29         }
+5/27/2024 1:44:25 PM : DownArrow : 29 
+5/27/2024 1:44:25 PM : DownArrow : 29         private static void MoveWord(ConsoleKeyInfo ch)
+5/27/2024 1:44:25 PM : DownArrow : 29         {
+5/27/2024 1:44:25 PM : DownArrow : 29             if (ch.KeyChar.ToString() == "w")
+5/27/2024 1:44:25 PM : DownArrow : 29             {
+5/27/2024 1:44:25 PM : DownArrow : 29                 MoveForwardLowerCase();
+5/27/2024 1:44:25 PM : DownArrow : 29                 while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row < text.Length - 1)
+5/27/2024 1:44:25 PM : DownArrow : 29                 {
+5/27/2024 1:44:25 PM : DownArrow : 29                     row++;
+5/27/2024 1:44:25 PM : DownArrow : 29                     col = 0;
+5/27/2024 1:44:25 PM : DownArrow : 29                     MoveForwardLowerCase();
+5/27/2024 1:44:25 PM : DownArrow : 29                 }
+5/27/2024 1:44:25 PM : DownArrow : 29             }
+5/27/2024 1:44:25 PM : DownArrow : 29 
+5/27/2024 1:44:25 PM : DownArrow : 29             if (ch.KeyChar.ToString() == "b")
+5/27/2024 1:44:25 PM : DownArrow : 29             {
+5/27/2024 1:44:25 PM : DownArrow : 29                 MoveBackwards();
+5/27/2024 1:44:25 PM : DownArrow : 29                 while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row > 0)
+5/27/2024 1:44:25 PM : DownArrow : 29                 {
+5/27/2024 1:44:26 PM : DownArrow : 29                     row--;
+5/27/2024 1:44:26 PM : DownArrow : 29                     col = text[row].Length;
+5/27/2024 1:44:26 PM : DownArrow : 29                     MoveBackwards();
+5/27/2024 1:44:26 PM : DownArrow : 29                 }
+5/27/2024 1:44:26 PM : DownArrow : 29             }

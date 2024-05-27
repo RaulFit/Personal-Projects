@@ -6,7 +6,7 @@ namespace TextEditor
     {
         public static void WriteLog(string messsage)
         {
-            string logPath = ConfigurationManager.AppSettings["logPath"];
+            string logPath = Directory.GetCurrentDirectory() + "log.txt";
 
             using (StreamWriter writer = new StreamWriter(logPath, true))
             {

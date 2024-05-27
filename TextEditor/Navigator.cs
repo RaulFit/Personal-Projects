@@ -1,4 +1,6 @@
-﻿namespace TextEditor
+﻿using System;
+
+namespace TextEditor
 {
     class Navigator
     {
@@ -349,6 +351,8 @@
                 {
                     Drawer.DrawRelativeIndexes();
                 }
+
+                Logger.WriteLog("UpArrow : " + Console.CursorTop + " " + text[row - 1]);
             }
 
             else if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
@@ -374,6 +378,8 @@
                 {
                     Drawer.DrawRelativeIndexes();
                 }
+
+                Logger.WriteLog("DownArrow : " + Console.CursorTop + " " + text[row + 1]);
             }
 
             else if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Console.WindowWidth && col < text[row].Length + Drawer.rowIndex.Length - 1)))

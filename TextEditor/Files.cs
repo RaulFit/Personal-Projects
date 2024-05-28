@@ -46,7 +46,6 @@
             {
                 if (top == Console.WindowHeight - 6 && Finder.startIndex > 0)
                 {
-
                     Finder.startIndex--;
                     Finder.endIndex--;
                     RefreshFiles();
@@ -62,32 +61,30 @@
             }
         }
 
+        private static void RemoveChar()
+        {
+            if (Finder.match.Length > 0)
+            {
+                int prevPos = Math.Max(1, Console.CursorLeft - 1);
+                int matchLength = Finder.match.Length;
+                Finder.match = Finder.match.Remove(Math.Max(0, Console.CursorLeft - 2), 1);
+                Console.CursorLeft = 1;
+                Console.Write(new string(' ', matchLength));
+                Console.CursorLeft = 1;
+                Console.Write(Finder.match);
+                Console.CursorLeft = prevPos;
+                filteredFiles = FilterFiles();
+                Finder.currentIndex = 0;
+                Finder.startIndex = 0;
+                Finder.endIndex = Math.Min(Console.WindowHeight - 6, filteredFiles.Length);
+            }
+        }
+
         public static void SearchFile(ConsoleKeyInfo ch)
         {
             if (ch.Key == ConsoleKey.Backspace)
             {
-                if (Console.CursorLeft == 0)
-                {
-                    Console.CursorLeft++;
-                }
-
-                if (Finder.match.Length > 0)
-                {
-                    Console.Write(' ');
-                    string remainingText = Finder.match.Substring(Math.Min(Finder.match.Length, Console.CursorLeft - 1));
-                    Finder.match = Finder.match.Length > 0 ? Finder.match.Remove(Console.CursorLeft - 2, 1) : Finder.match;
-                    Console.CursorLeft--;
-                    int prevPos = Console.CursorLeft;
-                    Console.Write(new string(' ', remainingText.Length + 2));
-                    Console.CursorLeft = prevPos;
-                    Console.Write(remainingText);
-                    Console.CursorLeft = prevPos;
-                    filteredFiles = FilterFiles();
-                    Finder.currentIndex = 0;
-                    Finder.startIndex = 0;
-                    Finder.endIndex = Math.Min(Console.WindowHeight - 6, filteredFiles.Length);
-                }
-
+                RemoveChar();
                 return;
             }
 
@@ -117,6 +114,11 @@
                 return;
             }
 
+            UpdateFiles(ch);
+        }
+
+        private static void UpdateFiles(ConsoleKeyInfo ch)
+        {
             Finder.match += ch.KeyChar.ToString();
             filteredFiles = FilterFiles();
             Finder.currentIndex = 0;

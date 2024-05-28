@@ -22,10 +22,7 @@ namespace TextEditor
 
                 if (ch.Key == ConsoleKey.Enter)
                 {
-                    Navigator.text = File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
-                    Drawer.lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
-                    Drawer.relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
-                    Navigator.RunNavigator();
+                    ReadText();
                 }
 
                 if (ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.RightArrow)
@@ -35,34 +32,8 @@ namespace TextEditor
 
                 if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
                 {
-                    Console.SetCursorPosition(1, Console.WindowHeight - 6);
-                    while (ch.Key != ConsoleKey.Enter)
-                    {
-                        ch = Console.ReadKey(true);
-                        if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
-                        {
-                            Files.SelectFile(ch, Files.filteredFiles);
-                        }
-
-                        else if (ch.Key != ConsoleKey.Enter)
-                        {
-                            Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
-                            Console.Write(ch.KeyChar.ToString());
-                            currentIndex = 0;
-                            Files.SearchFile(ch);
-                            Console.Write($"{ESC}?25l");
-                            Files.RefreshFiles();
-                            ColorMatchingLetters();
-                            Console.Write($"{ESC}?25h");
-                            Console.SetCursorPosition(1, Console.WindowHeight - 6);
-                        }
-                    }
-
-                    Navigator.text = File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
-                    Drawer.lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
-                    Drawer.relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
-                    ResetSettings();
-                    Navigator.RunNavigator();
+                    SelectFile(ch);
+                    ReadText();
                 }
 
                 int left = Console.CursorLeft;
@@ -74,6 +45,41 @@ namespace TextEditor
                 if (ch.Key == ConsoleKey.Backspace)
                 {
                     Console.CursorLeft = left;
+                }
+            }
+        }
+
+        private static void ReadText()
+        {
+            Navigator.text = File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
+            Drawer.lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
+            Drawer.relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
+            ResetSettings();
+            Navigator.RunNavigator();
+        }
+
+        private static void SelectFile(ConsoleKeyInfo ch)
+        {
+            Console.SetCursorPosition(1, Console.WindowHeight - 6);
+            while (ch.Key != ConsoleKey.Enter)
+            {
+                ch = Console.ReadKey(true);
+                if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
+                {
+                    Files.SelectFile(ch, Files.filteredFiles);
+                }
+
+                else if (ch.Key != ConsoleKey.Enter)
+                {
+                    Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
+                    Console.Write(ch.KeyChar.ToString());
+                    currentIndex = 0;
+                    Files.SearchFile(ch);
+                    Console.Write($"{ESC}?25l");
+                    Files.RefreshFiles();
+                    ColorMatchingLetters();
+                    Console.Write($"{ESC}?25h");
+                    Console.SetCursorPosition(1, Console.WindowHeight - 6);
                 }
             }
         }
@@ -195,18 +201,13 @@ namespace TextEditor
         {
             string pattern = "";
             int i = 0;
-            while (i < pat.Length)
+            for (int j = 0; j < text.Length && i < pat.Length; j++)
             {
-                for (int j = 0; j < text.Length && i < pat.Length; j++)
+                if (text[j] == pat[i])
                 {
-                    if (text[j] == pat[i])
-                    {
-                        pattern += text[j];
-                        i++;
-                    }
+                    pattern += text[j];
+                    i++;
                 }
-
-                break;
             }
 
             return pat == pattern;

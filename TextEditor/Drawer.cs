@@ -1,4 +1,6 @@
-﻿namespace TextEditor
+﻿using System.Text;
+
+namespace TextEditor
 {
     static class Drawer
     {
@@ -8,6 +10,7 @@
         public static int windowWidth = Console.WindowWidth;
         public static bool lineNumbers = false;
         public static bool relativeLines = false;
+        public static StringBuilder text = new StringBuilder();
 
         public static void RefreshScreen()
         {
@@ -28,6 +31,7 @@
         public static void DrawContent()
         {
             int len = Math.Min(Console.WindowHeight, Navigator.text.Length);
+            text = new StringBuilder();
 
             for (int i = 0; i < len; i++)
             {
@@ -35,26 +39,25 @@
                 DrawRow(rowIndex);
             }
 
-            if (relativeLines)
+            if (lineNumbers && relativeLines)
             {
                 DrawRelativeIndexes();
             }
+
+            Console.SetCursorPosition(0, 0);
+            Console.Write(text);
         }
 
         private static void DrawRow(int index)
         {
             rowIndex = (index + 1) + " ";
+            DrawRowIndex();
 
             int lenToDraw = Navigator.text[index].Length - Navigator.offsetCol;
 
             if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
             {
                 lenToDraw = Console.WindowWidth - rowIndex.Length;
-
-                if (relativeLines)
-                {
-                    lenToDraw = Console.WindowWidth - Navigator.row.ToString().Length - 2;
-                }
             }
 
             else if (lenToDraw >= Console.WindowWidth)
@@ -62,64 +65,80 @@
                 lenToDraw = Console.WindowWidth;
             }
 
-            if (lineNumbers)
+            AppendLine(index, lenToDraw);
+        }
+
+        private static void AppendLine(int index, int length)
+        {
+            if (relativeLines)
             {
-                Console.Write(rowIndex);
+                text.Append(new string(' ', 3));
             }
 
-            if (lenToDraw > 0)
+            if (length > 0)
             {
-                Console.Write(Navigator.text[index][Navigator.offsetCol..(lenToDraw + Navigator.offsetCol)]);
+                text.Append(Navigator.text[index][Navigator.offsetCol..(length + Navigator.offsetCol)]);
             }
 
             if (index < Console.WindowHeight + Navigator.offsetRow - 1)
             {
-                Console.CursorTop++;
-                Console.CursorLeft = 0;
+                text.Append("\r\n");
+            }
+        }
+
+        private static void DrawRowIndex()
+        {
+            if (lineNumbers && !relativeLines)
+            {
+                int lastNumber = Console.WindowHeight + Navigator.offsetRow;
+                if (lastNumber < 100)
+                {
+                    text.Append($"{ESC}32m{rowIndex,3}{ESC}0m");
+                }
+
+                else if (lastNumber >= 100 && lastNumber < 1000)
+                {
+                    text.Append($"{ESC}32m{rowIndex,4}{ESC}0m").Append($"{ESC}1D");
+                }
             }
         }
 
         public static void DrawRelativeIndexes()
         {
-            Console.Write($"{ESC}?25l");
-            Console.SetCursorPosition(0, 0);
+            text.Append($"{ESC}0;0H");
             int num = Navigator.row - Navigator.offsetRow;
             int i;
             for (i = Navigator.offsetRow; i < Console.WindowHeight + Navigator.offsetRow - 1; i++)
             {
-                Console.Write(new string(' ', rowIndex.Length));
-                Console.CursorLeft = 0;
+                text.Append($"{ESC}0G");
                 DrawIndex(i, ref num);
-                Console.CursorTop++;
-                Console.CursorLeft = 0;
+                text.Append("\r\n");
             }
 
             DrawIndex(i, ref num);
-            Console.CursorLeft = 0;
-            Console.Write($"{ESC}0m");
-            Console.Write($"{ESC}?25h");
+            text.Append($"{ESC}0G");
+            text.Append($"{ESC}0m");
         }
 
         private static void DrawIndex(int index, ref int num)
         {
-            Console.Write($"{ESC}32m");
+            text.Append($"{ESC}32m");
             num = index > Navigator.row ? num + 1 : num;
             string idx = Navigator.row == index ? Navigator.row + " " : num + " ";
 
             if (Navigator.row == index)
             {
-                Console.Write($"{ESC}31m");
+                text.Append($"{ESC}31m");
             }
 
             if (Navigator.row < 100)
             {
-                Console.Write($"{idx,3}");
+                text.Append($"{idx,3}");
             }
 
             else if (Navigator.row >= 100 && Navigator.row < 1000)
             {
-                Console.Write($"{idx,4}");
-                Console.CursorLeft = idx.ToString().Length;
+                text.Append($"{idx,4}");
             }
 
             num = index < Navigator.row ? num - 1 : num;
@@ -135,29 +154,19 @@
             Console.Write(new string(' ', Console.WindowWidth));
         }
 
-        private static void DrawRowIndex()
-        {
-            if (lineNumbers)
-            {
-                int lastNumber = Console.WindowHeight + Navigator.offsetRow;
-                if (lastNumber < 100)
-                {
-                    Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
-                }
-
-                else if (lastNumber >= 100 && lastNumber < 1000)
-                {
-                    Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
-                    Console.CursorLeft = rowIndex.Length;
-                }
-            }
-        }
-
         private static void DrawCursor()
         {
             if (lineNumbers)
             {
-                Console.SetCursorPosition(Math.Min(Navigator.col - Navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1), Math.Max(Navigator.row - Navigator.offsetRow, 0));
+                if (Console.WindowHeight + Navigator.offsetRow > 100)
+                {
+                    Console.SetCursorPosition(Math.Min(Navigator.col - Navigator.offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1), Math.Max(Navigator.row - Navigator.offsetRow, 0));
+                }
+
+                else
+                {
+                    Console.SetCursorPosition(Math.Min(Navigator.col - Navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1), Math.Max(Navigator.row - Navigator.offsetRow, 0));
+                }
                 return;
             }
 
@@ -189,14 +198,17 @@
                 Navigator.offsetCol = Navigator.col;
                 shouldRefresh = true;
             }
+        }
 
-            else if (windowWidth != Console.WindowWidth)
+        public static void RefreshText()
+        {
+            if (windowWidth != Console.WindowWidth)
             {
                 windowWidth = Console.WindowWidth;
                 shouldRefresh = true;
             }
 
-            else if (Navigator.insertMode)
+            if (Navigator.insertMode)
             {
                 shouldRefresh = true;
             }

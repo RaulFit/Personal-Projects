@@ -18,17 +18,15 @@
             while (true)
             {
                 Drawer.Scroll();
+                Drawer.RefreshText();
                 Drawer.RefreshScreen();
                 ConsoleKeyInfo ch;
-                if (insertMode)
+                ch = insertMode ? Console.ReadKey() : Console.ReadKey(true);
+                if (Drawer.relativeLines && (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow))
                 {
-                    ch = Console.ReadKey();
+                    Drawer.shouldRefresh = true;
+                    Drawer.RefreshScreen();
                 }
-                else
-                {
-                    ch = Console.ReadKey(true);
-                }
-               
                 HandleInput(ch);
             }
         }
@@ -53,13 +51,10 @@
                 return;
             }
 
-            else
-            {
-                ToggleInsertMode(ch);
-                HandleInsert(ch);
-                HandleArrows(ch.Key);
-                HandleKeys(ch.Key);
-            }
+            ToggleInsertMode(ch);
+            HandleInsert(ch);
+            HandleArrows(ch.Key);
+            HandleKeys(ch.Key);
         }
 
         public static void HandleInsert(ConsoleKeyInfo ch)
@@ -84,7 +79,7 @@
                 insertMode = true;
             }
 
-            else if (ch.Key == ConsoleKey.Escape)
+            if (ch.Key == ConsoleKey.Escape)
             {
                 insertMode = false;
             }
@@ -192,28 +187,19 @@
 
         private static void MoveForwardLowerCase()
         {
-            if (col < text[row].Length && char.IsPunctuation(text[row][col]))
+            while (col < text[row].Length && char.IsPunctuation(text[row][col]))
             {
-                while (col < text[row].Length && char.IsPunctuation(text[row][col]))
-                {
-                    col++;
-                }
+                col++;
             }
 
-            else if (col < text[row].Length && char.IsLetter(text[row][col]))
+            while (col < text[row].Length && char.IsLetter(text[row][col]))
             {
-                while (col < text[row].Length && char.IsLetter(text[row][col]))
-                {
-                    col++;
-                }
+                col++;
             }
 
-            else if (col < text[row].Length)
+            while (col < text[row].Length && !char.IsLetter(text[row][col]) && !char.IsPunctuation(text[row][col]))
             {
-                while (col < text[row].Length && !char.IsLetter(text[row][col]) && !char.IsPunctuation(text[row][col]))
-                {
-                    col++;
-                }
+                col++;
             }
 
             while (col < text[row].Length && char.IsWhiteSpace(text[row][col]))
@@ -224,20 +210,14 @@
 
         private static void MoveForwardUpperCase()
         {
-            if (col < text[row].Length && char.IsLetter(text[row][col]))
+            while (col < text[row].Length && char.IsLetter(text[row][col]))
             {
-                while (col < text[row].Length && char.IsLetter(text[row][col]))
-                {
-                    col++;
-                }
+                col++;
             }
 
-            else if (col < text[row].Length)
+            while (col < text[row].Length && !char.IsLetter(text[row][col]))
             {
-                while (col < text[row].Length && !char.IsLetter(text[row][col]))
-                {
-                    col++;
-                }
+                col++;
             }
 
             while (col < text[row].Length && (char.IsWhiteSpace(text[row][col]) || char.IsPunctuation(text[row][col])))
@@ -281,12 +261,12 @@
                 }
             }
 
-            else if (ch.KeyChar.ToString() == "0")
+            if (ch.KeyChar.ToString() == "0")
             {
                 col = 0;
             }
 
-            else if (ch.KeyChar.ToString() == "^")
+            if (ch.KeyChar.ToString() == "^")
             {
                 HandleKeys(ConsoleKey.Home);
             }
@@ -299,17 +279,17 @@
                 Move(ConsoleKey.DownArrow, number);
             }
 
-            else if (ch == ConsoleKey.K)
+            if (ch == ConsoleKey.K)
             {
                 Move(ConsoleKey.UpArrow, number);
             }
 
-            else if (ch == ConsoleKey.H)
+            if (ch == ConsoleKey.H)
             {
                 Move(ConsoleKey.LeftArrow, number);
             }
 
-            else if (ch == ConsoleKey.L)
+            if (ch == ConsoleKey.L)
             {
                 Move(ConsoleKey.RightArrow, number);
             }
@@ -325,12 +305,14 @@
 
         private static void HandleKeys(ConsoleKey ch)
         {
+            HandlePageScroll(ch);
+
             if (ch == ConsoleKey.Home)
             {
                 col = text[row].Length > 0 ? text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))) : 0;
             }
 
-            else if (ch == ConsoleKey.End)
+            if (ch == ConsoleKey.End)
             {
                 if (text[row].Length > Console.WindowWidth)
                 {
@@ -343,7 +325,20 @@
                 }
             }
 
-            else if (ch == ConsoleKey.PageDown)
+            if (ch == ConsoleKey.Spacebar && !insertMode)
+            {
+                var c = Console.ReadKey();
+                if (c.Key == ConsoleKey.F)
+                {
+                    Finder.ResetSettings();
+                    Finder.OpenFinder();
+                }
+            }
+        }
+
+        private static void HandlePageScroll(ConsoleKey ch)
+        {
+            if (ch == ConsoleKey.PageDown)
             {
                 row = Console.WindowHeight + offsetRow - 1;
                 int end = row + Console.WindowHeight;
@@ -353,7 +348,7 @@
                 }
             }
 
-            else if (ch == ConsoleKey.PageUp)
+            if (ch == ConsoleKey.PageUp)
             {
                 row = offsetRow;
                 int end = row - Console.WindowHeight;
@@ -362,86 +357,90 @@
                     HandleArrows(ConsoleKey.UpArrow);
                 }
             }
-
-            else if (ch == ConsoleKey.Spacebar && !insertMode)
-            {
-                var c = Console.ReadKey();
-
-                if (c.Key == ConsoleKey.F)
-                {
-                    Finder.ResetSettings();
-                    Finder.OpenFinder();
-                }
-            }
         }
 
         private static void HandleArrows(ConsoleKey ch)
         {
             if (ch == ConsoleKey.UpArrow && row > 0)
             {
-                if (col > prevCol)
-                {
-                    prevCol = col;
-                }
-
-                if (col >= text[row - 1].Length)
-                {
-                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length);
-                }
-
-                else if (text[row - 1].Length > text[row].Length)
-                {
-                    col = prevCol > text[row - 1].Length ? text[row - 1].Length : prevCol;
-                }
-
-                row--;
-
-                if (Drawer.relativeLines)
-                {
-                    Drawer.DrawRelativeIndexes();
-                }
+                HandleUpArrow();
             }
 
-            else if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
+            if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
             {
-                if (col > prevCol)
-                {
-                    prevCol = col;
-                }
-
-                if (col >= text[row + 1].Length)
-                {
-                    col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row + 1].Length);
-                }
-
-                else if (text[row + 1].Length > text[row].Length)
-                {
-                    col = prevCol > text[row + 1].Length ? text[row + 1].Length : prevCol;
-                }
-
-                row++;
-
-                if (Drawer.relativeLines)
-                {
-                    Drawer.DrawRelativeIndexes();
-                }
+                HandleDownArrow();
             }
 
-            else if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Console.WindowWidth && col < text[row].Length + Drawer.rowIndex.Length - 1)))
+            if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Console.WindowWidth && col < text[row].Length + Drawer.rowIndex.Length - 1)))
             {
-                col++;
-                if (col > text[row].Length && !Drawer.lineNumbers)
-                {
-                    col = text[row].Length;
-                }
-                prevCol = col;
+                HandleRightArrow();
             }
 
-            else if (ch == ConsoleKey.LeftArrow && col > 0)
+            if (ch == ConsoleKey.LeftArrow && col > 0)
             {
                 col--;
                 prevCol = col;
             }
+        }
+
+        private static void HandleUpArrow()
+        {
+            if (col > prevCol)
+            {
+                prevCol = col;
+            }
+
+            if (col >= text[row - 1].Length)
+            {
+                col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length);
+            }
+
+            else if (text[row - 1].Length > text[row].Length)
+            {
+                col = prevCol > text[row - 1].Length ? text[row - 1].Length : prevCol;
+            }
+
+            row--;
+
+            if (Drawer.relativeLines)
+            {
+                Drawer.DrawRelativeIndexes();
+            }
+        }
+
+        private static void HandleDownArrow()
+        {
+            if (col > prevCol)
+            {
+                prevCol = col;
+            }
+
+            if (col >= text[row + 1].Length)
+            {
+                col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row + 1].Length);
+            }
+
+            else if (text[row + 1].Length > text[row].Length)
+            {
+                col = prevCol > text[row + 1].Length ? text[row + 1].Length : prevCol;
+            }
+
+            row++;
+
+            if (Drawer.relativeLines)
+            {
+                Drawer.DrawRelativeIndexes();
+            }
+        }
+
+        private static void HandleRightArrow()
+        {
+            col++;
+            if (col > text[row].Length && !Drawer.lineNumbers)
+            {
+                col = text[row].Length;
+            }
+            prevCol = col;
         }
     }
 }

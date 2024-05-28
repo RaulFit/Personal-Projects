@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TextEditor
+﻿namespace TextEditor
 {
     class Navigator
     {
@@ -10,6 +8,7 @@ namespace TextEditor
         public static int col = 0;
         public static int offsetCol = 0;
         public static int prevCol = 0;
+        public static bool insertMode = false;
 
         public static void RunNavigator()
         {
@@ -20,7 +19,16 @@ namespace TextEditor
             {
                 Drawer.Scroll();
                 Drawer.RefreshScreen();
-                var ch = Console.ReadKey(true);
+                ConsoleKeyInfo ch;
+                if (insertMode)
+                {
+                    ch = Console.ReadKey();
+                }
+                else
+                {
+                    ch = Console.ReadKey(true);
+                }
+               
                 HandleInput(ch);
             }
         }
@@ -33,12 +41,53 @@ namespace TextEditor
                 return;
             }
 
-            MoveTo(ch.Key, 1);
-            HandleSpecialKeys(ch);
-            HandleArrows(ch.Key);
-            HandleKeys(ch.Key);
-            MoveWord(ch);
-            MoveChar(ch, 1);
+            if (!insertMode)
+            {
+                ToggleInsertMode(ch);
+                MoveTo(ch.Key, 1);
+                HandleSpecialKeys(ch);
+                HandleArrows(ch.Key);
+                HandleKeys(ch.Key);
+                MoveWord(ch);
+                MoveChar(ch, 1);
+                return;
+            }
+
+            else
+            {
+                ToggleInsertMode(ch);
+                HandleInsert(ch);
+                HandleArrows(ch.Key);
+                HandleKeys(ch.Key);
+            }
+        }
+
+        public static void HandleInsert(ConsoleKeyInfo ch)
+        {
+            if (ch.Key == ConsoleKey.Backspace && text[row].Length > 0 && col + offsetCol <= text[row].Length && col + offsetCol > 0)
+            {
+                text[row] = text[row].Remove(col + offsetCol - 1, 1);
+                HandleArrows(ConsoleKey.LeftArrow);
+            }
+
+            else if (!char.IsControl(ch.KeyChar))
+            {
+                text[row] = text[row].Insert(col + offsetCol, ch.KeyChar.ToString());
+                HandleArrows(ConsoleKey.RightArrow);
+            }
+        }
+
+        private static void ToggleInsertMode(ConsoleKeyInfo ch)
+        {
+            if (ch.Key == ConsoleKey.I)
+            {
+                insertMode = true;
+            }
+
+            else if (ch.Key == ConsoleKey.Escape)
+            {
+                insertMode = false;
+            }
         }
 
         private static void HandleSimpleMovement(ConsoleKeyInfo ch)
@@ -314,7 +363,7 @@ namespace TextEditor
                 }
             }
 
-            else if (ch == ConsoleKey.Spacebar)
+            else if (ch == ConsoleKey.Spacebar && !insertMode)
             {
                 var c = Console.ReadKey();
 
@@ -351,8 +400,6 @@ namespace TextEditor
                 {
                     Drawer.DrawRelativeIndexes();
                 }
-
-                Logger.WriteLog("UpArrow : " + Console.CursorTop + " " + text[row - 1]);
             }
 
             else if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
@@ -378,8 +425,6 @@ namespace TextEditor
                 {
                     Drawer.DrawRelativeIndexes();
                 }
-
-                Logger.WriteLog("DownArrow : " + Console.CursorTop + " " + text[row + 1]);
             }
 
             else if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Console.WindowWidth && col < text[row].Length + Drawer.rowIndex.Length - 1)))

@@ -44,7 +44,6 @@
         private static void DrawRow(int index)
         {
             rowIndex = (index + 1) + " ";
-            DrawRowIndex();
 
             int lenToDraw = Navigator.text[index].Length - Navigator.offsetCol;
 
@@ -61,6 +60,11 @@
             else if (lenToDraw >= Console.WindowWidth)
             {
                 lenToDraw = Console.WindowWidth;
+            }
+
+            if (lineNumbers)
+            {
+                Console.Write(rowIndex);
             }
 
             if (lenToDraw > 0)
@@ -186,9 +190,14 @@
                 shouldRefresh = true;
             }
 
-            if (windowWidth != Console.WindowWidth)
+            else if (windowWidth != Console.WindowWidth)
             {
                 windowWidth = Console.WindowWidth;
+                shouldRefresh = true;
+            }
+
+            else if (Navigator.insertMode)
+            {
                 shouldRefresh = true;
             }
         }

@@ -87,6 +87,7 @@ namespace TextEditor
             Navigator.prevCol = 0;
             Drawer.rowIndex = "";
             Drawer.shouldRefresh = false;
+            Navigator.insertMode = false;
             Drawer.windowWidth = Console.WindowWidth;
             match = "";
             startIndex = 0;

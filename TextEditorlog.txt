@@ -1,128 +1,788 @@
-5/27/2024 1:44:21 PM : DownArrow : 0 namespace TextEditor
-5/27/2024 1:44:22 PM : DownArrow : 1 {
-5/27/2024 1:44:22 PM : DownArrow : 2     class Navigator
-5/27/2024 1:44:22 PM : DownArrow : 3     {
-5/27/2024 1:44:22 PM : DownArrow : 4         public static string[] text = { };
-5/27/2024 1:44:22 PM : DownArrow : 5         public static int row = 0;
-5/27/2024 1:44:22 PM : DownArrow : 6         public static int offsetRow = 0;
-5/27/2024 1:44:22 PM : DownArrow : 7         public static int col = 0;
-5/27/2024 1:44:22 PM : DownArrow : 8         public static int offsetCol = 0;
-5/27/2024 1:44:22 PM : DownArrow : 9         public static int prevCol = 0;
-5/27/2024 1:44:22 PM : DownArrow : 10 
-5/27/2024 1:44:22 PM : DownArrow : 11         public static void RunNavigator()
-5/27/2024 1:44:22 PM : DownArrow : 12         {
-5/27/2024 1:44:22 PM : DownArrow : 13             Console.Clear();
-5/27/2024 1:44:22 PM : DownArrow : 14             Console.SetCursorPosition(0, 0);
-5/27/2024 1:44:22 PM : DownArrow : 15             Drawer.DrawContent();
-5/27/2024 1:44:22 PM : DownArrow : 16             while (true)
-5/27/2024 1:44:22 PM : DownArrow : 17             {
-5/27/2024 1:44:22 PM : DownArrow : 18                 Drawer.Scroll();
-5/27/2024 1:44:22 PM : DownArrow : 19                 Drawer.RefreshScreen();
-5/27/2024 1:44:22 PM : DownArrow : 20                 var ch = Console.ReadKey(true);
-5/27/2024 1:44:22 PM : DownArrow : 21                 HandleInput(ch);
-5/27/2024 1:44:22 PM : DownArrow : 22             }
-5/27/2024 1:44:22 PM : DownArrow : 23         }
-5/27/2024 1:44:22 PM : DownArrow : 24 
-5/27/2024 1:44:22 PM : DownArrow : 25         public static void HandleInput(ConsoleKeyInfo ch)
-5/27/2024 1:44:22 PM : DownArrow : 26         {
-5/27/2024 1:44:22 PM : DownArrow : 27             if (char.IsDigit(ch.KeyChar) && ch.Key != ConsoleKey.D0)
-5/27/2024 1:44:22 PM : DownArrow : 28             {
-5/27/2024 1:44:22 PM : DownArrow : 29                 HandleSimpleMovement(ch);
-5/27/2024 1:44:22 PM : DownArrow : 29                 return;
-5/27/2024 1:44:22 PM : DownArrow : 29             }
-5/27/2024 1:44:23 PM : DownArrow : 29 
-5/27/2024 1:44:23 PM : DownArrow : 29             MoveTo(ch.Key, 1);
-5/27/2024 1:44:23 PM : DownArrow : 29             HandleSpecialKeys(ch);
-5/27/2024 1:44:23 PM : DownArrow : 29             HandleArrows(ch.Key);
-5/27/2024 1:44:23 PM : DownArrow : 29             HandleKeys(ch.Key);
-5/27/2024 1:44:23 PM : DownArrow : 29             MoveWord(ch);
-5/27/2024 1:44:23 PM : DownArrow : 29             MoveChar(ch, 1);
-5/27/2024 1:44:23 PM : DownArrow : 29         }
-5/27/2024 1:44:23 PM : DownArrow : 29 
-5/27/2024 1:44:23 PM : DownArrow : 29         private static void HandleSimpleMovement(ConsoleKeyInfo ch)
-5/27/2024 1:44:23 PM : DownArrow : 29         {
-5/27/2024 1:44:23 PM : DownArrow : 29             string num = ch.KeyChar.ToString();
-5/27/2024 1:44:23 PM : DownArrow : 29             while (true)
-5/27/2024 1:44:23 PM : DownArrow : 29             {
-5/27/2024 1:44:23 PM : DownArrow : 29                 ch = Console.ReadKey(true);
-5/27/2024 1:44:23 PM : DownArrow : 29                 if (char.IsDigit(ch.KeyChar))
-5/27/2024 1:44:23 PM : DownArrow : 29                 {
-5/27/2024 1:44:23 PM : DownArrow : 29                     num += ch.KeyChar.ToString();
-5/27/2024 1:44:23 PM : DownArrow : 29                     continue;
-5/27/2024 1:44:23 PM : DownArrow : 29                 }
-5/27/2024 1:44:23 PM : DownArrow : 29 
-5/27/2024 1:44:23 PM : DownArrow : 29                 if (int.TryParse(num, out int number))
-5/27/2024 1:44:23 PM : DownArrow : 29                 {
-5/27/2024 1:44:23 PM : DownArrow : 29                     MoveTo(ch.Key, number);
-5/27/2024 1:44:23 PM : DownArrow : 29                     MoveWords(ch, number);
-5/27/2024 1:44:23 PM : DownArrow : 29                     MoveChar(ch, number);
-5/27/2024 1:44:23 PM : DownArrow : 29                 }
-5/27/2024 1:44:23 PM : DownArrow : 29 
-5/27/2024 1:44:23 PM : DownArrow : 29                 break;
-5/27/2024 1:44:23 PM : DownArrow : 29             }
-5/27/2024 1:44:24 PM : DownArrow : 29         }
-5/27/2024 1:44:24 PM : DownArrow : 29 
-5/27/2024 1:44:24 PM : DownArrow : 29         private static void FindCharLowerCase(ConsoleKeyInfo ch)
-5/27/2024 1:44:24 PM : DownArrow : 29         {
-5/27/2024 1:44:24 PM : DownArrow : 29             int index = text[row].IndexOf(ch.KeyChar.ToString(), Math.Min(col + 1, text[row].Length - 1));
-5/27/2024 1:44:24 PM : DownArrow : 29             col = index != -1 ? index : col;
-5/27/2024 1:44:24 PM : DownArrow : 29         }
-5/27/2024 1:44:24 PM : DownArrow : 29 
-5/27/2024 1:44:24 PM : DownArrow : 29         private static void FindCharUpperCase(ConsoleKeyInfo ch)
-5/27/2024 1:44:24 PM : DownArrow : 29         {
-5/27/2024 1:44:24 PM : DownArrow : 29             int index = text[row].LastIndexOf(ch.KeyChar.ToString(), Math.Max(col - 1, 0));
-5/27/2024 1:44:24 PM : DownArrow : 29             col = index != -1 ? index : col;
-5/27/2024 1:44:24 PM : DownArrow : 29         }
-5/27/2024 1:44:24 PM : DownArrow : 29 
-5/27/2024 1:44:24 PM : DownArrow : 29         private static void MoveChar(ConsoleKeyInfo ch, int num)
-5/27/2024 1:44:24 PM : DownArrow : 29         {
-5/27/2024 1:44:24 PM : DownArrow : 29             if (ch.KeyChar.ToString() == "f")
-5/27/2024 1:44:24 PM : DownArrow : 29             {
-5/27/2024 1:44:24 PM : DownArrow : 29                 var chToFind = Console.ReadKey(true);
-5/27/2024 1:44:24 PM : DownArrow : 29                 for (int i = 0; i < num; i++)
-5/27/2024 1:44:24 PM : DownArrow : 29                 {
-5/27/2024 1:44:24 PM : DownArrow : 29                     FindCharLowerCase(chToFind);
-5/27/2024 1:44:24 PM : DownArrow : 29                 }
-5/27/2024 1:44:24 PM : DownArrow : 29             }
-5/27/2024 1:44:24 PM : DownArrow : 29 
-5/27/2024 1:44:24 PM : DownArrow : 29             if (ch.KeyChar.ToString() == "F")
-5/27/2024 1:44:24 PM : DownArrow : 29             {
-5/27/2024 1:44:24 PM : DownArrow : 29                 var chToFind = Console.ReadKey(true);
-5/27/2024 1:44:24 PM : DownArrow : 29                 for (int i = 0; i < num; i++)
-5/27/2024 1:44:24 PM : DownArrow : 29                 {
-5/27/2024 1:44:25 PM : DownArrow : 29                     FindCharUpperCase(chToFind);
-5/27/2024 1:44:25 PM : DownArrow : 29                 }
-5/27/2024 1:44:25 PM : DownArrow : 29             }
-5/27/2024 1:44:25 PM : DownArrow : 29         }
-5/27/2024 1:44:25 PM : DownArrow : 29 
-5/27/2024 1:44:25 PM : DownArrow : 29         private static void MoveWords(ConsoleKeyInfo ch, int num)
-5/27/2024 1:44:25 PM : DownArrow : 29         {
-5/27/2024 1:44:25 PM : DownArrow : 29             for (int i = 0; i < num; i++)
-5/27/2024 1:44:25 PM : DownArrow : 29             {
-5/27/2024 1:44:25 PM : DownArrow : 29                 MoveWord(ch);
-5/27/2024 1:44:25 PM : DownArrow : 29             }
-5/27/2024 1:44:25 PM : DownArrow : 29         }
-5/27/2024 1:44:25 PM : DownArrow : 29 
-5/27/2024 1:44:25 PM : DownArrow : 29         private static void MoveWord(ConsoleKeyInfo ch)
-5/27/2024 1:44:25 PM : DownArrow : 29         {
-5/27/2024 1:44:25 PM : DownArrow : 29             if (ch.KeyChar.ToString() == "w")
-5/27/2024 1:44:25 PM : DownArrow : 29             {
-5/27/2024 1:44:25 PM : DownArrow : 29                 MoveForwardLowerCase();
-5/27/2024 1:44:25 PM : DownArrow : 29                 while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row < text.Length - 1)
-5/27/2024 1:44:25 PM : DownArrow : 29                 {
-5/27/2024 1:44:25 PM : DownArrow : 29                     row++;
-5/27/2024 1:44:25 PM : DownArrow : 29                     col = 0;
-5/27/2024 1:44:25 PM : DownArrow : 29                     MoveForwardLowerCase();
-5/27/2024 1:44:25 PM : DownArrow : 29                 }
-5/27/2024 1:44:25 PM : DownArrow : 29             }
-5/27/2024 1:44:25 PM : DownArrow : 29 
-5/27/2024 1:44:25 PM : DownArrow : 29             if (ch.KeyChar.ToString() == "b")
-5/27/2024 1:44:25 PM : DownArrow : 29             {
-5/27/2024 1:44:25 PM : DownArrow : 29                 MoveBackwards();
-5/27/2024 1:44:25 PM : DownArrow : 29                 while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row > 0)
-5/27/2024 1:44:25 PM : DownArrow : 29                 {
-5/27/2024 1:44:26 PM : DownArrow : 29                     row--;
-5/27/2024 1:44:26 PM : DownArrow : 29                     col = text[row].Length;
-5/27/2024 1:44:26 PM : DownArrow : 29                     MoveBackwards();
-5/27/2024 1:44:26 PM : DownArrow : 29                 }
-5/27/2024 1:44:26 PM : DownArrow : 29             }
+05/28/2024 13:04:21 : DownArrow : 29     class TextEditor
+05/28/2024 13:04:22 : DownArrow : 29     {
+05/28/2024 13:04:22 : DownArrow : 29         const string ESC = "\x1b[";
+05/28/2024 13:04:22 : DownArrow : 29         static string[] text = { };
+05/28/2024 13:04:22 : DownArrow : 29         static int row = 0;
+05/28/2024 13:04:22 : DownArrow : 29         static int offsetRow = 0;
+05/28/2024 13:04:22 : DownArrow : 29         static int col = 0;
+05/28/2024 13:04:22 : DownArrow : 29         static int offsetCol = 0;
+05/28/2024 13:04:22 : DownArrow : 29         static int prevCol = 0;
+05/28/2024 13:04:22 : DownArrow : 29         static string rowIndex = "";
+05/28/2024 13:04:22 : DownArrow : 29         static bool shouldRefresh = false;
+05/28/2024 13:04:22 : DownArrow : 29         static int windowWidth = Console.WindowWidth;
+05/28/2024 13:04:22 : DownArrow : 29         static bool lineNumbers = false;
+05/28/2024 13:04:22 : DownArrow : 29         static bool relativeLines = false;
+05/28/2024 13:04:22 : DownArrow : 29 
+05/28/2024 13:04:22 : DownArrow : 29         static void Main(string[] args)
+05/28/2024 13:04:22 : DownArrow : 29         {
+05/28/2024 13:04:22 : DownArrow : 29             OpenFile(args);
+05/28/2024 13:04:22 : DownArrow : 29             Console.Clear();
+05/28/2024 13:04:22 : DownArrow : 29             Console.SetCursorPosition(0, 0);
+05/28/2024 13:04:22 : DownArrow : 29             DrawContent();
+05/28/2024 13:04:22 : DownArrow : 29 
+05/28/2024 13:04:22 : DownArrow : 29             while (true)
+05/28/2024 13:04:22 : DownArrow : 29             {
+05/28/2024 13:04:22 : DownArrow : 29                 Scroll();
+05/28/2024 13:04:22 : DownArrow : 29                 RefreshScreen();
+05/28/2024 13:04:22 : DownArrow : 29                 var ch = Console.ReadKey(true);
+05/28/2024 13:04:22 : DownArrow : 29                 HandleInput(ch);
+05/28/2024 13:04:22 : DownArrow : 29             }
+05/28/2024 13:04:22 : DownArrow : 29         }
+05/28/2024 13:04:23 : DownArrow : 29 
+05/28/2024 13:04:23 : DownArrow : 29         private static void RefreshScreen()
+05/28/2024 13:04:23 : DownArrow : 29         {
+05/28/2024 13:04:23 : DownArrow : 29             if (shouldRefresh)
+05/28/2024 13:04:23 : DownArrow : 29             {
+05/28/2024 13:04:23 : DownArrow : 29                 Console.Write($"{ESC}?25l");
+05/28/2024 13:04:23 : DownArrow : 29                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:04:23 : DownArrow : 29                 ClearScreen();
+05/28/2024 13:04:23 : DownArrow : 29                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:04:23 : DownArrow : 29                 DrawContent();
+05/28/2024 13:04:23 : DownArrow : 29                 Console.Write($"{ESC}?25h");
+05/28/2024 13:04:23 : DownArrow : 29                 shouldRefresh = false;
+05/28/2024 13:04:23 : DownArrow : 29             }
+05/28/2024 13:04:23 : DownArrow : 29 
+05/28/2024 13:04:23 : DownArrow : 29             DrawCursor();
+05/28/2024 13:04:23 : DownArrow : 29         }
+05/28/2024 13:04:23 : DownArrow : 29 
+05/28/2024 13:04:23 : DownArrow : 29         private static void DrawContent()
+05/28/2024 13:04:23 : DownArrow : 29         {
+05/28/2024 13:04:23 : DownArrow : 29             int len = Math.Min(Console.WindowHeight, text.Length);
+05/28/2024 13:04:23 : DownArrow : 29 
+05/28/2024 13:04:23 : DownArrow : 29             for (int i = 0; i < len; i++)
+05/28/2024 13:04:23 : DownArrow : 29             {
+05/28/2024 13:04:23 : DownArrow : 29                 int rowIndex = i + offsetRow;
+05/28/2024 13:04:23 : DownArrow : 29                 DrawRow(rowIndex);
+05/28/2024 13:04:23 : DownArrow : 29             }
+05/28/2024 13:04:23 : DownArrow : 29 
+05/28/2024 13:04:23 : DownArrow : 29             if (relativeLines)
+05/28/2024 13:04:23 : DownArrow : 29             {
+05/28/2024 13:04:23 : DownArrow : 29                 DrawIndexes();
+05/28/2024 13:04:24 : DownArrow : 29             }
+05/28/2024 13:04:24 : DownArrow : 29         }
+05/28/2024 13:04:24 : DownArrow : 29 
+05/28/2024 13:04:24 : DownArrow : 29         private static void DrawRow(int index)
+05/28/2024 13:04:24 : DownArrow : 29         {
+05/28/2024 13:04:24 : DownArrow : 29             rowIndex = (index + 1) + " ";
+05/28/2024 13:04:24 : DownArrow : 29             DrawRowIndex();
+05/28/2024 13:04:24 : DownArrow : 29 
+05/28/2024 13:04:24 : DownArrow : 29             int lenToDraw = text[index].Length - offsetCol;
+05/28/2024 13:04:24 : DownArrow : 29 
+05/28/2024 13:04:24 : DownArrow : 29             if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
+05/28/2024 13:04:24 : DownArrow : 29             {
+05/28/2024 13:04:24 : DownArrow : 29                 lenToDraw = Console.WindowWidth - rowIndex.Length;
+05/28/2024 13:04:24 : DownArrow : 29 
+05/28/2024 13:04:24 : DownArrow : 29                 if (relativeLines)
+05/28/2024 13:04:24 : DownArrow : 29                 {
+05/28/2024 13:04:24 : DownArrow : 29                     lenToDraw = Console.WindowWidth - row.ToString().Length - 2;
+05/28/2024 13:04:24 : DownArrow : 29                 }
+05/28/2024 13:04:25 : DownArrow : 29             }
+05/28/2024 13:04:25 : DownArrow : 29 
+05/28/2024 13:04:25 : DownArrow : 29             else if (lenToDraw >= Console.WindowWidth)
+05/28/2024 13:04:25 : DownArrow : 29             {
+05/28/2024 13:04:25 : DownArrow : 29                 lenToDraw = Console.WindowWidth;
+05/28/2024 13:04:25 : DownArrow : 29             }
+05/28/2024 13:04:25 : DownArrow : 29 
+05/28/2024 13:04:25 : DownArrow : 29             if (lenToDraw > 0)
+05/28/2024 13:04:25 : DownArrow : 29             {
+05/28/2024 13:04:25 : DownArrow : 29                 Console.Write(text[index][offsetCol..(lenToDraw + offsetCol)]);
+05/28/2024 13:04:25 : DownArrow : 29             }
+05/28/2024 13:04:25 : DownArrow : 29 
+05/28/2024 13:04:25 : DownArrow : 29             if (index < Console.WindowHeight + offsetRow - 1)
+05/28/2024 13:04:25 : DownArrow : 29             {
+05/28/2024 13:04:25 : DownArrow : 29                 Console.CursorTop++;
+05/28/2024 13:04:26 : DownArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:04:26 : DownArrow : 29             }
+05/28/2024 13:04:26 : DownArrow : 29         }
+05/28/2024 13:04:26 : DownArrow : 29 
+05/28/2024 13:04:26 : DownArrow : 29         private static void DrawIndexes()
+05/28/2024 13:04:26 : DownArrow : 29         {
+05/28/2024 13:04:26 : DownArrow : 29             Console.Write($"{ESC}?25l");
+05/28/2024 13:04:26 : DownArrow : 29             Console.SetCursorPosition(0, 0);
+05/28/2024 13:04:26 : DownArrow : 29             int num = row - offsetRow;
+05/28/2024 13:04:26 : DownArrow : 29             int i;
+05/28/2024 13:04:26 : DownArrow : 29             for (i = offsetRow; i < Console.WindowHeight + offsetRow - 1; i++)
+05/28/2024 13:04:26 : DownArrow : 29             {
+05/28/2024 13:04:26 : DownArrow : 29                 Console.Write(new string(' ', rowIndex.Length));
+05/28/2024 13:04:26 : DownArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:04:26 : DownArrow : 29                 DrawIndex(i, ref num);
+05/28/2024 13:04:26 : DownArrow : 29                 Console.CursorTop++;
+05/28/2024 13:04:26 : DownArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:04:26 : DownArrow : 29             }
+05/28/2024 13:04:26 : DownArrow : 29 
+05/28/2024 13:04:26 : DownArrow : 29             DrawIndex(i, ref num);
+05/28/2024 13:04:26 : DownArrow : 29             Console.CursorLeft = 0;
+05/28/2024 13:04:26 : DownArrow : 29             Console.Write($"{ESC}0m");
+05/28/2024 13:04:26 : DownArrow : 29             Console.Write($"{ESC}?25h");
+05/28/2024 13:04:26 : DownArrow : 29         }
+05/28/2024 13:04:26 : DownArrow : 29 
+05/28/2024 13:04:26 : DownArrow : 29         private static void DrawIndex(int index, ref int num)
+05/28/2024 13:04:26 : DownArrow : 29         {
+05/28/2024 13:04:26 : DownArrow : 29             Console.Write($"{ESC}32m");
+05/28/2024 13:04:26 : DownArrow : 29             num = index > row ? num + 1 : num;
+05/28/2024 13:04:27 : DownArrow : 29             string idx = row == index ? row + " " : num + " ";
+05/28/2024 13:04:27 : DownArrow : 29 
+05/28/2024 13:04:27 : DownArrow : 29             if (row == index)
+05/28/2024 13:04:27 : DownArrow : 29             {
+05/28/2024 13:04:27 : DownArrow : 29                 Console.Write($"{ESC}31m");
+05/28/2024 13:04:27 : DownArrow : 29             }
+05/28/2024 13:04:27 : DownArrow : 29 
+05/28/2024 13:04:27 : DownArrow : 29             if (row < 100)
+05/28/2024 13:04:27 : DownArrow : 29             {
+05/28/2024 13:04:27 : DownArrow : 29                 Console.Write($"{idx,3}");
+05/28/2024 13:04:27 : DownArrow : 29             }
+05/28/2024 13:04:27 : DownArrow : 29 
+05/28/2024 13:04:27 : DownArrow : 29             else if (row >= 100 && row < 1000)
+05/28/2024 13:04:27 : DownArrow : 29             {
+05/28/2024 13:04:27 : DownArrow : 29                 Console.Write($"{idx,4}");
+05/28/2024 13:04:27 : DownArrow : 29                 Console.CursorLeft = idx.ToString().Length;
+05/28/2024 13:04:27 : DownArrow : 29             }
+05/28/2024 13:04:27 : DownArrow : 29 
+05/28/2024 13:04:27 : DownArrow : 29             num = index < row ? num - 1 : num;
+05/28/2024 13:04:27 : DownArrow : 29         }
+05/28/2024 13:04:27 : DownArrow : 29 
+05/28/2024 13:04:27 : DownArrow : 29         private static void ClearScreen()
+05/28/2024 13:04:27 : DownArrow : 29         {
+05/28/2024 13:04:27 : DownArrow : 29             for (int i = 0; i < Console.WindowHeight - 1; i++)
+05/28/2024 13:04:27 : DownArrow : 29             {
+05/28/2024 13:04:27 : DownArrow : 29                 Console.WriteLine(new string(' ', Console.WindowWidth));
+05/28/2024 13:04:27 : DownArrow : 29             }
+05/28/2024 13:04:27 : DownArrow : 29 
+05/28/2024 13:04:27 : DownArrow : 29             Console.Write(new string(' ', Console.WindowWidth));
+05/28/2024 13:04:27 : DownArrow : 29         }
+05/28/2024 13:04:27 : DownArrow : 29 
+05/28/2024 13:04:27 : DownArrow : 29         private static void DrawRowIndex()
+05/28/2024 13:04:28 : DownArrow : 29         {
+05/28/2024 13:04:28 : DownArrow : 29             if (lineNumbers)
+05/28/2024 13:04:28 : DownArrow : 29             {
+05/28/2024 13:04:28 : DownArrow : 29                 int lastNumber = Console.WindowHeight + offsetRow;
+05/28/2024 13:04:28 : DownArrow : 29                 if (lastNumber < 100)
+05/28/2024 13:04:28 : DownArrow : 29                 {
+05/28/2024 13:04:29 : UpArrow : 29             }
+05/28/2024 13:04:29 : UpArrow : 29                 Console.Write($"{ESC}31m");
+05/28/2024 13:04:29 : UpArrow : 29             {
+05/28/2024 13:04:29 : UpArrow : 29             if (row == index)
+05/28/2024 13:04:29 : UpArrow : 29 
+05/28/2024 13:04:29 : UpArrow : 29             string idx = row == index ? row + " " : num + " ";
+05/28/2024 13:04:29 : UpArrow : 29             num = index > row ? num + 1 : num;
+05/28/2024 13:04:29 : UpArrow : 29             Console.Write($"{ESC}32m");
+05/28/2024 13:04:29 : UpArrow : 29         {
+05/28/2024 13:04:29 : UpArrow : 29         private static void DrawIndex(int index, ref int num)
+05/28/2024 13:04:29 : UpArrow : 29 
+05/28/2024 13:04:29 : UpArrow : 29         }
+05/28/2024 13:04:29 : UpArrow : 29             Console.Write($"{ESC}?25h");
+05/28/2024 13:04:29 : UpArrow : 29             Console.Write($"{ESC}0m");
+05/28/2024 13:04:29 : UpArrow : 29             Console.CursorLeft = 0;
+05/28/2024 13:04:29 : UpArrow : 29             DrawIndex(i, ref num);
+05/28/2024 13:04:29 : UpArrow : 29 
+05/28/2024 13:04:29 : UpArrow : 29             }
+05/28/2024 13:04:29 : UpArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:04:29 : UpArrow : 29                 Console.CursorTop++;
+05/28/2024 13:04:29 : UpArrow : 29                 DrawIndex(i, ref num);
+05/28/2024 13:04:29 : UpArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:04:29 : UpArrow : 29                 Console.Write(new string(' ', rowIndex.Length));
+05/28/2024 13:04:29 : UpArrow : 29             {
+05/28/2024 13:04:29 : UpArrow : 29             for (i = offsetRow; i < Console.WindowHeight + offsetRow - 1; i++)
+05/28/2024 13:04:29 : UpArrow : 29             int i;
+05/28/2024 13:04:29 : UpArrow : 29             int num = row - offsetRow;
+05/28/2024 13:04:29 : UpArrow : 29             Console.SetCursorPosition(0, 0);
+05/28/2024 13:04:29 : UpArrow : 29             Console.Write($"{ESC}?25l");
+05/28/2024 13:04:29 : UpArrow : 29         {
+05/28/2024 13:04:29 : UpArrow : 29         private static void DrawIndexes()
+05/28/2024 13:04:29 : UpArrow : 29 
+05/28/2024 13:04:29 : UpArrow : 29         }
+05/28/2024 13:04:29 : UpArrow : 29             }
+05/28/2024 13:04:29 : UpArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:04:29 : UpArrow : 29                 Console.CursorTop++;
+05/28/2024 13:04:29 : UpArrow : 29             {
+05/28/2024 13:04:29 : UpArrow : 29             if (index < Console.WindowHeight + offsetRow - 1)
+05/28/2024 13:04:29 : UpArrow : 29 
+05/28/2024 13:04:29 : UpArrow : 29             }
+05/28/2024 13:04:29 : UpArrow : 29                 Console.Write(text[index][offsetCol..(lenToDraw + offsetCol)]);
+05/28/2024 13:04:29 : UpArrow : 29             {
+05/28/2024 13:04:29 : UpArrow : 29             if (lenToDraw > 0)
+05/28/2024 13:04:29 : UpArrow : 29 
+05/28/2024 13:04:29 : UpArrow : 29             }
+05/28/2024 13:04:29 : UpArrow : 29                 lenToDraw = Console.WindowWidth;
+05/28/2024 13:04:29 : UpArrow : 29             {
+05/28/2024 13:04:29 : UpArrow : 29             else if (lenToDraw >= Console.WindowWidth)
+05/28/2024 13:04:29 : UpArrow : 29 
+05/28/2024 13:04:29 : UpArrow : 29             }
+05/28/2024 13:04:29 : UpArrow : 29                 }
+05/28/2024 13:04:29 : UpArrow : 29                     lenToDraw = Console.WindowWidth - row.ToString().Length - 2;
+05/28/2024 13:04:29 : UpArrow : 29                 {
+05/28/2024 13:04:29 : UpArrow : 29                 if (relativeLines)
+05/28/2024 13:04:29 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29                 lenToDraw = Console.WindowWidth - rowIndex.Length;
+05/28/2024 13:04:30 : UpArrow : 29             {
+05/28/2024 13:04:30 : UpArrow : 29             if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
+05/28/2024 13:04:30 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29             int lenToDraw = text[index].Length - offsetCol;
+05/28/2024 13:04:30 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29             DrawRowIndex();
+05/28/2024 13:04:30 : UpArrow : 29             rowIndex = (index + 1) + " ";
+05/28/2024 13:04:30 : UpArrow : 29         {
+05/28/2024 13:04:30 : UpArrow : 29         private static void DrawRow(int index)
+05/28/2024 13:04:30 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29         }
+05/28/2024 13:04:30 : UpArrow : 29             }
+05/28/2024 13:04:30 : UpArrow : 29                 DrawIndexes();
+05/28/2024 13:04:30 : UpArrow : 29             {
+05/28/2024 13:04:30 : UpArrow : 29             if (relativeLines)
+05/28/2024 13:04:30 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29             }
+05/28/2024 13:04:30 : UpArrow : 29                 DrawRow(rowIndex);
+05/28/2024 13:04:30 : UpArrow : 29                 int rowIndex = i + offsetRow;
+05/28/2024 13:04:30 : UpArrow : 29             {
+05/28/2024 13:04:30 : UpArrow : 29             for (int i = 0; i < len; i++)
+05/28/2024 13:04:30 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29             int len = Math.Min(Console.WindowHeight, text.Length);
+05/28/2024 13:04:30 : UpArrow : 29         {
+05/28/2024 13:04:30 : UpArrow : 29         private static void DrawContent()
+05/28/2024 13:04:30 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29         }
+05/28/2024 13:04:30 : UpArrow : 29             DrawCursor();
+05/28/2024 13:04:30 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29             }
+05/28/2024 13:04:30 : UpArrow : 29                 shouldRefresh = false;
+05/28/2024 13:04:30 : UpArrow : 29                 Console.Write($"{ESC}?25h");
+05/28/2024 13:04:30 : UpArrow : 29                 DrawContent();
+05/28/2024 13:04:30 : UpArrow : 29                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:04:30 : UpArrow : 29                 ClearScreen();
+05/28/2024 13:04:30 : UpArrow : 29                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:04:30 : UpArrow : 29                 Console.Write($"{ESC}?25l");
+05/28/2024 13:04:30 : UpArrow : 29             {
+05/28/2024 13:04:30 : UpArrow : 29             if (shouldRefresh)
+05/28/2024 13:04:30 : UpArrow : 29         {
+05/28/2024 13:04:30 : UpArrow : 29         private static void RefreshScreen()
+05/28/2024 13:04:30 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29         }
+05/28/2024 13:04:30 : UpArrow : 29             }
+05/28/2024 13:04:30 : UpArrow : 29                 HandleInput(ch);
+05/28/2024 13:04:30 : UpArrow : 29                 var ch = Console.ReadKey(true);
+05/28/2024 13:04:30 : UpArrow : 29                 RefreshScreen();
+05/28/2024 13:04:30 : UpArrow : 29                 Scroll();
+05/28/2024 13:04:30 : UpArrow : 29             {
+05/28/2024 13:04:30 : UpArrow : 29             while (true)
+05/28/2024 13:04:30 : UpArrow : 29 
+05/28/2024 13:04:30 : UpArrow : 29             DrawContent();
+05/28/2024 13:04:30 : UpArrow : 29             Console.SetCursorPosition(0, 0);
+05/28/2024 13:04:30 : UpArrow : 29             Console.Clear();
+05/28/2024 13:04:31 : UpArrow : 29             OpenFile(args);
+05/28/2024 13:04:31 : UpArrow : 29         {
+05/28/2024 13:04:31 : UpArrow : 29         static void Main(string[] args)
+05/28/2024 13:04:31 : UpArrow : 29 
+05/28/2024 13:04:31 : UpArrow : 29         static bool relativeLines = false;
+05/28/2024 13:04:31 : UpArrow : 29         static bool lineNumbers = false;
+05/28/2024 13:04:31 : UpArrow : 29         static int windowWidth = Console.WindowWidth;
+05/28/2024 13:04:31 : UpArrow : 29         static bool shouldRefresh = false;
+05/28/2024 13:04:31 : UpArrow : 29         static string rowIndex = "";
+05/28/2024 13:04:31 : UpArrow : 29         static int prevCol = 0;
+05/28/2024 13:04:31 : UpArrow : 29         static int offsetCol = 0;
+05/28/2024 13:04:31 : UpArrow : 29         static int col = 0;
+05/28/2024 13:04:31 : UpArrow : 29         static int offsetRow = 0;
+05/28/2024 13:04:31 : UpArrow : 29         static int row = 0;
+05/28/2024 13:04:31 : UpArrow : 29         static string[] text = { };
+05/28/2024 13:04:31 : UpArrow : 29         const string ESC = "\x1b[";
+05/28/2024 13:04:31 : UpArrow : 29     {
+05/28/2024 13:04:31 : UpArrow : 29     class TextEditor
+05/28/2024 13:04:31 : UpArrow : 29 {
+05/28/2024 13:04:31 : UpArrow : 29 namespace TextEditor
+05/28/2024 13:10:27 : DownArrow : 0     class TextEditor
+05/28/2024 13:10:27 : DownArrow : 1     {
+05/28/2024 13:10:27 : DownArrow : 2         const string ESC = "\x1b[";
+05/28/2024 13:10:27 : DownArrow : 3         static string[] text = { };
+05/28/2024 13:10:27 : DownArrow : 4         static int row = 0;
+05/28/2024 13:10:27 : DownArrow : 5         static int offsetRow = 0;
+05/28/2024 13:10:28 : DownArrow : 6         static int col = 0;
+05/28/2024 13:10:28 : DownArrow : 7         static int offsetCol = 0;
+05/28/2024 13:10:28 : DownArrow : 8         static int prevCol = 0;
+05/28/2024 13:10:28 : DownArrow : 9         static string rowIndex = "";
+05/28/2024 13:10:28 : DownArrow : 10         static bool shouldRefresh = false;
+05/28/2024 13:10:28 : DownArrow : 11         static int windowWidth = Console.WindowWidth;
+05/28/2024 13:10:28 : DownArrow : 12         static bool lineNumbers = false;
+05/28/2024 13:10:28 : DownArrow : 13         static bool relativeLines = false;
+05/28/2024 13:10:28 : DownArrow : 14 
+05/28/2024 13:10:28 : DownArrow : 15         static void Main(string[] args)
+05/28/2024 13:10:28 : DownArrow : 16         {
+05/28/2024 13:10:28 : DownArrow : 17             OpenFile(args);
+05/28/2024 13:10:28 : DownArrow : 18             Console.Clear();
+05/28/2024 13:10:28 : DownArrow : 19             Console.SetCursorPosition(0, 0);
+05/28/2024 13:10:28 : DownArrow : 20             DrawContent();
+05/28/2024 13:10:28 : DownArrow : 21 
+05/28/2024 13:10:28 : DownArrow : 22             while (true)
+05/28/2024 13:10:28 : DownArrow : 23             {
+05/28/2024 13:10:28 : DownArrow : 24                 Scroll();
+05/28/2024 13:10:28 : DownArrow : 25                 RefreshScreen();
+05/28/2024 13:10:28 : DownArrow : 26                 var ch = Console.ReadKey(true);
+05/28/2024 13:10:28 : DownArrow : 27                 HandleInput(ch);
+05/28/2024 13:10:28 : DownArrow : 28             }
+05/28/2024 13:10:28 : DownArrow : 29         }
+05/28/2024 13:10:28 : DownArrow : 29 
+05/28/2024 13:10:28 : DownArrow : 29         private static void RefreshScreen()
+05/28/2024 13:10:28 : DownArrow : 29         {
+05/28/2024 13:10:28 : DownArrow : 29             if (shouldRefresh)
+05/28/2024 13:10:28 : DownArrow : 29             {
+05/28/2024 13:10:28 : DownArrow : 29                 Console.Write($"{ESC}?25l");
+05/28/2024 13:10:28 : DownArrow : 29                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:10:29 : DownArrow : 29                 ClearScreen();
+05/28/2024 13:10:29 : DownArrow : 29                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:10:29 : DownArrow : 29                 DrawContent();
+05/28/2024 13:10:29 : DownArrow : 29                 Console.Write($"{ESC}?25h");
+05/28/2024 13:10:29 : DownArrow : 29                 shouldRefresh = false;
+05/28/2024 13:10:29 : DownArrow : 29             }
+05/28/2024 13:10:29 : DownArrow : 29 
+05/28/2024 13:10:29 : DownArrow : 29             DrawCursor();
+05/28/2024 13:10:29 : DownArrow : 29         }
+05/28/2024 13:10:29 : DownArrow : 29 
+05/28/2024 13:10:29 : DownArrow : 29         private static void DrawContent()
+05/28/2024 13:10:29 : DownArrow : 29         {
+05/28/2024 13:10:29 : DownArrow : 29             int len = Math.Min(Console.WindowHeight, text.Length);
+05/28/2024 13:10:29 : DownArrow : 29 
+05/28/2024 13:10:29 : DownArrow : 29             for (int i = 0; i < len; i++)
+05/28/2024 13:10:29 : DownArrow : 29             {
+05/28/2024 13:10:29 : DownArrow : 29                 int rowIndex = i + offsetRow;
+05/28/2024 13:10:29 : DownArrow : 29                 DrawRow(rowIndex);
+05/28/2024 13:10:29 : DownArrow : 29             }
+05/28/2024 13:10:29 : DownArrow : 29 
+05/28/2024 13:10:29 : DownArrow : 29             if (relativeLines)
+05/28/2024 13:10:29 : DownArrow : 29             {
+05/28/2024 13:10:29 : DownArrow : 29                 DrawIndexes();
+05/28/2024 13:10:29 : DownArrow : 29             }
+05/28/2024 13:10:29 : DownArrow : 29         }
+05/28/2024 13:10:29 : DownArrow : 29 
+05/28/2024 13:10:29 : DownArrow : 29         private static void DrawRow(int index)
+05/28/2024 13:10:29 : DownArrow : 29         {
+05/28/2024 13:10:29 : DownArrow : 29             rowIndex = (index + 1) + " ";
+05/28/2024 13:10:29 : DownArrow : 29             DrawRowIndex();
+05/28/2024 13:10:30 : DownArrow : 29 
+05/28/2024 13:10:30 : DownArrow : 29             int lenToDraw = text[index].Length - offsetCol;
+05/28/2024 13:10:30 : DownArrow : 29 
+05/28/2024 13:10:30 : DownArrow : 29             if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
+05/28/2024 13:10:30 : DownArrow : 29             {
+05/28/2024 13:10:30 : DownArrow : 29                 lenToDraw = Console.WindowWidth - rowIndex.Length;
+05/28/2024 13:10:30 : DownArrow : 29 
+05/28/2024 13:10:30 : DownArrow : 29                 if (relativeLines)
+05/28/2024 13:10:30 : DownArrow : 29                 {
+05/28/2024 13:10:30 : DownArrow : 29                     lenToDraw = Console.WindowWidth - row.ToString().Length - 2;
+05/28/2024 13:10:30 : DownArrow : 29                 }
+05/28/2024 13:10:30 : DownArrow : 29             }
+05/28/2024 13:10:30 : DownArrow : 29 
+05/28/2024 13:10:30 : DownArrow : 29             else if (lenToDraw >= Console.WindowWidth)
+05/28/2024 13:10:30 : DownArrow : 29             {
+05/28/2024 13:10:30 : DownArrow : 29                 lenToDraw = Console.WindowWidth;
+05/28/2024 13:10:30 : DownArrow : 29             }
+05/28/2024 13:10:30 : DownArrow : 29 
+05/28/2024 13:10:30 : DownArrow : 29             if (lenToDraw > 0)
+05/28/2024 13:10:30 : DownArrow : 29             {
+05/28/2024 13:10:30 : DownArrow : 29                 Console.Write(text[index][offsetCol..(lenToDraw + offsetCol)]);
+05/28/2024 13:10:30 : DownArrow : 29             }
+05/28/2024 13:10:30 : DownArrow : 29 
+05/28/2024 13:10:30 : DownArrow : 29             if (index < Console.WindowHeight + offsetRow - 1)
+05/28/2024 13:10:30 : DownArrow : 29             {
+05/28/2024 13:10:30 : DownArrow : 29                 Console.CursorTop++;
+05/28/2024 13:10:30 : DownArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:10:30 : DownArrow : 29             }
+05/28/2024 13:10:30 : DownArrow : 29         }
+05/28/2024 13:10:30 : DownArrow : 29 
+05/28/2024 13:10:31 : DownArrow : 29         private static void DrawIndexes()
+05/28/2024 13:10:31 : DownArrow : 29         {
+05/28/2024 13:10:31 : DownArrow : 29             Console.Write($"{ESC}?25l");
+05/28/2024 13:10:31 : DownArrow : 29             Console.SetCursorPosition(0, 0);
+05/28/2024 13:10:31 : DownArrow : 29             int num = row - offsetRow;
+05/28/2024 13:10:31 : DownArrow : 29             int i;
+05/28/2024 13:10:31 : DownArrow : 29             for (i = offsetRow; i < Console.WindowHeight + offsetRow - 1; i++)
+05/28/2024 13:10:31 : DownArrow : 29             {
+05/28/2024 13:10:31 : DownArrow : 29                 Console.Write(new string(' ', rowIndex.Length));
+05/28/2024 13:10:31 : DownArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:10:31 : DownArrow : 29                 DrawIndex(i, ref num);
+05/28/2024 13:10:31 : DownArrow : 29                 Console.CursorTop++;
+05/28/2024 13:10:31 : DownArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:10:31 : DownArrow : 29             }
+05/28/2024 13:10:31 : DownArrow : 29 
+05/28/2024 13:10:31 : DownArrow : 29             DrawIndex(i, ref num);
+05/28/2024 13:10:31 : DownArrow : 29             Console.CursorLeft = 0;
+05/28/2024 13:10:31 : DownArrow : 29             Console.Write($"{ESC}0m");
+05/28/2024 13:10:31 : DownArrow : 29             Console.Write($"{ESC}?25h");
+05/28/2024 13:10:31 : DownArrow : 29         }
+05/28/2024 13:10:31 : DownArrow : 29 
+05/28/2024 13:10:31 : DownArrow : 29         private static void DrawIndex(int index, ref int num)
+05/28/2024 13:10:31 : DownArrow : 29         {
+05/28/2024 13:10:31 : DownArrow : 29             Console.Write($"{ESC}32m");
+05/28/2024 13:10:31 : DownArrow : 29             num = index > row ? num + 1 : num;
+05/28/2024 13:10:31 : DownArrow : 29             string idx = row == index ? row + " " : num + " ";
+05/28/2024 13:10:31 : DownArrow : 29 
+05/28/2024 13:10:31 : DownArrow : 29             if (row == index)
+05/28/2024 13:10:31 : DownArrow : 29             {
+05/28/2024 13:10:31 : DownArrow : 29                 Console.Write($"{ESC}31m");
+05/28/2024 13:10:32 : DownArrow : 29             }
+05/28/2024 13:10:32 : DownArrow : 29 
+05/28/2024 13:10:32 : DownArrow : 29             if (row < 100)
+05/28/2024 13:10:32 : DownArrow : 29             {
+05/28/2024 13:10:32 : DownArrow : 29                 Console.Write($"{idx,3}");
+05/28/2024 13:10:32 : DownArrow : 29             }
+05/28/2024 13:10:32 : DownArrow : 29 
+05/28/2024 13:10:32 : DownArrow : 29             else if (row >= 100 && row < 1000)
+05/28/2024 13:10:32 : DownArrow : 29             {
+05/28/2024 13:10:32 : DownArrow : 29                 Console.Write($"{idx,4}");
+05/28/2024 13:10:32 : DownArrow : 29                 Console.CursorLeft = idx.ToString().Length;
+05/28/2024 13:10:32 : DownArrow : 29             }
+05/28/2024 13:10:32 : DownArrow : 29 
+05/28/2024 13:10:32 : DownArrow : 29             num = index < row ? num - 1 : num;
+05/28/2024 13:10:32 : DownArrow : 29         }
+05/28/2024 13:10:32 : DownArrow : 29 
+05/28/2024 13:10:32 : DownArrow : 29         private static void ClearScreen()
+05/28/2024 13:10:32 : DownArrow : 29         {
+05/28/2024 13:10:32 : DownArrow : 29             for (int i = 0; i < Console.WindowHeight - 1; i++)
+05/28/2024 13:10:32 : DownArrow : 29             {
+05/28/2024 13:10:32 : DownArrow : 29                 Console.WriteLine(new string(' ', Console.WindowWidth));
+05/28/2024 13:10:32 : DownArrow : 29             }
+05/28/2024 13:10:32 : DownArrow : 29 
+05/28/2024 13:10:32 : DownArrow : 29             Console.Write(new string(' ', Console.WindowWidth));
+05/28/2024 13:10:32 : DownArrow : 29         }
+05/28/2024 13:10:32 : DownArrow : 29 
+05/28/2024 13:10:32 : DownArrow : 29         private static void DrawRowIndex()
+05/28/2024 13:10:32 : DownArrow : 29         {
+05/28/2024 13:10:32 : DownArrow : 29             if (lineNumbers)
+05/28/2024 13:10:32 : DownArrow : 29             {
+05/28/2024 13:10:32 : DownArrow : 29                 int lastNumber = Console.WindowHeight + offsetRow;
+05/28/2024 13:10:33 : DownArrow : 29                 if (lastNumber < 100)
+05/28/2024 13:10:33 : DownArrow : 29                 {
+05/28/2024 13:10:33 : DownArrow : 29                     Console.Write($"{ESC}32m{rowIndex,3}{ESC}0m");
+05/28/2024 13:10:33 : DownArrow : 29                 }
+05/28/2024 13:10:33 : DownArrow : 29 
+05/28/2024 13:10:33 : DownArrow : 29                 else if (lastNumber >= 100 && lastNumber < 1000)
+05/28/2024 13:10:33 : DownArrow : 29                 {
+05/28/2024 13:10:33 : DownArrow : 29                     Console.Write($"{ESC}32m{rowIndex,4}{ESC}0m");
+05/28/2024 13:10:33 : DownArrow : 29                     Console.CursorLeft = rowIndex.Length;
+05/28/2024 13:10:33 : DownArrow : 29                 }
+05/28/2024 13:10:33 : DownArrow : 29             }
+05/28/2024 13:10:33 : DownArrow : 29         }
+05/28/2024 13:10:33 : DownArrow : 29 
+05/28/2024 13:10:33 : DownArrow : 29         private static void DrawCursor()
+05/28/2024 13:10:33 : DownArrow : 29         {
+05/28/2024 13:10:33 : DownArrow : 29             if (lineNumbers)
+05/28/2024 13:10:33 : DownArrow : 29             {
+05/28/2024 13:10:33 : DownArrow : 29                 Console.SetCursorPosition(Math.Min(col - offsetCol + rowIndex.Length, Console.WindowWidth - 1), Math.Max(row - offsetRow, 0));
+05/28/2024 13:10:33 : DownArrow : 29                 return;
+05/28/2024 13:10:33 : DownArrow : 29             }
+05/28/2024 13:10:33 : DownArrow : 29 
+05/28/2024 13:10:33 : DownArrow : 29             Console.SetCursorPosition(Math.Min(col - offsetCol, Console.WindowWidth - 1), Math.Max(row - offsetRow, 0));
+05/28/2024 13:10:33 : DownArrow : 29         }
+05/28/2024 13:10:33 : DownArrow : 29 
+05/28/2024 13:10:33 : DownArrow : 29         private static void Scroll()
+05/28/2024 13:10:33 : DownArrow : 29         {
+05/28/2024 13:10:33 : DownArrow : 29             if (row >= Console.WindowHeight + offsetRow)
+05/28/2024 13:10:33 : DownArrow : 29             {
+05/28/2024 13:10:33 : DownArrow : 29                 offsetRow = row - Console.WindowHeight + 1;
+05/28/2024 13:10:33 : DownArrow : 29                 shouldRefresh = true;
+05/28/2024 13:10:34 : DownArrow : 29             }
+05/28/2024 13:10:34 : DownArrow : 29 
+05/28/2024 13:10:34 : DownArrow : 29             else if (row < offsetRow)
+05/28/2024 13:10:34 : DownArrow : 29             {
+05/28/2024 13:10:34 : DownArrow : 29                 offsetRow = row;
+05/28/2024 13:10:34 : DownArrow : 29                 shouldRefresh = true;
+05/28/2024 13:10:34 : DownArrow : 29             }
+05/28/2024 13:10:34 : DownArrow : 29 
+05/28/2024 13:10:34 : DownArrow : 29             if (col >= Console.WindowWidth + offsetCol)
+05/28/2024 13:10:34 : DownArrow : 29             {
+05/28/2024 13:10:34 : DownArrow : 29                 offsetCol = col - Console.WindowWidth + 1;
+05/28/2024 13:10:34 : DownArrow : 29                 shouldRefresh = true;
+05/28/2024 13:10:34 : DownArrow : 29             }
+05/28/2024 13:10:34 : DownArrow : 29 
+05/28/2024 13:10:34 : DownArrow : 29             else if (col < offsetCol)
+05/28/2024 13:10:34 : DownArrow : 29             {
+05/28/2024 13:10:34 : DownArrow : 29                 offsetCol = col;
+05/28/2024 13:13:58 : DownArrow : 0     class TextEditor
+05/28/2024 13:13:59 : DownArrow : 1     {
+05/28/2024 13:13:59 : DownArrow : 2         const string ESC = "\x1b[";
+05/28/2024 13:13:59 : DownArrow : 3         static string[] text = { };
+05/28/2024 13:13:59 : DownArrow : 4         static int row = 0;
+05/28/2024 13:13:59 : DownArrow : 5         static int offsetRow = 0;
+05/28/2024 13:13:59 : DownArrow : 6         static int col = 0;
+05/28/2024 13:13:59 : DownArrow : 7         static int offsetCol = 0;
+05/28/2024 13:13:59 : DownArrow : 8         static int prevCol = 0;
+05/28/2024 13:13:59 : UpArrow : 9         static int offsetRow = 0;
+05/28/2024 13:14:00 : UpArrow : 8         static int row = 0;
+05/28/2024 13:14:02 : UpArrow : 7         static string[] text = { };
+05/28/2024 13:14:02 : UpArrow : 6         const string ESC = "\x1b[";
+05/28/2024 13:14:02 : UpArrow : 5     {
+05/28/2024 13:14:02 : UpArrow : 4     class TextEditor
+05/28/2024 13:14:02 : UpArrow : 3 {
+05/28/2024 13:14:02 : UpArrow : 2 namespace TextEditor
+05/28/2024 13:16:24 : DownArrow : 0     class TextEditor
+05/28/2024 13:16:25 : DownArrow : 1     {
+05/28/2024 13:16:25 : DownArrow : 2         const string ESC = "\x1b[";
+05/28/2024 13:16:25 : DownArrow : 3         static string[] text = { };
+05/28/2024 13:16:25 : DownArrow : 4         static int row = 0;
+05/28/2024 13:16:25 : DownArrow : 5         static int offsetRow = 0;
+05/28/2024 13:16:25 : DownArrow : 6         static int col = 0;
+05/28/2024 13:16:25 : DownArrow : 7         static int offsetCol = 0;
+05/28/2024 13:16:25 : DownArrow : 8         static int prevCol = 0;
+05/28/2024 13:16:25 : DownArrow : 9         static string rowIndex = "";
+05/28/2024 13:16:25 : DownArrow : 10         static bool shouldRefresh = false;
+05/28/2024 13:16:25 : DownArrow : 11         static int windowWidth = Console.WindowWidth;
+05/28/2024 13:16:25 : DownArrow : 12         static bool lineNumbers = false;
+05/28/2024 13:16:25 : DownArrow : 13         static bool relativeLines = false;
+05/28/2024 13:16:25 : DownArrow : 14 
+05/28/2024 13:16:25 : DownArrow : 15         static void Main(string[] args)
+05/28/2024 13:16:25 : DownArrow : 16         {
+05/28/2024 13:16:25 : DownArrow : 17             OpenFile(args);
+05/28/2024 13:16:25 : DownArrow : 18             Console.Clear();
+05/28/2024 13:16:25 : DownArrow : 19             Console.SetCursorPosition(0, 0);
+05/28/2024 13:16:25 : DownArrow : 20             DrawContent();
+05/28/2024 13:16:25 : DownArrow : 21 
+05/28/2024 13:16:25 : DownArrow : 22             while (true)
+05/28/2024 13:16:25 : DownArrow : 23             {
+05/28/2024 13:16:25 : DownArrow : 24                 Scroll();
+05/28/2024 13:16:26 : DownArrow : 25                 RefreshScreen();
+05/28/2024 13:16:26 : DownArrow : 26                 var ch = Console.ReadKey(true);
+05/28/2024 13:16:26 : DownArrow : 27                 HandleInput(ch);
+05/28/2024 13:16:26 : DownArrow : 28             }
+05/28/2024 13:16:26 : DownArrow : 29         }
+05/28/2024 13:16:26 : DownArrow : 29 
+05/28/2024 13:16:26 : DownArrow : 29         private static void RefreshScreen()
+05/28/2024 13:16:26 : DownArrow : 29         {
+05/28/2024 13:16:26 : DownArrow : 29             if (shouldRefresh)
+05/28/2024 13:16:26 : DownArrow : 29             {
+05/28/2024 13:16:26 : DownArrow : 29                 Console.Write($"{ESC}?25l");
+05/28/2024 13:16:26 : DownArrow : 29                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:16:26 : DownArrow : 29                 ClearScreen();
+05/28/2024 13:16:26 : DownArrow : 29                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:16:26 : DownArrow : 29                 DrawContent();
+05/28/2024 13:16:26 : DownArrow : 29                 Console.Write($"{ESC}?25h");
+05/28/2024 13:16:26 : DownArrow : 29                 shouldRefresh = false;
+05/28/2024 13:16:26 : DownArrow : 29             }
+05/28/2024 13:16:26 : DownArrow : 29 
+05/28/2024 13:16:26 : DownArrow : 29             DrawCursor();
+05/28/2024 13:16:26 : DownArrow : 29         }
+05/28/2024 13:16:26 : DownArrow : 29 
+05/28/2024 13:16:26 : DownArrow : 29         private static void DrawContent()
+05/28/2024 13:16:26 : DownArrow : 29         {
+05/28/2024 13:16:26 : DownArrow : 29             int len = Math.Min(Console.WindowHeight, text.Length);
+05/28/2024 13:16:26 : DownArrow : 29 
+05/28/2024 13:16:26 : DownArrow : 29             for (int i = 0; i < len; i++)
+05/28/2024 13:16:26 : DownArrow : 29             {
+05/28/2024 13:16:26 : DownArrow : 29                 int rowIndex = i + offsetRow;
+05/28/2024 13:16:26 : DownArrow : 29                 DrawRow(rowIndex);
+05/28/2024 13:16:26 : DownArrow : 29             }
+05/28/2024 13:16:27 : DownArrow : 29 
+05/28/2024 13:16:27 : DownArrow : 29             if (relativeLines)
+05/28/2024 13:16:27 : DownArrow : 29             {
+05/28/2024 13:16:27 : DownArrow : 29                 DrawIndexes();
+05/28/2024 13:16:27 : DownArrow : 29             }
+05/28/2024 13:16:27 : DownArrow : 29         }
+05/28/2024 13:16:27 : DownArrow : 29 
+05/28/2024 13:16:27 : DownArrow : 29         private static void DrawRow(int index)
+05/28/2024 13:16:27 : DownArrow : 29         {
+05/28/2024 13:16:27 : DownArrow : 29             rowIndex = (index + 1) + " ";
+05/28/2024 13:16:27 : DownArrow : 29             DrawRowIndex();
+05/28/2024 13:16:27 : DownArrow : 29 
+05/28/2024 13:16:27 : DownArrow : 29             int lenToDraw = text[index].Length - offsetCol;
+05/28/2024 13:16:27 : DownArrow : 29 
+05/28/2024 13:16:27 : DownArrow : 29             if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
+05/28/2024 13:16:27 : DownArrow : 29             {
+05/28/2024 13:16:27 : DownArrow : 29                 lenToDraw = Console.WindowWidth - rowIndex.Length;
+05/28/2024 13:16:27 : DownArrow : 29 
+05/28/2024 13:16:27 : DownArrow : 29                 if (relativeLines)
+05/28/2024 13:16:27 : DownArrow : 29                 {
+05/28/2024 13:16:27 : DownArrow : 29                     lenToDraw = Console.WindowWidth - row.ToString().Length - 2;
+05/28/2024 13:16:27 : DownArrow : 29                 }
+05/28/2024 13:16:27 : DownArrow : 29             }
+05/28/2024 13:16:27 : DownArrow : 29 
+05/28/2024 13:16:27 : DownArrow : 29             else if (lenToDraw >= Console.WindowWidth)
+05/28/2024 13:16:27 : DownArrow : 29             {
+05/28/2024 13:16:27 : DownArrow : 29                 lenToDraw = Console.WindowWidth;
+05/28/2024 13:16:27 : DownArrow : 29             }
+05/28/2024 13:16:27 : DownArrow : 29 
+05/28/2024 13:16:27 : DownArrow : 29             if (lenToDraw > 0)
+05/28/2024 13:16:28 : DownArrow : 29             {
+05/28/2024 13:16:28 : DownArrow : 29                 Console.Write(text[index][offsetCol..(lenToDraw + offsetCol)]);
+05/28/2024 13:16:28 : DownArrow : 29             }
+05/28/2024 13:16:28 : DownArrow : 29 
+05/28/2024 13:16:28 : DownArrow : 29             if (index < Console.WindowHeight + offsetRow - 1)
+05/28/2024 13:16:28 : DownArrow : 29             {
+05/28/2024 13:16:28 : DownArrow : 29                 Console.CursorTop++;
+05/28/2024 13:16:28 : DownArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:16:28 : DownArrow : 29             }
+05/28/2024 13:16:28 : DownArrow : 29         }
+05/28/2024 13:16:28 : DownArrow : 29 
+05/28/2024 13:16:28 : DownArrow : 29         private static void DrawIndexes()
+05/28/2024 13:16:28 : DownArrow : 29         {
+05/28/2024 13:16:28 : DownArrow : 29             Console.Write($"{ESC}?25l");
+05/28/2024 13:16:28 : DownArrow : 29             Console.SetCursorPosition(0, 0);
+05/28/2024 13:16:28 : DownArrow : 29             int num = row - offsetRow;
+05/28/2024 13:16:28 : DownArrow : 29             int i;
+05/28/2024 13:16:28 : DownArrow : 29             for (i = offsetRow; i < Console.WindowHeight + offsetRow - 1; i++)
+05/28/2024 13:16:28 : DownArrow : 29             {
+05/28/2024 13:16:28 : DownArrow : 29                 Console.Write(new string(' ', rowIndex.Length));
+05/28/2024 13:16:28 : DownArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:16:28 : DownArrow : 29                 DrawIndex(i, ref num);
+05/28/2024 13:16:28 : DownArrow : 29                 Console.CursorTop++;
+05/28/2024 13:16:28 : DownArrow : 29                 Console.CursorLeft = 0;
+05/28/2024 13:16:28 : DownArrow : 29             }
+05/28/2024 13:16:28 : DownArrow : 29 
+05/28/2024 13:16:28 : DownArrow : 29             DrawIndex(i, ref num);
+05/28/2024 13:16:28 : DownArrow : 29             Console.CursorLeft = 0;
+05/28/2024 13:16:28 : DownArrow : 29             Console.Write($"{ESC}0m");
+05/28/2024 13:16:28 : DownArrow : 29             Console.Write($"{ESC}?25h");
+05/28/2024 13:16:28 : DownArrow : 29         }
+05/28/2024 13:16:29 : DownArrow : 29 
+05/28/2024 13:16:29 : DownArrow : 29         private static void DrawIndex(int index, ref int num)
+05/28/2024 13:16:29 : DownArrow : 29         {
+05/28/2024 13:16:29 : DownArrow : 29             Console.Write($"{ESC}32m");
+05/28/2024 13:16:29 : DownArrow : 29             num = index > row ? num + 1 : num;
+05/28/2024 13:16:29 : DownArrow : 29             string idx = row == index ? row + " " : num + " ";
+05/28/2024 13:16:29 : DownArrow : 29 
+05/28/2024 13:16:29 : DownArrow : 29             if (row == index)
+05/28/2024 13:16:29 : DownArrow : 29             {
+05/28/2024 13:16:29 : DownArrow : 29                 Console.Write($"{ESC}31m");
+05/28/2024 13:16:29 : DownArrow : 29             }
+05/28/2024 13:16:29 : DownArrow : 29 
+05/28/2024 13:16:29 : DownArrow : 29             if (row < 100)
+05/28/2024 13:16:29 : DownArrow : 29             {
+05/28/2024 13:16:29 : DownArrow : 29                 Console.Write($"{idx,3}");
+05/28/2024 13:16:29 : DownArrow : 29             }
+05/28/2024 13:16:29 : DownArrow : 29 
+05/28/2024 13:16:29 : DownArrow : 29             else if (row >= 100 && row < 1000)
+05/28/2024 13:16:29 : DownArrow : 29             {
+05/28/2024 13:16:29 : DownArrow : 29                 Console.Write($"{idx,4}");
+05/28/2024 13:16:54 : UpArrow : 29 
+05/28/2024 13:16:55 : UpArrow : 28             }
+05/28/2024 13:16:55 : UpArrow : 27                 Console.Write($"{idx,3}");
+05/28/2024 13:16:55 : UpArrow : 26             {
+05/28/2024 13:16:55 : UpArrow : 25             if (row < 100)
+05/28/2024 13:16:55 : UpArrow : 24 
+05/28/2024 13:16:55 : UpArrow : 23             }
+05/28/2024 13:16:55 : UpArrow : 22                 Console.Write($"{ESC}31m");
+05/28/2024 13:16:55 : UpArrow : 21             {
+05/28/2024 13:16:55 : UpArrow : 20             if (row == index)
+05/28/2024 13:16:55 : UpArrow : 19 
+05/28/2024 13:16:55 : UpArrow : 18             string idx = row == index ? row + " " : num + " ";
+05/28/2024 13:16:55 : UpArrow : 17             num = index > row ? num + 1 : num;
+05/28/2024 13:16:55 : UpArrow : 16             Console.Write($"{ESC}32m");
+05/28/2024 13:16:55 : UpArrow : 15         {
+05/28/2024 13:16:55 : UpArrow : 14         private static void DrawIndex(int index, ref int num)
+05/28/2024 13:16:55 : UpArrow : 13 
+05/28/2024 13:16:55 : UpArrow : 12         }
+05/28/2024 13:16:55 : UpArrow : 11             Console.Write($"{ESC}?25h");
+05/28/2024 13:16:55 : UpArrow : 10             Console.Write($"{ESC}0m");
+05/28/2024 13:16:55 : UpArrow : 9             Console.CursorLeft = 0;
+05/28/2024 13:16:55 : UpArrow : 8             DrawIndex(i, ref num);
+05/28/2024 13:16:55 : UpArrow : 7 
+05/28/2024 13:16:56 : UpArrow : 6             }
+05/28/2024 13:16:56 : UpArrow : 5                 Console.CursorLeft = 0;
+05/28/2024 13:16:56 : UpArrow : 4                 Console.CursorTop++;
+05/28/2024 13:16:56 : UpArrow : 3                 DrawIndex(i, ref num);
+05/28/2024 13:16:56 : UpArrow : 2                 Console.CursorLeft = 0;
+05/28/2024 13:16:56 : UpArrow : 1                 Console.Write(new string(' ', rowIndex.Length));
+05/28/2024 13:16:56 : UpArrow : 0             {
+05/28/2024 13:16:56 : UpArrow : 0             for (i = offsetRow; i < Console.WindowHeight + offsetRow - 1; i++)
+05/28/2024 13:16:56 : UpArrow : 0             int i;
+05/28/2024 13:16:56 : UpArrow : 0             int num = row - offsetRow;
+05/28/2024 13:16:56 : UpArrow : 0             Console.SetCursorPosition(0, 0);
+05/28/2024 13:16:56 : UpArrow : 0             Console.Write($"{ESC}?25l");
+05/28/2024 13:16:56 : UpArrow : 0         {
+05/28/2024 13:16:56 : UpArrow : 0         private static void DrawIndexes()
+05/28/2024 13:16:56 : UpArrow : 0 
+05/28/2024 13:16:56 : UpArrow : 0         }
+05/28/2024 13:16:56 : UpArrow : 0             }
+05/28/2024 13:16:56 : UpArrow : 0                 Console.CursorLeft = 0;
+05/28/2024 13:16:56 : UpArrow : 0                 Console.CursorTop++;
+05/28/2024 13:16:56 : UpArrow : 0             {
+05/28/2024 13:16:56 : UpArrow : 0             if (index < Console.WindowHeight + offsetRow - 1)
+05/28/2024 13:16:56 : UpArrow : 0 
+05/28/2024 13:16:56 : UpArrow : 0             }
+05/28/2024 13:16:56 : UpArrow : 0                 Console.Write(text[index][offsetCol..(lenToDraw + offsetCol)]);
+05/28/2024 13:16:56 : UpArrow : 0             {
+05/28/2024 13:16:56 : UpArrow : 0             if (lenToDraw > 0)
+05/28/2024 13:16:56 : UpArrow : 0 
+05/28/2024 13:16:56 : UpArrow : 0             }
+05/28/2024 13:16:56 : UpArrow : 0                 lenToDraw = Console.WindowWidth;
+05/28/2024 13:16:56 : UpArrow : 0             {
+05/28/2024 13:16:57 : UpArrow : 0             else if (lenToDraw >= Console.WindowWidth)
+05/28/2024 13:16:57 : UpArrow : 0 
+05/28/2024 13:16:57 : UpArrow : 0             }
+05/28/2024 13:16:57 : UpArrow : 0                 }
+05/28/2024 13:16:57 : UpArrow : 0                     lenToDraw = Console.WindowWidth - row.ToString().Length - 2;
+05/28/2024 13:16:57 : UpArrow : 0                 {
+05/28/2024 13:16:57 : UpArrow : 0                 if (relativeLines)
+05/28/2024 13:16:57 : UpArrow : 0 
+05/28/2024 13:16:57 : UpArrow : 0                 lenToDraw = Console.WindowWidth - rowIndex.Length;
+05/28/2024 13:16:57 : UpArrow : 0             {
+05/28/2024 13:16:57 : UpArrow : 0             if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
+05/28/2024 13:16:57 : UpArrow : 0 
+05/28/2024 13:16:57 : UpArrow : 0             int lenToDraw = text[index].Length - offsetCol;
+05/28/2024 13:16:57 : UpArrow : 0 
+05/28/2024 13:16:57 : UpArrow : 0             DrawRowIndex();
+05/28/2024 13:16:57 : UpArrow : 0             rowIndex = (index + 1) + " ";
+05/28/2024 13:16:57 : UpArrow : 0         {
+05/28/2024 13:16:57 : UpArrow : 0         private static void DrawRow(int index)
+05/28/2024 13:16:57 : UpArrow : 0 
+05/28/2024 13:16:57 : UpArrow : 0         }
+05/28/2024 13:16:57 : UpArrow : 0             }
+05/28/2024 13:16:57 : UpArrow : 0                 DrawIndexes();
+05/28/2024 13:16:57 : UpArrow : 0             {
+05/28/2024 13:16:57 : UpArrow : 0             if (relativeLines)
+05/28/2024 13:16:57 : UpArrow : 0 
+05/28/2024 13:16:57 : UpArrow : 0             }
+05/28/2024 13:16:57 : UpArrow : 0                 DrawRow(rowIndex);
+05/28/2024 13:16:57 : UpArrow : 0                 int rowIndex = i + offsetRow;
+05/28/2024 13:16:57 : UpArrow : 0             {
+05/28/2024 13:16:57 : UpArrow : 0             for (int i = 0; i < len; i++)
+05/28/2024 13:16:58 : UpArrow : 0 
+05/28/2024 13:16:58 : UpArrow : 0             int len = Math.Min(Console.WindowHeight, text.Length);
+05/28/2024 13:16:58 : UpArrow : 0         {
+05/28/2024 13:16:58 : UpArrow : 0         private static void DrawContent()
+05/28/2024 13:16:58 : UpArrow : 0 
+05/28/2024 13:16:58 : UpArrow : 0         }
+05/28/2024 13:16:58 : UpArrow : 0             DrawCursor();
+05/28/2024 13:16:58 : UpArrow : 0 
+05/28/2024 13:16:58 : UpArrow : 0             }
+05/28/2024 13:16:58 : UpArrow : 0                 shouldRefresh = false;
+05/28/2024 13:16:58 : UpArrow : 0                 Console.Write($"{ESC}?25h");
+05/28/2024 13:16:58 : UpArrow : 0                 DrawContent();
+05/28/2024 13:16:58 : UpArrow : 0                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:16:58 : UpArrow : 0                 ClearScreen();
+05/28/2024 13:16:58 : UpArrow : 0                 Console.SetCursorPosition(0, 0);
+05/28/2024 13:16:58 : UpArrow : 0                 Console.Write($"{ESC}?25l");
+05/28/2024 13:16:58 : UpArrow : 0             {
+05/28/2024 13:16:58 : UpArrow : 0             if (shouldRefresh)
+05/28/2024 13:16:58 : UpArrow : 0         {
+05/28/2024 13:16:58 : UpArrow : 0         private static void RefreshScreen()
+05/28/2024 13:16:58 : UpArrow : 0 
+05/28/2024 13:16:58 : UpArrow : 0         }
+05/28/2024 13:16:58 : UpArrow : 0             }
+05/28/2024 13:16:58 : UpArrow : 0                 HandleInput(ch);
+05/28/2024 13:16:58 : UpArrow : 0                 var ch = Console.ReadKey(true);
+05/28/2024 13:16:58 : UpArrow : 0                 RefreshScreen();
+05/28/2024 13:16:58 : UpArrow : 0                 Scroll();
+05/28/2024 13:16:58 : UpArrow : 0             {
+05/28/2024 13:16:58 : UpArrow : 0             while (true)
+05/28/2024 13:16:58 : UpArrow : 0 
+05/28/2024 13:16:58 : UpArrow : 0             DrawContent();
+05/28/2024 13:16:59 : UpArrow : 0             Console.SetCursorPosition(0, 0);
+05/28/2024 13:16:59 : UpArrow : 0             Console.Clear();
+05/28/2024 13:16:59 : UpArrow : 0             OpenFile(args);
+05/28/2024 13:16:59 : UpArrow : 0         {
+05/28/2024 13:16:59 : UpArrow : 0         static void Main(string[] args)
+05/28/2024 13:16:59 : UpArrow : 0 
+05/28/2024 13:16:59 : UpArrow : 0         static bool relativeLines = false;
+05/28/2024 13:16:59 : UpArrow : 0         static bool lineNumbers = false;
+05/28/2024 13:16:59 : UpArrow : 0         static int windowWidth = Console.WindowWidth;
+05/28/2024 13:16:59 : UpArrow : 0         static bool shouldRefresh = false;
+05/28/2024 13:16:59 : UpArrow : 0         static string rowIndex = "";
+05/28/2024 13:16:59 : UpArrow : 0         static int prevCol = 0;
+05/28/2024 13:16:59 : UpArrow : 0         static int offsetCol = 0;
+05/28/2024 13:16:59 : UpArrow : 0         static int col = 0;
+05/28/2024 13:16:59 : UpArrow : 0         static int offsetRow = 0;
+05/28/2024 13:16:59 : UpArrow : 0         static int row = 0;
+05/28/2024 13:16:59 : UpArrow : 0         static string[] text = { };
+05/28/2024 13:16:59 : UpArrow : 0         const string ESC = "\x1b[";
+05/28/2024 13:16:59 : UpArrow : 0     {
+05/28/2024 13:16:59 : UpArrow : 0     class TextEditor
+05/28/2024 13:16:59 : UpArrow : 0 {
+05/28/2024 13:16:59 : UpArrow : 0 namespace TextEditor
+05/28/2024 13:18:33 : DownArrow : 0     class Navigator
+05/28/2024 13:18:34 : DownArrow : 1     {
+05/28/2024 13:18:34 : UpArrow : 2 namespace TextEditor

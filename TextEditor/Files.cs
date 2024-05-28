@@ -101,7 +101,7 @@
                 if (Console.CursorLeft > 1)
                 {
                     Console.CursorLeft--;
-                    
+
                 }
 
                 return;

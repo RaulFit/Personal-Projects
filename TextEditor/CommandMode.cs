@@ -64,13 +64,8 @@ namespace TextEditor
                     QuitApp(command);
                 }
 
-                else
-                {
-                    input = "";
-                }
-
                 Console.SetCursorPosition(1, Console.WindowHeight - 2);
-                Console.Write(new string(' ', input.Length));
+                Console.Write(new string(' ', Console.WindowWidth - 10));
             }
         }
 
@@ -100,10 +95,10 @@ namespace TextEditor
             {
                 if (Navigator.hasChanges)
                 {
-                    throw new Exception("You have unsaved changes!");
+                    Console.SetCursorPosition(1, Console.CursorTop - 1);
+                    Console.Write("You have unsaved changes! Press any key to continue");
+                    var key = Console.ReadKey(true);
                 }
-
-                Environment.Exit(1);
             }
         }
     }

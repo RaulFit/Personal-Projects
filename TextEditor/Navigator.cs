@@ -2,13 +2,14 @@
 {
     class Navigator
     {
-        public static string[] text = { };
+        public static List<string> text = new List<string>();
         public static int row = 0;
         public static int offsetRow = 0;
         public static int col = 0;
         public static int offsetCol = 0;
         public static int prevCol = 0;
         public static bool insertMode = false;
+        public static bool hasChanges = false;
 
         public static void RunNavigator()
         {
@@ -46,29 +47,76 @@
                 HandleSpecialKeys(ch);
                 HandleArrows(ch.Key);
                 HandleKeys(ch.Key);
+                HandlePageScroll(ch);
                 MoveWord(ch);
                 MoveChar(ch, 1);
-                return;
             }
 
-            ToggleInsertMode(ch);
-            HandleInsert(ch);
-            HandleArrows(ch.Key);
-            HandleKeys(ch.Key);
+            else
+            {
+                ToggleInsertMode(ch);
+                HandleInsert(ch);
+                HandleArrows(ch.Key);
+                HandleKeys(ch.Key);
+                HandlePageScroll(ch);
+            }
         }
 
         public static void HandleInsert(ConsoleKeyInfo ch)
         {
-            if (ch.Key == ConsoleKey.Backspace && text[row].Length > 0 && col + offsetCol <= text[row].Length && col + offsetCol > 0)
+            if (ch.KeyChar.ToString() == ":")
             {
+                CommandMode.DrawCommandMode();
+                return;
+            }
+
+            if (ch.Key == ConsoleKey.Enter)
+            {
+                if (col + offsetCol == 0)
+                {
+                    text.Insert(row, "");
+                }
+
+                else
+                {
+                    text.Insert(row + 1, text[row][(col + offsetCol)..]);
+                    text[row] = text[row][0..(col + offsetCol)];
+                }
+
+                HandleArrows(ConsoleKey.DownArrow);
+                hasChanges = true;
+            }
+
+            if (ch.Key == ConsoleKey.Backspace)
+            {
+                if (col + offsetCol == 0)
+                {
+                    if (row > 0)
+                    {
+                        HandleArrows(ConsoleKey.UpArrow);
+                        text[row] = text[row].Insert(text[row].Length, text[row + 1]);
+                        text.RemoveAt(row + 1);
+                        if (Math.Min(Console.WindowHeight, text.Count) + offsetRow >= text.Count)
+                        {
+                            offsetRow--;
+                        }
+                        hasChanges = true;
+                        return;
+                    }
+
+                    return;
+                }
+
                 text[row] = text[row].Remove(col + offsetCol - 1, 1);
                 HandleArrows(ConsoleKey.LeftArrow);
+                hasChanges = true;
             }
 
             else if (!char.IsControl(ch.KeyChar))
             {
                 text[row] = text[row].Insert(col + offsetCol, ch.KeyChar.ToString());
                 HandleArrows(ConsoleKey.RightArrow);
+                hasChanges = true;
             }
         }
 
@@ -154,7 +202,7 @@
             if (ch.KeyChar.ToString() == "w")
             {
                 MoveForwardLowerCase();
-                while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row < text.Length - 1)
+                while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row < text.Count - 1)
                 {
                     row++;
                     col = 0;
@@ -176,7 +224,7 @@
             if (ch.KeyChar.ToString() == "W")
             {
                 MoveForwardUpperCase();
-                while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row < text.Length - 1)
+                while ((col == text[row].Length || char.IsWhiteSpace(text[row][col])) && row < text.Count - 1)
                 {
                     row++;
                     col = 0;
@@ -305,8 +353,6 @@
 
         private static void HandleKeys(ConsoleKey ch)
         {
-            HandlePageScroll(ch);
-
             if (ch == ConsoleKey.Home)
             {
                 col = text[row].Length > 0 ? text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))) : 0;
@@ -336,19 +382,19 @@
             }
         }
 
-        private static void HandlePageScroll(ConsoleKey ch)
+        private static void HandlePageScroll(ConsoleKeyInfo ch)
         {
-            if (ch == ConsoleKey.PageDown)
+            if (ch.Key == ConsoleKey.PageDown || ((ch.Modifiers & ConsoleModifiers.Control) != 0 && ch.Key == ConsoleKey.D))
             {
                 row = Console.WindowHeight + offsetRow - 1;
                 int end = row + Console.WindowHeight;
-                for (int i = row; i < end && i < text.Length - 1; i++)
+                for (int i = row; i < end && i < text.Count - 1; i++)
                 {
                     HandleArrows(ConsoleKey.DownArrow);
                 }
             }
 
-            if (ch == ConsoleKey.PageUp)
+            if (ch.Key == ConsoleKey.PageUp || ((ch.Modifiers & ConsoleModifiers.Control) != 0 && ch.Key == ConsoleKey.U))
             {
                 row = offsetRow;
                 int end = row - Console.WindowHeight;
@@ -366,7 +412,7 @@
                 HandleUpArrow();
             }
 
-            if (ch == ConsoleKey.DownArrow && row < text.Length - 1)
+            if (ch == ConsoleKey.DownArrow && row < text.Count - 1)
             {
                 HandleDownArrow();
             }
@@ -401,7 +447,7 @@
             }
 
             row--;
-
+            
             if (Drawer.relativeLines)
             {
                 Drawer.DrawRelativeIndexes();

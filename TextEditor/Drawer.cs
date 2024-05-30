@@ -11,6 +11,7 @@ namespace TextEditor
         public static bool lineNumbers = false;
         public static bool relativeLines = false;
         public static StringBuilder text = new StringBuilder();
+        public static StringBuilder commandMode = new StringBuilder();
 
         public static void RefreshScreen()
         {
@@ -18,7 +19,7 @@ namespace TextEditor
             {
                 Console.Write($"{ESC}?25l");
                 Console.SetCursorPosition(0, 0);
-                ClearScreen();
+                ClearScreen(Console.WindowHeight - 1);
                 Console.SetCursorPosition(0, 0);
                 DrawContent();
                 Console.Write($"{ESC}?25h");
@@ -30,9 +31,8 @@ namespace TextEditor
 
         public static void DrawContent()
         {
-            int len = Math.Min(Console.WindowHeight, Navigator.text.Length);
+            int len = Math.Min(Console.WindowHeight, Navigator.text.Count);
             text = new StringBuilder();
-
             for (int i = 0; i < len; i++)
             {
                 int rowIndex = i + Navigator.offsetRow;
@@ -144,9 +144,9 @@ namespace TextEditor
             num = index < Navigator.row ? num - 1 : num;
         }
 
-        private static void ClearScreen()
+        public static void ClearScreen(int length)
         {
-            for (int i = 0; i < Console.WindowHeight - 1; i++)
+            for (int i = 0; i < length; i++)
             {
                 Console.WriteLine(new string(' ', Console.WindowWidth));
             }

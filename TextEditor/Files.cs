@@ -16,8 +16,8 @@
 
             int filesLength = new string(filteredFiles.Length.ToString()).Length;
             Console.SetCursorPosition(Console.WindowWidth - 10, Console.WindowHeight - 2);
-            Console.Write(new string(' ', 9));
-            Console.SetCursorPosition(Console.WindowWidth - 6 - filesLength, Console.WindowHeight - 2);
+            Console.Write(new string(' ', 8));
+            Console.SetCursorPosition(Console.WindowWidth - 7 - filesLength, Console.WindowHeight - 2);
             Console.Write($"{filteredFiles.Length} / {Files.files.Length}");
             Console.SetCursorPosition(Finder.match.Length + 1, Console.WindowHeight - 2);
         }
@@ -131,7 +131,7 @@
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
             for (int i = 0; i < Console.WindowHeight - 6; i++)
             {
-                Console.Write(new string(' ', Console.WindowWidth - 2));
+                Console.Write(new string(' ', Console.WindowWidth - 3));
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
             }
 

@@ -1,9 +1,8 @@
-﻿namespace TextEditor
+namespaceTextEditor
 {
     class TextEditor
     {
-        const string ESC = "\x1b[";
-        static string[] text = { };
+        const string ESC = "\x1b[";static string[] text = { };
         static int row = 0;
         static int offsetRow = 0;
         static int col = 0;
@@ -512,15 +511,4 @@
                 lineNumbers = true;
 
                 Console.WriteLine();
-                Console.Write("Show line numbers relative to the current line? (Press Y for yes):");
-
-                ch = Console.ReadKey();
-
-                if (ch.KeyChar.ToString() == "Y")
-                {
-                    relativeLines = true;
-                }
-            }
-        }
-    }
-}
+                Console.Write("Show line numbers relative to the current line? (Press Y for yes):");                ch = Console.ReadKey();                if (ch.KeyChar.ToString() == "Y")                {                    relativeLines = true;                }            }        }    }}

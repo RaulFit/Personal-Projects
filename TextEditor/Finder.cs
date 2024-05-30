@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Text;
 
 namespace TextEditor
 {
@@ -9,7 +10,7 @@ namespace TextEditor
         public static int startIndex = 0;
         public static int endIndex = 0;
         public static int currentIndex = 0;
-
+        public static StringBuilder finder = new StringBuilder();
 
         public static void OpenFinder()
         {
@@ -51,7 +52,8 @@ namespace TextEditor
 
         private static void ReadText()
         {
-            Navigator.text = File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
+            Navigator.text = File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex))).ToList();
+            CommandMode.currentPath = Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex));
             Drawer.lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
             Drawer.relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
             ResetSettings();
@@ -86,6 +88,8 @@ namespace TextEditor
 
         public static void ResetSettings()
         {
+            finder = new StringBuilder();
+            Navigator.hasChanges = false;
             Navigator.row = 0;
             Navigator.offsetRow = 0;
             Navigator.col = 0;
@@ -103,53 +107,81 @@ namespace TextEditor
 
         private static void DrawFinder()
         {
+            DrawBorders();
+            DrawCorners();
             Console.SetCursorPosition(0, 0);
-            PrintVerticalBorders(Console.WindowHeight - 4);
-            Console.SetCursorPosition(0, 0);
-            PrintHorizontalBorder(Console.WindowWidth / 2 - 4);
-            Console.Write("Results");
-            PrintHorizontalBorder(Console.WindowWidth / 2 - 3);
-            Console.SetCursorPosition(0, Console.WindowHeight - 5);
-            PrintHorizontalBorder(Console.WindowWidth);
-            Console.SetCursorPosition(0, Console.WindowHeight - 3);
-            PrintHorizontalBorder(Console.WindowWidth / 2 - 5);
-            Console.Write("Find Files");
-            PrintHorizontalBorder(Console.WindowWidth / 2 - 5);
-            Console.SetCursorPosition(0, Console.CursorTop + 1);
-            PrintVerticalBorders(1);
-            PrintHorizontalBorder(Console.WindowWidth);
+            Console.Write(finder);
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
             Files.files = Directory.GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.AllDirectories).Select(Path.GetFullPath).ToArray();
             Files.filteredFiles = new string[Files.files.Length];
             Files.files.CopyTo(Files.filteredFiles, 0);
             endIndex = Math.Min(Files.files.Length - 1, Console.WindowHeight - 6);
             Files.PrintFiles(Files.filteredFiles.Select(f => Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(f))).ToArray());
-            DrawCorners();
             Console.SetCursorPosition(1, Console.WindowHeight - 2);
+        }
+
+        private static void DrawBorders()
+        {
+            PrintVerticalBorders(Console.WindowHeight - 4, finder);
+            finder.Append($"{ESC}{0};{0}H");
+            PrintHorizontalBorder(Console.WindowWidth / 2 - 4, finder);
+            finder.Append("Results");
+            PrintHorizontalBorder(Console.WindowWidth / 2 - 4, finder);
+            finder.Append($"{ESC}{Console.WindowHeight - 4};{0}H");
+            PrintHorizontalBorder(Console.WindowWidth - 1, finder);
+            finder.Append($"{ESC}{Console.WindowHeight - 2};{0}H");
+            PrintHorizontalBorder(Console.WindowWidth / 2 - 5, finder);
+            finder.Append("Find Files");
+            PrintHorizontalBorder(Console.WindowWidth / 2 - 6, finder);
+            finder.Append($"{ESC}{Console.WindowHeight - 1};{0}H");
+            PrintBorder(true, finder);
+            finder.Append($"{ESC}{Console.WindowHeight - 1};{Console.WindowWidth - 1}H");
+            PrintBorder(true, finder);
+            finder.Append($"{ESC}{Console.WindowHeight};{0}H");
+            PrintHorizontalBorder(Console.WindowWidth - 1, finder);
+        }
+
+        public static void PrintVerticalBorders(int length, StringBuilder finder)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                finder.Append($"{ESC}{i};{0}H");
+                PrintBorder(true, finder);
+                finder.Append($"{ESC}{i};{Console.WindowWidth - 1}H");
+                PrintBorder(true, finder);
+            }
+        }
+
+        public static void PrintHorizontalBorder(int length, StringBuilder finder)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                PrintBorder(false, finder);
+            }
         }
 
         private static void DrawCorners()
         {
-            Console.Write("\x1b" + "(0");
-            Console.Write(ESC + "31m");
-            Console.SetCursorPosition(0, 0);
-            Console.Write("l");
-            Console.SetCursorPosition(Console.WindowWidth - 1, 0);
-            Console.Write("k");
-            Console.SetCursorPosition(0, Console.WindowHeight - 5);
-            Console.Write("m");
-            Console.SetCursorPosition(Console.WindowWidth - 1, Console.WindowHeight - 5);
-            Console.Write("j");
-            Console.SetCursorPosition(0, Console.WindowHeight - 3);
-            Console.Write("l");
-            Console.SetCursorPosition(Console.WindowWidth - 1, Console.WindowHeight - 3);
-            Console.Write("k");
-            Console.SetCursorPosition(0, Console.WindowHeight - 1);
-            Console.Write("m");
-            Console.SetCursorPosition(Console.WindowWidth - 1, Console.WindowHeight - 1);
-            Console.Write("j");
-            Console.Write(ESC + "0m");
-            Console.Write("\x1b" + "(B");
+            finder.Append("\x1b" + "(0");
+            finder.Append(ESC + "31m");
+            finder.Append($"{ESC}{0};{0}H");
+            finder.Append("l");
+            finder.Append($"{ESC}{Console.WindowHeight - 4};{0}H");
+            finder.Append("m");
+            finder.Append($"{ESC}{0};{Console.WindowWidth - 1}H");
+            finder.Append("k");
+            finder.Append($"{ESC}{Console.WindowHeight - 4};{Console.WindowWidth - 1}H");
+            finder.Append("j");
+            finder.Append($"{ESC}{Console.WindowHeight - 2};{0}H");
+            finder.Append("l");
+            finder.Append($"{ESC}{Console.WindowHeight};{0}H");
+            finder.Append("m");
+            finder.Append($"{ESC}{Console.WindowHeight - 2};{Console.WindowWidth - 1}H");
+            finder.Append("k");
+            finder.Append($"{ESC}{Console.WindowHeight};{Console.WindowWidth - 1}H");
+            finder.Append("j");
+            finder.Append(ESC + "0m");
+            finder.Append("\x1b" + "(B");
         }
 
         public static void ColorMatchingLetters()
@@ -171,7 +203,7 @@ namespace TextEditor
             string lowerFileName = fileName.ToLower();
             string lowerMatch = match.ToLower();
 
-            if (lowerFileName.Contains(lowerMatch))
+            if (lowerFileName.Contains(lowerMatch) && !Files.caseInsensitive)
             {
                 Console.CursorLeft = lowerFileName.IndexOf(lowerMatch) + 1;
                 Console.Write(new string(' ', lowerMatch.Length));
@@ -213,39 +245,20 @@ namespace TextEditor
             return pat == pattern;
         }
 
-        private static void PrintVerticalBorders(int length)
+        public static void PrintBorder(bool vertical, StringBuilder finder)
         {
-            for (int i = 0; i < length; i++)
-            {
-                PrintBorder(true);
-                Console.CursorLeft = Console.WindowWidth - 1;
-                PrintBorder(true);
-                Console.SetCursorPosition(0, Console.CursorTop + 1);
-            }
-        }
-
-        private static void PrintHorizontalBorder(int length)
-        {
-            for (int i = 0; i < length; i++)
-            {
-                PrintBorder(false);
-            }
-        }
-
-        private static void PrintBorder(bool vertical)
-        {
-            Console.Write("\x1b" + "(0");
-            Console.Write(ESC + "31m");
+            finder.Append("\x1b" + "(0");
+            finder.Append(ESC + "31m");
             if (vertical)
             {
-                Console.Write("x");
+                finder.Append("x");
             }
             else
             {
-                Console.Write("q");
+                finder.Append("q");
             }
-            Console.Write(ESC + "0m");
-            Console.Write("\x1b" + "(B");
+            finder.Append(ESC + "0m");
+            finder.Append("\x1b" + "(B");
         }
     }
 }

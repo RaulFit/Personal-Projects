@@ -8,7 +8,7 @@ namespace TextEditor
         {
             if (args.Length > 0 && Path.Exists(args[0]))
             {
-                Navigator.text = File.ReadAllLines(Path.GetFullPath(args[0]));
+                Navigator.text = File.ReadAllLines(Path.GetFullPath(args[0])).ToList();
                 Drawer.lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
                 Drawer.relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
                 Navigator.RunNavigator();

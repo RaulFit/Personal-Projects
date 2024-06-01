@@ -1,15 +1,20 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.Text;
 
 namespace TextEditor
 {
-    static class CommandMode
+    public class CommandMode
     {
-        public static StringBuilder commandMode = new StringBuilder();
-        public static string currentPath = "";
         const string ESC = "\x1b[";
+        public StringBuilder commandMode;
+        public string CurrentPath;
 
-        public static void DrawCommandMode()
+        public CommandMode(string? currentPath)
+        {
+            commandMode = new StringBuilder();
+            CurrentPath = string.IsNullOrEmpty(currentPath) ? "" : currentPath;
+        }
+
+        public void DrawCommandMode(Navigator navigator)
         {
             Console.SetCursorPosition(0, Console.WindowHeight - 3);
             Drawer.ClearScreen(2);
@@ -25,10 +30,10 @@ namespace TextEditor
             DrawCorners();
             Console.SetCursorPosition(0, Console.WindowHeight - 3);
             Console.Write(commandMode);
-            EnterCommand();
+            EnterCommand(navigator);
         }
 
-        private static void DrawCorners()
+        private void DrawCorners()
         {
             commandMode.Append("\x1b" + "(0");
             commandMode.Append(ESC + "31m");
@@ -44,7 +49,7 @@ namespace TextEditor
             commandMode.Append("\x1b" + "(B");
         }
 
-        private static void EnterCommand()
+        private void EnterCommand(Navigator navigator)
         {
             while (true)
             {
@@ -58,10 +63,10 @@ namespace TextEditor
                     if (command.ToLower() == "w" || command.ToLower() == "write")
                     {
                         string path = components.Length > 1 ? components[1] : "";
-                        WriteToFile(path, Navigator.text);
+                        WriteToFile(path, navigator);
                     }
 
-                    QuitApp(command);
+                    QuitApp(command, navigator);
                 }
 
                 Console.SetCursorPosition(1, Console.WindowHeight - 2);
@@ -69,22 +74,22 @@ namespace TextEditor
             }
         }
 
-        private static void WriteToFile(string path, List<string> text)
+        private void WriteToFile(string path, Navigator navigator)
         {
             if (string.IsNullOrEmpty(path))
             {
-                File.WriteAllLines(currentPath, Navigator.text);
-                Navigator.hasChanges = false;
+                File.WriteAllLines(CurrentPath, navigator.text);
+                navigator.hasChanges = false;
             }
 
             if (Path.Exists(path))
             {
-                File.WriteAllLines(path, Navigator.text);
-                Navigator.hasChanges = false;
+                File.WriteAllLines(path, navigator.text);
+                navigator.hasChanges = false;
             }
         }
 
-        private static void QuitApp(string command)
+        private void QuitApp(string command, Navigator navigator)
         {
             if (command.ToLower() == "q!" || command.ToLower() == "quit!")
             {
@@ -93,12 +98,15 @@ namespace TextEditor
 
             if (command.ToLower() == "q" || command.ToLower() == "quit")
             {
-                if (Navigator.hasChanges)
+                if (navigator.hasChanges)
                 {
                     Console.SetCursorPosition(1, Console.CursorTop - 1);
                     Console.Write("You have unsaved changes! Press any key to continue");
                     var key = Console.ReadKey(true);
+                    return;
                 }
+
+                Environment.Exit(1);
             }
         }
     }

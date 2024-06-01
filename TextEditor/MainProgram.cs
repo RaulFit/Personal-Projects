@@ -8,10 +8,12 @@ namespace TextEditor
         {
             if (args.Length > 0 && Path.Exists(args[0]))
             {
-                Navigator.text = File.ReadAllLines(Path.GetFullPath(args[0])).ToList();
-                Drawer.lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
-                Drawer.relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
-                Navigator.RunNavigator();
+                bool lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
+                bool relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
+                Drawer drawer = new Drawer(lineNumbers, relativeLines);
+                string path = Path.GetFullPath(args[0]);
+                Navigator navigator = new Navigator(File.ReadAllLines(path).ToList(), drawer, new CommandMode(path));
+                navigator.RunNavigator();
             }
 
             Finder.OpenFinder();

@@ -1,38 +1,48 @@
 ﻿namespace TextEditor
 {
-    class Navigator
+    public class Navigator
     {
-        public static List<string> text = new List<string>();
-        public static int row = 0;
-        public static int offsetRow = 0;
-        public static int col = 0;
-        public static int offsetCol = 0;
-        public static int prevCol = 0;
-        public static bool insertMode = false;
-        public static bool hasChanges = false;
+        public CommandMode CommandMode;
+        public Drawer Drawer;
+        public List<string> text = [];
+        public int row;
+        public int offsetRow;
+        public int col;
+        public int offsetCol;
+        public int prevCol;
+        public bool insertMode;
+        public bool hasChanges;
 
-        public static void RunNavigator()
+        public Navigator(List<string> text, Drawer drawer, CommandMode commandMode)
+        {
+            this.text = text;
+            row = 0;
+            offsetRow = 0;
+            col = 0;
+            offsetCol = 0;
+            prevCol = 0;
+            insertMode = false;
+            hasChanges = false;
+            Drawer = drawer;
+            CommandMode = commandMode;
+        }
+
+        public void RunNavigator()
         {
             Console.Clear();
             Console.SetCursorPosition(0, 0);
-            Drawer.DrawContent();
+            Drawer.DrawContent(this);
             while (true)
             {
-                Drawer.Scroll();
-                Drawer.RefreshText();
-                Drawer.RefreshScreen();
-                ConsoleKeyInfo ch;
-                ch = insertMode ? Console.ReadKey() : Console.ReadKey(true);
-                if (Drawer.relativeLines && (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow))
-                {
-                    Drawer.shouldRefresh = true;
-                    Drawer.RefreshScreen();
-                }
+                Drawer.Scroll(this);
+                Drawer.RefreshText(this);
+                Drawer.RefreshScreen(this);
+                ConsoleKeyInfo ch = insertMode ? Console.ReadKey() : Console.ReadKey(true);
                 HandleInput(ch);
             }
         }
 
-        public static void HandleInput(ConsoleKeyInfo ch)
+        public void HandleInput(ConsoleKeyInfo ch)
         {
             if (char.IsDigit(ch.KeyChar) && ch.Key != ConsoleKey.D0)
             {
@@ -62,11 +72,11 @@
             }
         }
 
-        public static void HandleInsert(ConsoleKeyInfo ch)
+        public void HandleInsert(ConsoleKeyInfo ch)
         {
             if (ch.KeyChar.ToString() == ":")
             {
-                CommandMode.DrawCommandMode();
+                CommandMode.DrawCommandMode(this);
                 return;
             }
 
@@ -96,12 +106,11 @@
                         HandleArrows(ConsoleKey.UpArrow);
                         text[row] = text[row].Insert(text[row].Length, text[row + 1]);
                         text.RemoveAt(row + 1);
-                        if (Math.Min(Console.WindowHeight, text.Count) + offsetRow >= text.Count)
+                        if (Math.Min(Drawer.windowHeight, text.Count) + offsetRow >= text.Count)
                         {
                             offsetRow--;
                         }
                         hasChanges = true;
-                        return;
                     }
 
                     return;
@@ -120,7 +129,7 @@
             }
         }
 
-        private static void ToggleInsertMode(ConsoleKeyInfo ch)
+        private void ToggleInsertMode(ConsoleKeyInfo ch)
         {
             if (ch.Key == ConsoleKey.I)
             {
@@ -133,7 +142,7 @@
             }
         }
 
-        private static void HandleSimpleMovement(ConsoleKeyInfo ch)
+        private void HandleSimpleMovement(ConsoleKeyInfo ch)
         {
             string num = ch.KeyChar.ToString();
             while (true)
@@ -156,19 +165,19 @@
             }
         }
 
-        private static void FindCharLowerCase(ConsoleKeyInfo ch)
+        private void FindCharLowerCase(ConsoleKeyInfo ch)
         {
             int index = text[row].IndexOf(ch.KeyChar.ToString(), Math.Min(col + 1, text[row].Length - 1));
             col = index != -1 ? index : col;
         }
 
-        private static void FindCharUpperCase(ConsoleKeyInfo ch)
+        private void FindCharUpperCase(ConsoleKeyInfo ch)
         {
             int index = text[row].LastIndexOf(ch.KeyChar.ToString(), Math.Max(col - 1, 0));
             col = index != -1 ? index : col;
         }
 
-        private static void MoveChar(ConsoleKeyInfo ch, int num)
+        private void MoveChar(ConsoleKeyInfo ch, int num)
         {
             if (ch.KeyChar.ToString() == "f")
             {
@@ -189,7 +198,7 @@
             }
         }
 
-        private static void MoveWords(ConsoleKeyInfo ch, int num)
+        private void MoveWords(ConsoleKeyInfo ch, int num)
         {
             for (int i = 0; i < num; i++)
             {
@@ -197,7 +206,7 @@
             }
         }
 
-        private static void MoveWord(ConsoleKeyInfo ch)
+        private void MoveWord(ConsoleKeyInfo ch)
         {
             if (ch.KeyChar.ToString() == "w")
             {
@@ -233,7 +242,7 @@
             }
         }
 
-        private static void MoveForwardLowerCase()
+        private void MoveForwardLowerCase()
         {
             while (col < text[row].Length && char.IsPunctuation(text[row][col]))
             {
@@ -256,7 +265,7 @@
             }
         }
 
-        private static void MoveForwardUpperCase()
+        private void MoveForwardUpperCase()
         {
             while (col < text[row].Length && char.IsLetter(text[row][col]))
             {
@@ -274,7 +283,7 @@
             }
         }
 
-        private static void MoveBackwards()
+        private void MoveBackwards()
         {
             col--;
             if (col >= text[row].Length)
@@ -294,13 +303,13 @@
             col++;
         }
 
-        private static void HandleSpecialKeys(ConsoleKeyInfo ch)
+        private void HandleSpecialKeys(ConsoleKeyInfo ch)
         {
             if (ch.KeyChar.ToString() == "$")
             {
                 if (Drawer.lineNumbers)
                 {
-                    col = text[row].Length > Console.WindowWidth ? text[row].Length + Drawer.rowIndex.Length : text[row].Length;
+                    col = text[row].Length > Drawer.windowWidth ? text[row].Length + Drawer.rowIndex.Length : text[row].Length;
                 }
 
                 else
@@ -320,7 +329,7 @@
             }
         }
 
-        private static void MoveTo(ConsoleKey ch, int number)
+        public void MoveTo(ConsoleKey ch, int number)
         {
             if (ch == ConsoleKey.J)
             {
@@ -343,7 +352,7 @@
             }
         }
 
-        private static void Move(ConsoleKey ch, int num)
+        public void Move(ConsoleKey ch, int num)
         {
             for (int i = 0; i < num; i++)
             {
@@ -351,7 +360,7 @@
             }
         }
 
-        private static void HandleKeys(ConsoleKey ch)
+        private void HandleKeys(ConsoleKey ch)
         {
             if (ch == ConsoleKey.Home)
             {
@@ -360,7 +369,7 @@
 
             if (ch == ConsoleKey.End)
             {
-                if (text[row].Length > Console.WindowWidth)
+                if (text[row].Length > Drawer.windowWidth)
                 {
                     col = Drawer.lineNumbers ? text[row].Length + Drawer.rowIndex.Length : text[row].Length;
                 }
@@ -382,12 +391,12 @@
             }
         }
 
-        private static void HandlePageScroll(ConsoleKeyInfo ch)
+        private void HandlePageScroll(ConsoleKeyInfo ch)
         {
             if (ch.Key == ConsoleKey.PageDown || ((ch.Modifiers & ConsoleModifiers.Control) != 0 && ch.Key == ConsoleKey.D))
             {
-                row = Console.WindowHeight + offsetRow - 1;
-                int end = row + Console.WindowHeight;
+                row = Drawer.windowHeight + offsetRow - 1;
+                int end = row + Drawer.windowHeight;
                 for (int i = row; i < end && i < text.Count - 1; i++)
                 {
                     HandleArrows(ConsoleKey.DownArrow);
@@ -397,7 +406,7 @@
             if (ch.Key == ConsoleKey.PageUp || ((ch.Modifiers & ConsoleModifiers.Control) != 0 && ch.Key == ConsoleKey.U))
             {
                 row = offsetRow;
-                int end = row - Console.WindowHeight;
+                int end = row - Drawer.windowHeight;
                 for (int i = row; i > end && i > 0; i--)
                 {
                     HandleArrows(ConsoleKey.UpArrow);
@@ -405,7 +414,7 @@
             }
         }
 
-        private static void HandleArrows(ConsoleKey ch)
+        private void HandleArrows(ConsoleKey ch)
         {
             if (ch == ConsoleKey.UpArrow && row > 0)
             {
@@ -417,7 +426,7 @@
                 HandleDownArrow();
             }
 
-            if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Console.WindowWidth && col < text[row].Length + Drawer.rowIndex.Length - 1)))
+            if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Drawer.windowWidth && col < text[row].Length + Drawer.rowIndex.Length - 1)))
             {
                 HandleRightArrow();
             }
@@ -429,7 +438,7 @@
             }
         }
 
-        private static void HandleUpArrow()
+        private void HandleUpArrow()
         {
             if (col > prevCol)
             {
@@ -438,7 +447,7 @@
 
             if (col >= text[row - 1].Length)
             {
-                col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row - 1].Length);
+                col = Math.Min(Drawer.windowWidth + offsetCol - 1, text[row - 1].Length);
             }
 
             else if (text[row - 1].Length > text[row].Length)
@@ -450,11 +459,11 @@
             
             if (Drawer.relativeLines)
             {
-                Drawer.DrawRelativeIndexes();
+                Drawer.DrawRelativeIndexes(this);
             }
         }
 
-        private static void HandleDownArrow()
+        private void HandleDownArrow()
         {
             if (col > prevCol)
             {
@@ -463,7 +472,7 @@
 
             if (col >= text[row + 1].Length)
             {
-                col = Math.Min(Console.WindowWidth + offsetCol - 1, text[row + 1].Length);
+                col = Math.Min(Drawer.windowWidth + offsetCol - 1, text[row + 1].Length);
             }
 
             else if (text[row + 1].Length > text[row].Length)
@@ -475,11 +484,11 @@
 
             if (Drawer.relativeLines)
             {
-                Drawer.DrawRelativeIndexes();
+                Drawer.DrawRelativeIndexes(this);
             }
         }
 
-        private static void HandleRightArrow()
+        private void HandleRightArrow()
         {
             col++;
             if (col > text[row].Length && !Drawer.lineNumbers)

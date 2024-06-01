@@ -2,18 +2,30 @@
 
 namespace TextEditor
 {
-    static class Drawer
+    public class Drawer
     {
         const string ESC = "\x1b[";
-        public static string rowIndex = "";
-        public static bool shouldRefresh = false;
-        public static int windowWidth = Console.WindowWidth;
-        public static bool lineNumbers = false;
-        public static bool relativeLines = false;
-        public static StringBuilder text = new StringBuilder();
-        public static StringBuilder commandMode = new StringBuilder();
+        public string rowIndex;
+        public bool shouldRefresh;
+        public int windowWidth;
+        public int windowHeight;
+        public bool lineNumbers;
+        public bool relativeLines;
+        public StringBuilder text;
+        public StringBuilder commandMode;
 
-        public static void RefreshScreen()
+        public Drawer(bool lineNumbers, bool relativeLines)
+        {
+            this.lineNumbers = lineNumbers;
+            this.relativeLines = relativeLines;
+            rowIndex = "";
+            shouldRefresh = false;
+            text = new StringBuilder();
+            commandMode = new StringBuilder();
+        }
+
+
+        public void RefreshScreen(Navigator navigator)
         {
             if (shouldRefresh)
             {
@@ -21,39 +33,39 @@ namespace TextEditor
                 Console.SetCursorPosition(0, 0);
                 ClearScreen(Console.WindowHeight - 1);
                 Console.SetCursorPosition(0, 0);
-                DrawContent();
+                DrawContent(navigator);
                 Console.Write($"{ESC}?25h");
                 shouldRefresh = false;
             }
 
-            DrawCursor();
+            DrawCursor(navigator);
         }
 
-        public static void DrawContent()
+        public void DrawContent(Navigator navigator)
         {
-            int len = Math.Min(Console.WindowHeight, Navigator.text.Count);
+            int len = Math.Min(Console.WindowHeight, navigator.text.Count);
             text = new StringBuilder();
             for (int i = 0; i < len; i++)
             {
-                int rowIndex = i + Navigator.offsetRow;
-                DrawRow(rowIndex);
+                int rowIndex = i + navigator.offsetRow;
+                DrawRow(rowIndex, navigator);
             }
 
             if (lineNumbers && relativeLines)
             {
-                DrawRelativeIndexes();
+                DrawRelativeIndexes(navigator);
             }
 
             Console.SetCursorPosition(0, 0);
             Console.Write(text);
         }
 
-        private static void DrawRow(int index)
+        private void DrawRow(int index, Navigator navigator)
         {
             rowIndex = (index + 1) + " ";
-            DrawRowIndex();
+            DrawRowIndex(navigator);
 
-            int lenToDraw = Navigator.text[index].Length - Navigator.offsetCol;
+            int lenToDraw = navigator.text[index].Length - navigator.offsetCol;
 
             if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
             {
@@ -65,10 +77,10 @@ namespace TextEditor
                 lenToDraw = Console.WindowWidth;
             }
 
-            AppendLine(index, lenToDraw);
+            AppendLine(index, lenToDraw, navigator);
         }
 
-        private static void AppendLine(int index, int length)
+        private void AppendLine(int index, int length, Navigator navigator)
         {
             if (relativeLines)
             {
@@ -77,71 +89,52 @@ namespace TextEditor
 
             if (length > 0)
             {
-                text.Append(Navigator.text[index][Navigator.offsetCol..(length + Navigator.offsetCol)]);
+                text.Append(navigator.text[index][navigator.offsetCol..(length + navigator.offsetCol)]);
             }
 
-            if (index < Console.WindowHeight + Navigator.offsetRow - 1)
+            if (index < Console.WindowHeight + navigator.offsetRow - 1)
             {
                 text.Append("\r\n");
             }
         }
 
-        private static void DrawRowIndex()
+        private void DrawRowIndex(Navigator navigator)
         {
             if (lineNumbers && !relativeLines)
             {
-                int lastNumber = Console.WindowHeight + Navigator.offsetRow;
-                if (lastNumber < 100)
-                {
-                    text.Append($"{ESC}32m{rowIndex,3}{ESC}0m");
-                }
-
-                else if (lastNumber >= 100 && lastNumber < 1000)
-                {
-                    text.Append($"{ESC}32m{rowIndex,4}{ESC}0m").Append($"{ESC}1D");
-                }
+                int lastNumber = Console.WindowHeight + navigator.offsetRow;
+                text = lastNumber < 100 ? text.Append($"{ESC}32m{rowIndex,3}{ESC}0m") : text.Append($"{ESC}32m{rowIndex,4}{ESC}0m").Append($"{ESC}1D");
             }
         }
 
-        public static void DrawRelativeIndexes()
+        public void DrawRelativeIndexes(Navigator navigator)
         {
             text.Append($"{ESC}0;0H");
-            int num = Navigator.row - Navigator.offsetRow;
+            int num = navigator.row - navigator.offsetRow;
             int i;
-            for (i = Navigator.offsetRow; i < Console.WindowHeight + Navigator.offsetRow - 1; i++)
+            for (i = navigator.offsetRow; i < Console.WindowHeight + navigator.offsetRow - 1; i++)
             {
-                text.Append($"{ESC}0G");
-                DrawIndex(i, ref num);
+                DrawRelativeIndex(i, ref num, navigator);
                 text.Append("\r\n");
             }
 
-            DrawIndex(i, ref num);
-            text.Append($"{ESC}0G");
+            DrawRelativeIndex(i, ref num, navigator);
             text.Append($"{ESC}0m");
         }
 
-        private static void DrawIndex(int index, ref int num)
+        private void DrawRelativeIndex(int index, ref int num, Navigator navigator)
         {
             text.Append($"{ESC}32m");
-            num = index > Navigator.row ? num + 1 : num;
-            string idx = Navigator.row == index ? Navigator.row + " " : num + " ";
+            num = index > navigator.row ? num + 1 : num;
+            string idx = navigator.row == index ? navigator.row + " " : num + " ";
 
-            if (Navigator.row == index)
+            if (navigator.row == index)
             {
                 text.Append($"{ESC}31m");
             }
 
-            if (Navigator.row < 100)
-            {
-                text.Append($"{idx,3}");
-            }
-
-            else if (Navigator.row >= 100 && Navigator.row < 1000)
-            {
-                text.Append($"{idx,4}");
-            }
-
-            num = index < Navigator.row ? num - 1 : num;
+            text = navigator.row < 100 ? text.Append($"{idx,3}") : text.Append($"{idx,4}");
+            num = index < navigator.row ? num - 1 : num;
         }
 
         public static void ClearScreen(int length)
@@ -154,53 +147,55 @@ namespace TextEditor
             Console.Write(new string(' ', Console.WindowWidth));
         }
 
-        private static void DrawCursor()
+        private void DrawCursor(Navigator navigator)
         {
             if (lineNumbers)
             {
-                if (Console.WindowHeight + Navigator.offsetRow > 100)
+                if (Console.WindowHeight + navigator.offsetRow > 100)
                 {
-                    Console.SetCursorPosition(Math.Min(Navigator.col - Navigator.offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1), Math.Max(Navigator.row - Navigator.offsetRow, 0));
+                    Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1),
+                    Math.Max(navigator.row - navigator.offsetRow, 0));
                 }
 
                 else
                 {
-                    Console.SetCursorPosition(Math.Min(Navigator.col - Navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1), Math.Max(Navigator.row - Navigator.offsetRow, 0));
+                    Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1),
+                    Math.Max(navigator.row - navigator.offsetRow, 0));
                 }
                 return;
             }
 
-            Console.SetCursorPosition(Math.Min(Navigator.col - Navigator.offsetCol, Console.WindowWidth - 1), Math.Max(Navigator.row - Navigator.offsetRow, 0));
+            Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol, Console.WindowWidth - 1), Math.Max(navigator.row - navigator.offsetRow, 0));
         }
 
-        public static void Scroll()
+        public void Scroll(Navigator navigator)
         {
-            if (Navigator.row >= Console.WindowHeight + Navigator.offsetRow)
+            if (navigator.row >= Console.WindowHeight + navigator.offsetRow)
             {
-                Navigator.offsetRow = Navigator.row - Console.WindowHeight + 1;
+                navigator.offsetRow = navigator.row - Console.WindowHeight + 1;
                 shouldRefresh = true;
             }
 
-            else if (Navigator.row < Navigator.offsetRow)
+            else if (navigator.row < navigator.offsetRow)
             {
-                Navigator.offsetRow = Navigator.row;
+                navigator.offsetRow = navigator.row;
                 shouldRefresh = true;
             }
 
-            if (Navigator.col >= Console.WindowWidth + Navigator.offsetCol)
+            if (navigator.col >= Console.WindowWidth + navigator.offsetCol)
             {
-                Navigator.offsetCol = Navigator.col - Console.WindowWidth + 1;
+                navigator.offsetCol = navigator.col - Console.WindowWidth + 1;
                 shouldRefresh = true;
             }
 
-            else if (Navigator.col < Navigator.offsetCol)
+            else if (navigator.col < navigator.offsetCol)
             {
-                Navigator.offsetCol = Navigator.col;
+                navigator.offsetCol = navigator.col;
                 shouldRefresh = true;
             }
         }
 
-        public static void RefreshText()
+        public void RefreshText(Navigator navigator)
         {
             if (windowWidth != Console.WindowWidth)
             {
@@ -208,7 +203,18 @@ namespace TextEditor
                 shouldRefresh = true;
             }
 
-            if (Navigator.insertMode)
+            if (windowHeight != Console.WindowHeight)
+            {
+                windowHeight = Console.WindowHeight;
+                shouldRefresh = true;
+            }
+
+            if (navigator.insertMode)
+            {
+                shouldRefresh = true;
+            }
+
+            if (relativeLines)
             {
                 shouldRefresh = true;
             }

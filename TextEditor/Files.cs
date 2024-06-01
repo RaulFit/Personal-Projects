@@ -141,7 +141,8 @@
 
         private static string[] FilterFiles()
         {
-            string[] caseInsensitiveFiles = files.Where(file => Finder.FuzzySearch(Finder.match, Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(file)))).ToArray();
+            string[] caseInsensitiveFiles = files.Where(file => Finder.FuzzySearch(Finder.match,
+            Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(file)))).ToArray();
 
             if (caseInsensitiveFiles.Length > 0)
             {
@@ -150,7 +151,8 @@
             }
 
             caseInsensitive = false;
-            return files.Where(file => Finder.FuzzySearch(Finder.match.ToLower(), Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(file)).ToLower())).ToArray();
+            return files.Where(file => Finder.FuzzySearch(Finder.match.ToLower(),
+            Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(file)).ToLower())).ToArray();
         }
     }
 }

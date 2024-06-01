@@ -52,12 +52,12 @@ namespace TextEditor
 
         private static void ReadText()
         {
-            Navigator.text = File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex))).ToList();
-            CommandMode.currentPath = Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex));
-            Drawer.lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
-            Drawer.relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
-            ResetSettings();
-            Navigator.RunNavigator();
+            CommandMode commandMode = new CommandMode(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
+            bool lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
+            bool relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
+            Drawer drawer = new Drawer(lineNumbers, relativeLines);
+            Navigator navigator = new Navigator(File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex))).ToList(), drawer, commandMode);
+            navigator.RunNavigator();
         }
 
         private static void SelectFile(ConsoleKeyInfo ch)
@@ -89,21 +89,11 @@ namespace TextEditor
         public static void ResetSettings()
         {
             finder = new StringBuilder();
-            Navigator.hasChanges = false;
-            Navigator.row = 0;
-            Navigator.offsetRow = 0;
-            Navigator.col = 0;
-            Navigator.offsetCol = 0;
-            Navigator.prevCol = 0;
-            Drawer.rowIndex = "";
-            Drawer.shouldRefresh = false;
-            Navigator.insertMode = false;
-            Drawer.windowWidth = Console.WindowWidth;
             match = "";
             startIndex = 0;
             endIndex = 0;
             currentIndex = 0;
-    }
+        }
 
         private static void DrawFinder()
         {

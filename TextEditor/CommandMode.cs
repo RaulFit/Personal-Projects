@@ -16,6 +16,7 @@ namespace TextEditor
 
         public void DrawCommandMode(Navigator navigator)
         {
+            commandMode = new StringBuilder();
             Console.SetCursorPosition(0, Console.WindowHeight - 3);
             Drawer.ClearScreen(2);
             Finder.PrintHorizontalBorder(Console.WindowWidth / 2 - 7, commandMode);
@@ -55,6 +56,12 @@ namespace TextEditor
             {
                 Console.SetCursorPosition(1, Console.WindowHeight - 2);
                 string? input = Console.ReadLine();
+
+                if (input == "e" || input == "exit")
+                {
+                    return;
+                }
+
                 if (!string.IsNullOrWhiteSpace(input))
                 {
                     string[] components = input.Split(" ");

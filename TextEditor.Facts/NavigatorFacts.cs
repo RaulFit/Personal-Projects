@@ -265,7 +265,7 @@ namespace TextEditor.Facts
             navigator.Drawer.windowHeight = 30;
             ConsoleKeyInfo pageDown = new ConsoleKeyInfo((char)ConsoleKey.PageDown, ConsoleKey.PageDown, false, false, false);
             navigator.HandleInput(pageDown);           
-            Assert.Equal(2 * navigator.Drawer.windowHeight - 1, navigator.row);
+            Assert.Equal(2 * navigator.Drawer.windowHeight - 2, navigator.row);
         }
 
         [Fact]
@@ -399,6 +399,172 @@ namespace TextEditor.Facts
             navigator.HandleInput(b);
             Assert.Equal(text[navigator.row].IndexOf('T'), navigator.col);
             Assert.Equal(0, navigator.row);
+        }
+
+        [Fact]
+        public void HandleInput_I_ShouldEnableInsertMode()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            navigator.HandleInput(ins);
+            Assert.True(navigator.insertMode);
+        }
+
+        [Fact]
+        public void HandleInput_ESC_ShouldDisableInsertMode()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo esc = new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false);
+            navigator.HandleInput(ins);
+            Assert.True(navigator.insertMode);
+            navigator.HandleInput(esc);
+            Assert.False(navigator.insertMode);
+        }
+
+        [Fact]
+        public void InsertMode_Text_FirstCol_ShouldInsertTextAtStartOfRow()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo T = new ConsoleKeyInfo('T', ConsoleKey.T, false, false, false);
+            ConsoleKeyInfo E = new ConsoleKeyInfo('E', ConsoleKey.E, false, false, false);
+            ConsoleKeyInfo S = new ConsoleKeyInfo('S', ConsoleKey.S, false, false, false);
+            navigator.HandleInput(ins);
+            Assert.Equal("namespace TextEditor", text[navigator.row]);
+            navigator.HandleInput(T);
+            navigator.HandleInput(E);
+            navigator.HandleInput(S);
+            navigator.HandleInput(T);
+            Assert.Equal("TESTnamespace TextEditor", text[navigator.row]);
+        }
+
+        [Fact]
+        public void InsertMode_Text_ShouldInsertTextAtCurrentCol()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo T = new ConsoleKeyInfo('T', ConsoleKey.T, false, false, false);
+            ConsoleKeyInfo E = new ConsoleKeyInfo('E', ConsoleKey.E, false, false, false);
+            ConsoleKeyInfo S = new ConsoleKeyInfo('S', ConsoleKey.S, false, false, false);
+            ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
+            navigator.HandleInput(ins);
+            Assert.Equal("namespace TextEditor", text[navigator.row]);
+            navigator.HandleInput(right);
+            navigator.HandleInput(right);
+            navigator.HandleInput(T);
+            navigator.HandleInput(E);
+            navigator.HandleInput(S);
+            navigator.HandleInput(T);
+            Assert.Equal("naTESTmespace TextEditor", text[navigator.row]);
+        }
+
+
+        [Fact]
+        public void InsertMode_Enter_FirstCol_ShouldCreateNewEmptyLineAndMoveDownOneRow()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo enter = new ConsoleKeyInfo((char)ConsoleKey.Enter, ConsoleKey.Enter, false, false, false);
+            navigator.HandleInput(ins);
+            navigator.HandleInput(enter);
+            Assert.Equal("", text[navigator.row - 1]);
+            Assert.Equal("namespace TextEditor", text[navigator.row]);
+        }
+
+        [Fact]
+        public void InsertMode_Enter_ShouldMoveRowContentFromSpecifiedPosToNextRow()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo enter = new ConsoleKeyInfo((char)ConsoleKey.Enter, ConsoleKey.Enter, false, false, false);
+            ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
+            navigator.HandleInput(ins);
+            navigator.HandleInput(right);
+            navigator.HandleInput(right);
+            navigator.HandleInput(enter);
+            Assert.Equal("na", text[navigator.row - 1]);
+            Assert.Equal("mespace TextEditor", text[navigator.row]);
+        }
+
+        [Fact]
+        public void InsertMode_Backspace_FirstCol_ShouldAppendRowToPreviousRowAndMoveColToPrevRowLength()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo backspace = new ConsoleKeyInfo((char)ConsoleKey.Backspace, ConsoleKey.Backspace, false, false, false);
+            ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
+            int prevLength = navigator.text[navigator.row].Length;
+            navigator.HandleInput(ins);
+            navigator.HandleInput(down);
+            navigator.HandleInput(backspace);
+            Assert.Equal("namespace TextEditor{", text[navigator.row]);
+            Assert.Equal(prevLength, navigator.col);
+        }
+
+        [Fact]
+        public void InsertMode_Backspace_ShouldRemoveCharFromCurrentCol()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo backspace = new ConsoleKeyInfo((char)ConsoleKey.Backspace, ConsoleKey.Backspace, false, false, false);
+            ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
+            navigator.HandleInput(ins);
+            navigator.HandleInput(right);
+            navigator.HandleInput(right);
+            navigator.HandleInput(backspace);
+            navigator.HandleInput(backspace);
+            Assert.Equal("mespace TextEditor", text[navigator.row]);
+            Assert.Equal(0, navigator.col);
+        }
+
+        [Fact]
+        public void InsertMode_DEL_LastCol_ShouldAppendNextRowToCurrentRow()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo del = new ConsoleKeyInfo((char)ConsoleKey.Delete, ConsoleKey.Delete, false, false, false);
+            navigator.col = navigator.text[navigator.row].Length;
+            navigator.HandleInput(ins);
+            navigator.HandleInput(del);
+            Assert.Equal("namespace TextEditor{", text[navigator.row]);
+        }
+
+        [Fact]
+        public void InsertMode_DEL_ShouldRemoveCharFromNextColButNotModifyColPosition()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo del = new ConsoleKeyInfo((char)ConsoleKey.Delete, ConsoleKey.Delete, false, false, false);
+            ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
+            navigator.HandleInput(ins);
+            navigator.HandleInput(right);
+            navigator.HandleInput(right);
+            int prevCol = navigator.col;
+            navigator.HandleInput(del);
+            navigator.HandleInput(del);
+            Assert.Equal("naspace TextEditor", text[navigator.row]);
+            Assert.Equal(prevCol, navigator.col);
         }
     }
 }

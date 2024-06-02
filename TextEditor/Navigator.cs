@@ -60,72 +60,108 @@
                 HandlePageScroll(ch);
                 MoveWord(ch);
                 MoveChar(ch, 1);
+                return;
             }
 
-            else
-            {
-                ToggleInsertMode(ch);
-                HandleInsert(ch);
-                HandleArrows(ch.Key);
-                HandleKeys(ch.Key);
-                HandlePageScroll(ch);
-            }
+            ToggleInsertMode(ch);
+            HandleInsert(ch);
+            HandleArrows(ch.Key);
+            HandleKeys(ch.Key);
+            HandlePageScroll(ch);
         }
 
         public void HandleInsert(ConsoleKeyInfo ch)
         {
-            if (ch.KeyChar.ToString() == ":")
-            {
-                CommandMode.DrawCommandMode(this);
-                return;
-            }
-
             if (ch.Key == ConsoleKey.Enter)
             {
-                if (col + offsetCol == 0)
-                {
-                    text.Insert(row, "");
-                }
-
-                else
-                {
-                    text.Insert(row + 1, text[row][(col + offsetCol)..]);
-                    text[row] = text[row][0..(col + offsetCol)];
-                }
-
-                HandleArrows(ConsoleKey.DownArrow);
-                hasChanges = true;
+                HandleEnter();
+                return;
             }
 
             if (ch.Key == ConsoleKey.Backspace)
             {
-                if (col + offsetCol == 0)
-                {
-                    if (row > 0)
-                    {
-                        HandleArrows(ConsoleKey.UpArrow);
-                        text[row] = text[row].Insert(text[row].Length, text[row + 1]);
-                        text.RemoveAt(row + 1);
-                        if (Math.Min(Drawer.windowHeight, text.Count) + offsetRow >= text.Count)
-                        {
-                            offsetRow--;
-                        }
-                        hasChanges = true;
-                    }
-
-                    return;
-                }
-
-                text[row] = text[row].Remove(col + offsetCol - 1, 1);
-                HandleArrows(ConsoleKey.LeftArrow);
-                hasChanges = true;
+                HandleBackspace();
+                return;
             }
 
-            else if (!char.IsControl(ch.KeyChar))
+            if (ch.Key == ConsoleKey.Delete)
             {
-                text[row] = text[row].Insert(col + offsetCol, ch.KeyChar.ToString());
+                HandleDelete();
+                return;
+            }
+
+            if (ch.Key == ConsoleKey.RightArrow || ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
+            {
+                return;
+            }
+
+            if (!char.IsControl(ch.KeyChar))
+            {
+                text[row] = text[row].Insert(col, ch.KeyChar.ToString());
                 HandleArrows(ConsoleKey.RightArrow);
-                hasChanges = true;
+            }
+
+            hasChanges = true;
+        }
+
+        private void HandleEnter()
+        {
+            if (col == 0)
+            {
+                text.Insert(row, "");
+            }
+
+            else
+            {
+                text.Insert(row + 1, text[row][col..]);
+                text[row] = text[row][0..col];
+            }
+
+            HandleArrows(ConsoleKey.DownArrow);
+        }
+
+        private void HandleBackspace()
+        {
+            if (col == 0)
+            {
+                if (row > 0)
+                {
+                    HandleArrows(ConsoleKey.UpArrow);
+                    col = text[row].Length;
+                    text[row] = text[row].Insert(text[row].Length, text[row + 1]);
+                    text.RemoveAt(row + 1);
+                    if (text.Count + offsetRow > text.Count)
+                    {
+                        offsetRow--;
+                    }
+                }
+            }
+
+            else
+            {
+                text[row] = text[row].Remove(col - 1, 1);
+                HandleArrows(ConsoleKey.LeftArrow);
+            }
+        }
+
+        private void HandleDelete()
+        {
+            if (col == text[row].Length)
+            {
+                if (row < text.Count - 1)
+                {
+                    text[row] = text[row].Insert(text[row].Length, text[row + 1]);
+                    text.RemoveAt(row + 1);
+                    if (text.Count + offsetRow > text.Count)
+                    {
+                        offsetRow--;
+                    }
+                }
+            }
+
+            else
+            {
+                text[row] = text[row].Remove(col, 1);
             }
         }
 
@@ -305,6 +341,11 @@
 
         private void HandleSpecialKeys(ConsoleKeyInfo ch)
         {
+            if (ch.KeyChar.ToString() == ":")
+            {
+                CommandMode.DrawCommandMode(this);
+            }
+
             if (ch.KeyChar.ToString() == "$")
             {
                 if (Drawer.lineNumbers)
@@ -395,7 +436,7 @@
         {
             if (ch.Key == ConsoleKey.PageDown || ((ch.Modifiers & ConsoleModifiers.Control) != 0 && ch.Key == ConsoleKey.D))
             {
-                row = Drawer.windowHeight + offsetRow - 1;
+                row = Drawer.windowHeight + offsetRow - 2;
                 int end = row + Drawer.windowHeight;
                 for (int i = row; i < end && i < text.Count - 1; i++)
                 {

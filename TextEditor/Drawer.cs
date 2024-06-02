@@ -12,7 +12,6 @@ namespace TextEditor
         public bool lineNumbers;
         public bool relativeLines;
         public StringBuilder text;
-        public StringBuilder commandMode;
 
         public Drawer(bool lineNumbers, bool relativeLines)
         {
@@ -21,9 +20,7 @@ namespace TextEditor
             rowIndex = "";
             shouldRefresh = false;
             text = new StringBuilder();
-            commandMode = new StringBuilder();
         }
-
 
         public void RefreshScreen(Navigator navigator)
         {
@@ -38,12 +35,13 @@ namespace TextEditor
                 shouldRefresh = false;
             }
 
+            DrawStatusBar(navigator);
             DrawCursor(navigator);
         }
 
         public void DrawContent(Navigator navigator)
         {
-            int len = Math.Min(Console.WindowHeight, navigator.text.Count);
+            int len = Math.Min(Console.WindowHeight - 1, navigator.text.Count);
             text = new StringBuilder();
             for (int i = 0; i < len; i++)
             {
@@ -60,6 +58,27 @@ namespace TextEditor
             Console.Write(text);
         }
 
+        public void DrawStatusBar(Navigator navigator)
+        {
+            Console.SetCursorPosition(0, Console.WindowHeight - 1);
+            Console.Write($"{ESC}46m");
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.Write($"{ESC}0G");
+            if (navigator.insertMode)
+            {
+                Console.Write("INS");
+            }
+            else
+            {
+                Console.Write("NOR");
+            }
+            Console.Write(new string(' ', Console.WindowWidth / 2 - 3));
+            Console.Write(Finder.fileName);
+            Console.Write($"{ESC}{Console.WindowWidth - 6}G");
+            Console.Write($"{navigator.row}:{navigator.col}");
+            Console.Write($"{ESC}0m");
+        }
+
         private void DrawRow(int index, Navigator navigator)
         {
             rowIndex = (index + 1) + " ";
@@ -67,9 +86,9 @@ namespace TextEditor
 
             int lenToDraw = navigator.text[index].Length - navigator.offsetCol;
 
-            if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
+            if (lenToDraw >= Console.WindowWidth - rowIndex.Length && lineNumbers)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length;
+                lenToDraw = Console.WindowWidth - rowIndex.Length - 1;
             }
 
             else if (lenToDraw >= Console.WindowWidth)
@@ -118,7 +137,6 @@ namespace TextEditor
                 text.Append("\r\n");
             }
 
-            DrawRelativeIndex(i, ref num, navigator);
             text.Append($"{ESC}0m");
         }
 
@@ -154,25 +172,26 @@ namespace TextEditor
                 if (Console.WindowHeight + navigator.offsetRow > 100)
                 {
                     Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1),
-                    Math.Max(navigator.row - navigator.offsetRow, 0));
+                    Math.Min(navigator.row - navigator.offsetRow, Console.WindowHeight - 2));
                 }
 
                 else
                 {
                     Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1),
-                    Math.Max(navigator.row - navigator.offsetRow, 0));
+                    Math.Min(navigator.row - navigator.offsetRow, Console.WindowHeight - 2));
                 }
                 return;
             }
 
-            Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol, Console.WindowWidth - 1), Math.Max(navigator.row - navigator.offsetRow, 0));
+            Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol, Console.WindowWidth - 1),
+            Math.Min(navigator.row - navigator.offsetRow, Console.WindowHeight - 2));
         }
 
         public void Scroll(Navigator navigator)
         {
-            if (navigator.row >= Console.WindowHeight + navigator.offsetRow)
+            if (navigator.row >= Console.WindowHeight + navigator.offsetRow - 1)
             {
-                navigator.offsetRow = navigator.row - Console.WindowHeight + 1;
+                navigator.offsetRow = navigator.row - Console.WindowHeight + 2;
                 shouldRefresh = true;
             }
 

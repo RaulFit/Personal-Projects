@@ -11,6 +11,7 @@ namespace TextEditor
         public static int endIndex = 0;
         public static int currentIndex = 0;
         public static StringBuilder finder = new StringBuilder();
+        public static string fileName = "";
 
         public static void OpenFinder()
         {
@@ -52,6 +53,7 @@ namespace TextEditor
 
         private static void ReadText()
         {
+            fileName = Path.GetFileNameWithoutExtension(Files.filteredFiles.ElementAt(currentIndex));
             CommandMode commandMode = new CommandMode(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
             bool lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
             bool relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
@@ -89,6 +91,7 @@ namespace TextEditor
         public static void ResetSettings()
         {
             finder = new StringBuilder();
+            fileName = "";
             match = "";
             startIndex = 0;
             endIndex = 0;

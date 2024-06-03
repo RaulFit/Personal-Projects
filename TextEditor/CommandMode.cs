@@ -17,19 +17,19 @@ namespace TextEditor
         public void DrawCommandMode(Navigator navigator)
         {
             commandMode = new StringBuilder();
-            Console.SetCursorPosition(0, Console.WindowHeight - 3);
+            Console.SetCursorPosition(0, Console.WindowHeight - 4);
             Drawer.ClearScreen(2);
             Finder.PrintHorizontalBorder(Console.WindowWidth / 2 - 7, commandMode);
             commandMode.Append("Command mode");
             Finder.PrintHorizontalBorder(Console.WindowWidth / 2 - 7, commandMode);
+            commandMode.Append($"{ESC}{Console.WindowHeight - 2};{0}H");
+            Finder.PrintBorder(true, commandMode);
+            commandMode.Append($"{ESC}{Console.WindowHeight - 2};{Console.WindowWidth - 1}H");
+            Finder.PrintBorder(true, commandMode);
             commandMode.Append($"{ESC}{Console.WindowHeight - 1};{0}H");
-            Finder.PrintBorder(true, commandMode);
-            commandMode.Append($"{ESC}{Console.WindowHeight - 1};{Console.WindowWidth - 1}H");
-            Finder.PrintBorder(true, commandMode);
-            commandMode.Append($"{ESC}{Console.WindowHeight};{0}H");
             Finder.PrintHorizontalBorder(Console.WindowWidth - 1, commandMode);
             DrawCorners();
-            Console.SetCursorPosition(0, Console.WindowHeight - 3);
+            Console.SetCursorPosition(0, Console.WindowHeight - 4);
             Console.Write(commandMode);
             EnterCommand(navigator);
         }
@@ -38,13 +38,13 @@ namespace TextEditor
         {
             commandMode.Append("\x1b" + "(0");
             commandMode.Append(ESC + "31m");
-            commandMode.Append($"{ESC}{Console.WindowHeight - 2};{0}H");
+            commandMode.Append($"{ESC}{Console.WindowHeight - 3};{0}H");
             commandMode.Append("l");
-            commandMode.Append($"{ESC}{Console.WindowHeight};{0}H");
+            commandMode.Append($"{ESC}{Console.WindowHeight - 1};{0}H");
             commandMode.Append("m");
-            commandMode.Append($"{ESC}{Console.WindowHeight - 2};{Console.WindowWidth - 1}H");
+            commandMode.Append($"{ESC}{Console.WindowHeight - 3};{Console.WindowWidth - 1}H");
             commandMode.Append("k");
-            commandMode.Append($"{ESC}{Console.WindowHeight};{Console.WindowWidth - 1}H");
+            commandMode.Append($"{ESC}{Console.WindowHeight - 1};{Console.WindowWidth - 1}H");
             commandMode.Append("j");
             commandMode.Append(ESC + "0m");
             commandMode.Append("\x1b" + "(B");
@@ -54,13 +54,8 @@ namespace TextEditor
         {
             while (true)
             {
-                Console.SetCursorPosition(1, Console.WindowHeight - 2);
+                Console.SetCursorPosition(1, Console.WindowHeight - 3);
                 string? input = Console.ReadLine();
-
-                if (input == "e" || input == "exit")
-                {
-                    return;
-                }
 
                 if (!string.IsNullOrWhiteSpace(input))
                 {
@@ -71,12 +66,21 @@ namespace TextEditor
                     {
                         string path = components.Length > 1 ? components[1] : "";
                         WriteToFile(path, navigator);
+                        if (!navigator.hasChanges)
+                        {
+                            return;
+                        }
+                    }
+
+                    if (command.ToLower() == "q!" || command.ToLower() == "quit!")
+                    {
+                        Environment.Exit(1);
                     }
 
                     QuitApp(command, navigator);
                 }
 
-                Console.SetCursorPosition(1, Console.WindowHeight - 2);
+                Console.SetCursorPosition(1, Console.WindowHeight - 3);
                 Console.Write(new string(' ', Console.WindowWidth - 10));
             }
         }
@@ -85,6 +89,18 @@ namespace TextEditor
         {
             if (string.IsNullOrEmpty(path))
             {
+                if (string.IsNullOrEmpty(Finder.fileName))
+                {
+                    if (navigator.hasChanges)
+                    {
+                        Console.SetCursorPosition(1, Console.CursorTop - 1);
+                        Console.Write("You need to specify a path! Press any key to continue");
+                        var key = Console.ReadKey(true);
+                    }
+
+                    return;
+                }
+
                 File.WriteAllLines(CurrentPath, navigator.text);
                 navigator.hasChanges = false;
             }
@@ -98,11 +114,6 @@ namespace TextEditor
 
         private void QuitApp(string command, Navigator navigator)
         {
-            if (command.ToLower() == "q!" || command.ToLower() == "quit!")
-            {
-                Environment.Exit(1);
-            }
-
             if (command.ToLower() == "q" || command.ToLower() == "quit")
             {
                 if (navigator.hasChanges)

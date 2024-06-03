@@ -66,12 +66,13 @@ namespace TextEditor
             Console.Write($"{ESC}0G");
             if (navigator.insertMode)
             {
-                Console.Write("INS");
+                Console.Write($"{ESC}31mINS{ESC}0m");
             }
             else
             {
-                Console.Write("NOR");
+                Console.Write($"{ESC}31mNOR{ESC}0m");
             }
+            Console.Write($"{ESC}46m");
             Console.Write(new string(' ', Console.WindowWidth / 2 - 3));
             Console.Write(Finder.fileName);
             Console.Write($"{ESC}{Console.WindowWidth - 6}G");
@@ -86,9 +87,9 @@ namespace TextEditor
 
             int lenToDraw = navigator.text[index].Length - navigator.offsetCol;
 
-            if (lenToDraw >= Console.WindowWidth - rowIndex.Length && lineNumbers)
+            if (lenToDraw > Console.WindowWidth - rowIndex.Length && lineNumbers)
             {
-                lenToDraw = Console.WindowWidth - rowIndex.Length - 1;
+                lenToDraw = Console.WindowWidth - rowIndex.Length;
             }
 
             else if (lenToDraw >= Console.WindowWidth)
@@ -122,7 +123,12 @@ namespace TextEditor
             if (lineNumbers && !relativeLines)
             {
                 int lastNumber = Console.WindowHeight + navigator.offsetRow;
-                text = lastNumber < 100 ? text.Append($"{ESC}32m{rowIndex,3}{ESC}0m") : text.Append($"{ESC}32m{rowIndex,4}{ESC}0m").Append($"{ESC}1D");
+                rowIndex = lastNumber < 100 ? rowIndex.PadLeft(3) : rowIndex.PadLeft(4);
+                text.Append($"{ESC}32m{rowIndex}{ESC}0m");
+                if (lastNumber >= 100 && lastNumber < 1000)
+                {
+                    text.Append($"{ESC}1D");
+                }
             }
         }
 
@@ -169,17 +175,16 @@ namespace TextEditor
         {
             if (lineNumbers)
             {
-                if (Console.WindowHeight + navigator.offsetRow > 100)
+                int lastNumber = Console.WindowHeight + navigator.offsetRow;
+                if (lastNumber >= 100)
                 {
                     Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1),
                     Math.Min(navigator.row - navigator.offsetRow, Console.WindowHeight - 2));
+                    return;
                 }
 
-                else
-                {
-                    Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1),
-                    Math.Min(navigator.row - navigator.offsetRow, Console.WindowHeight - 2));
-                }
+                Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1),
+                Math.Min(navigator.row - navigator.offsetRow, Console.WindowHeight - 2));
                 return;
             }
 

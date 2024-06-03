@@ -344,13 +344,15 @@
             if (ch.KeyChar.ToString() == ":")
             {
                 CommandMode.DrawCommandMode(this);
+                Drawer.shouldRefresh = true;
+                Drawer.RefreshScreen(this);
             }
 
             if (ch.KeyChar.ToString() == "$")
             {
                 if (Drawer.lineNumbers)
                 {
-                    col = text[row].Length > Drawer.windowWidth ? text[row].Length + Drawer.rowIndex.Length : text[row].Length;
+                    col = text[row].Length;
                 }
 
                 else
@@ -367,6 +369,21 @@
             if (ch.KeyChar.ToString() == "^")
             {
                 HandleKeys(ConsoleKey.Home);
+            }
+
+            if (ch.KeyChar.ToString() == "o")
+            {
+                HandleArrows(ConsoleKey.DownArrow);
+                text.Insert(row, "");
+                hasChanges = true;
+                Drawer.shouldRefresh = true;
+            }
+
+            if (ch.KeyChar.ToString() == "O")
+            {
+                text.Insert(row, "");
+                hasChanges = true;
+                Drawer.shouldRefresh = true;
             }
         }
 
@@ -410,20 +427,19 @@
 
             if (ch == ConsoleKey.End)
             {
-                if (text[row].Length > Drawer.windowWidth)
-                {
-                    col = Drawer.lineNumbers ? text[row].Length + Drawer.rowIndex.Length : text[row].Length;
-                }
-
-                else
-                {
-                    col = text[row].Length;
-                }
+                col = text[row].Length;
             }
 
             if (ch == ConsoleKey.Spacebar && !insertMode)
             {
+
                 var c = Console.ReadKey();
+
+                if (hasChanges)
+                {
+                    CommandMode.DrawCommandMode(this);
+                }
+
                 if (c.Key == ConsoleKey.F)
                 {
                     Finder.ResetSettings();
@@ -467,7 +483,7 @@
                 HandleDownArrow();
             }
 
-            if (ch == ConsoleKey.RightArrow && (col < text[row].Length || (text[row].Length > Drawer.windowWidth && col < text[row].Length + Drawer.rowIndex.Length - 1)))
+            if (ch == ConsoleKey.RightArrow && col < text[row].Length)
             {
                 HandleRightArrow();
             }
@@ -532,7 +548,7 @@
         private void HandleRightArrow()
         {
             col++;
-            if (col > text[row].Length && !Drawer.lineNumbers)
+            if (col > text[row].Length)
             {
                 col = text[row].Length;
             }

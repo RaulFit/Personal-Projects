@@ -53,7 +53,7 @@ namespace TextEditor
 
         private static void ReadText()
         {
-            fileName = Path.GetFileNameWithoutExtension(Files.filteredFiles.ElementAt(currentIndex));
+            fileName = Path.GetFileName(Files.filteredFiles.ElementAt(currentIndex));
             CommandMode commandMode = new CommandMode(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
             bool lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
             bool relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));

@@ -1,4 +1,4 @@
-      namespaceTextEditor
+
 {
     class TextEditor
     {
@@ -75,11 +75,7 @@
 
                 if (relativeLines)
                 {
-                    lenToDraw = Console.WindowWidth - row.ToString().Length - 2;
-                }
-            }
-
-            else if (lenToDraw >= Console.WindowWidth)
+                    lenToDraw = Console.WindowWidth - row.ToStrin            else if (lenToDraw >= Console.WindowWidth)
             {
                 lenToDraw = Console.WindowWidth;
             }

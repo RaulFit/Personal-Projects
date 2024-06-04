@@ -1,4 +1,4 @@
-﻿namespace TextEditor
+namespace TextEditor
 {
     static class Files
     {

@@ -1,4 +1,4 @@
-
+sa
 {
     class TextEditor
     {
@@ -50,7 +50,7 @@
         {
             int len = Math.Min(Console.WindowHeight, text.Length);
 
-            for (int i = 0; i < len; i++)
+            for (int i = 0; i < len; 
             {
                 int rowIndex = i + offsetRow;
                 DrawRow(rowIndex);

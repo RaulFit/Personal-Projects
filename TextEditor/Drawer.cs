@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 namespace TextEditor
 {
@@ -61,18 +61,24 @@ namespace TextEditor
         public void DrawStatusBar(Navigator navigator)
         {
             Console.SetCursorPosition(0, Console.WindowHeight - 1);
-            Console.Write($"{ESC}46m");
+            if (navigator.insertMode)
+            {
+                Console.Write($"{ESC}44m");
+            }
+            else
+            {
+                Console.Write($"{ESC}46m");
+            }
             Console.Write(new string(' ', Console.WindowWidth));
             Console.Write($"{ESC}0G");
             if (navigator.insertMode)
             {
-                Console.Write($"{ESC}31mINS{ESC}0m");
+                Console.Write("INS");
             }
             else
             {
-                Console.Write($"{ESC}31mNOR{ESC}0m");
+                Console.Write("NOR");
             }
-            Console.Write($"{ESC}46m");
             Console.Write(new string(' ', Console.WindowWidth / 2 - 3));
             Console.Write(Finder.fileName);
             Console.Write($"{ESC}{Console.WindowWidth - 6}G");

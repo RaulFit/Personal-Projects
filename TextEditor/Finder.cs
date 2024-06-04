@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+using System.Configuration;
 using System.Text;
 
 namespace TextEditor
@@ -13,7 +13,7 @@ namespace TextEditor
         public static StringBuilder finder = new StringBuilder();
         public static string fileName = "";
 
-        public static void OpenFinder()
+        public static void OpenFinder(Navigator navigator)
         {
             Console.Clear();
             DrawFinder();
@@ -25,6 +25,11 @@ namespace TextEditor
                 if (ch.Key == ConsoleKey.Enter)
                 {
                     ReadText();
+                }
+
+                if (ch.Key == ConsoleKey.Escape)
+                {
+                    navigator.RunNavigator();
                 }
 
                 if (ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.RightArrow)

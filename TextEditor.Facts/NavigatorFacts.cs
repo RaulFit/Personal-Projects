@@ -402,7 +402,7 @@ namespace TextEditor.Facts
         }
 
         [Fact]
-        public void HandleInput_I_ShouldEnableInsertMode()
+        public void HandleInput_i_ShouldEnableInsertMode()
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
@@ -568,29 +568,65 @@ namespace TextEditor.Facts
         }
 
         [Fact]
-        public void HandleInput_O_ShouldAddNewLineBeforeCurrentLine()
+        public void HandleInput_o_ShouldAddNewLineBeforeCurrentLine()
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
             Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
-            ConsoleKeyInfo O = new ConsoleKeyInfo('O', ConsoleKey.O, false, false, false);
+            ConsoleKeyInfo O = new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false);
             navigator.HandleInput(down);
             navigator.HandleInput(O);
             Assert.Equal("", text[navigator.row]);
         }
 
         [Fact]
-        public void HandleInput_o_ShouldAddNewLineAfterCurrentLine()
+        public void HandleInput_O_ShouldAddNewLineAfterCurrentLine()
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
             Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
-            ConsoleKeyInfo o = new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false);
+            ConsoleKeyInfo o = new ConsoleKeyInfo('O', ConsoleKey.O, false, false, false);
             int prevRow = navigator.row;
             Assert.Equal("{", text[navigator.row + 1]);
             navigator.HandleInput(o);
             Assert.Equal("", text[prevRow + 1]);
+        }
+
+        [Fact]
+        public void HandleInput_a_ShouldEnableInsertModeAndMoveOnePosToRight()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo a = new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false);
+            navigator.HandleInput(a);
+            Assert.True(navigator.insertMode);
+            Assert.Equal(1, navigator.col);
+        }
+
+        [Fact]
+        public void HandleInput_A_ShouldEnableInsertModeAndMoveToEndOfRow()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo A = new ConsoleKeyInfo('A', ConsoleKey.A, false, false, false);
+            navigator.HandleInput(A);
+            Assert.True(navigator.insertMode);
+            Assert.Equal(text[navigator.row].Length, navigator.col);
+        }
+
+        [Fact]
+        public void HandleInput_I_ShouldEnableInsertModeAndMoveToFirstCharInRow()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo I = new ConsoleKeyInfo('I', ConsoleKey.I, false, false, false);
+            navigator.HandleInput(I);
+            Assert.True(navigator.insertMode);
+            Assert.Equal(text[navigator.row].IndexOf(text[navigator.row].First(c => !char.IsWhiteSpace(c))), navigator.col);
         }
     }
 }

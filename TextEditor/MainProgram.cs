@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using System.IO;
+using System.Configuration;
 
 namespace TextEditor
 {

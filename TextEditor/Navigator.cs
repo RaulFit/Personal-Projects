@@ -44,15 +44,16 @@
 
         public void HandleInput(ConsoleKeyInfo ch)
         {
-            if (char.IsDigit(ch.KeyChar) && ch.Key != ConsoleKey.D0)
-            {
-                HandleSimpleMovement(ch);
-                return;
-            }
-
             if (!insertMode)
             {
+                if (char.IsDigit(ch.KeyChar) && ch.Key != ConsoleKey.D0)
+                {
+                    HandleSimpleMovement(ch);
+                    return;
+                }
+
                 ToggleInsertMode(ch);
+                HandleToggleInsertKeys(ch);
                 MoveTo(ch.Key, 1);
                 HandleSpecialKeys(ch);
                 HandleArrows(ch.Key);
@@ -75,18 +76,21 @@
             if (ch.Key == ConsoleKey.Enter)
             {
                 HandleEnter();
+                hasChanges = true;
                 return;
             }
 
             if (ch.Key == ConsoleKey.Backspace)
             {
                 HandleBackspace();
+                hasChanges = true;
                 return;
             }
 
             if (ch.Key == ConsoleKey.Delete)
             {
                 HandleDelete();
+                hasChanges = true;
                 return;
             }
 
@@ -165,9 +169,30 @@
             }
         }
 
+        private void HandleToggleInsertKeys(ConsoleKeyInfo ch)
+        {
+            if (ch.KeyChar.ToString() == "a")
+            {
+                HandleArrows(ConsoleKey.RightArrow);
+                insertMode = true;
+            }
+
+            if (ch.KeyChar.ToString() == "A")
+            {
+                HandleKeys(ConsoleKey.End);
+                insertMode = true;
+            }
+
+            if (ch.KeyChar.ToString() == "I")
+            {
+                HandleKeys(ConsoleKey.Home);
+                insertMode = true;
+            }
+        }
+
         private void ToggleInsertMode(ConsoleKeyInfo ch)
         {
-            if (ch.Key == ConsoleKey.I)
+            if (ch.KeyChar.ToString() == "i")
             {
                 insertMode = true;
             }
@@ -203,7 +228,7 @@
 
         private void FindCharLowerCase(ConsoleKeyInfo ch)
         {
-            int index = text[row].IndexOf(ch.KeyChar.ToString(), Math.Min(col + 1, text[row].Length - 1));
+            int index = text[row].IndexOf(ch.KeyChar.ToString(), Math.Min(col + 1, text[row].Length));
             col = index != -1 ? index : col;
         }
 
@@ -371,19 +396,19 @@
                 HandleKeys(ConsoleKey.Home);
             }
 
-            if (ch.KeyChar.ToString() == "o")
+            if (ch.KeyChar.ToString() == "O")
             {
                 HandleArrows(ConsoleKey.DownArrow);
                 text.Insert(row, "");
-                hasChanges = true;
-                Drawer.shouldRefresh = true;
+                insertMode = true;
+                col = 0;
             }
 
-            if (ch.KeyChar.ToString() == "O")
+            if (ch.KeyChar.ToString() == "o")
             {
                 text.Insert(row, "");
-                hasChanges = true;
-                Drawer.shouldRefresh = true;
+                insertMode = true;
+                col = 0;
             }
         }
 
@@ -432,18 +457,11 @@
 
             if (ch == ConsoleKey.Spacebar && !insertMode)
             {
-
                 var c = Console.ReadKey();
-
-                if (hasChanges)
-                {
-                    CommandMode.DrawCommandMode(this);
-                }
-
                 if (c.Key == ConsoleKey.F)
                 {
                     Finder.ResetSettings();
-                    Finder.OpenFinder();
+                    Finder.OpenFinder(this);
                 }
             }
         }

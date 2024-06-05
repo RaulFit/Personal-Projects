@@ -40,7 +40,7 @@
             {
                 Drawer.DrawWarning();
                 var key = Console.ReadKey(true);
-                RunNavigator(false);
+                Drawer.shouldRefresh = true;
             }
            
             while (true)

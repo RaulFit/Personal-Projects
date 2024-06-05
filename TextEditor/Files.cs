@@ -88,11 +88,6 @@ namespace TextEditor
                 return;
             }
 
-            if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow || ch.Key == ConsoleKey.Enter)
-            {
-                return;
-            }
-
             if (ch.Key == ConsoleKey.LeftArrow)
             {
                 if (Console.CursorLeft > 1)

@@ -20,16 +20,9 @@ namespace TextEditor
             while (true)
             {
                 var ch = Console.ReadKey();
-                Files.SearchFile(ch);
-
-                if (ch.Key == ConsoleKey.Enter)
+                if (ch.Key != ConsoleKey.UpArrow && ch.Key != ConsoleKey.DownArrow && ch.Key != ConsoleKey.Enter)
                 {
-                    ReadText();
-                }
-
-                if (ch.Key == ConsoleKey.Escape)
-                {
-                    navigator.RunNavigator();
+                    Files.SearchFile(ch);
                 }
 
                 if (ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.RightArrow)
@@ -37,10 +30,28 @@ namespace TextEditor
                     continue;
                 }
 
+                if (ch.Key == ConsoleKey.Escape)
+                {
+                    navigator.RunNavigator();
+                }
+
                 if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
                 {
                     SelectFile(ch);
-                    ReadText();
+                    if (navigator.hasChanges)
+                    {
+                        Console.SetCursorPosition(1, Console.WindowHeight - 2);
+                        Console.Write(new string(' ', match.Length));
+                        Console.SetCursorPosition(1, Console.WindowHeight - 2);
+                        Console.Write($"{ESC}31mSave the current changes before opening a new file! Press any key to exit finder...");
+                        var key = Console.ReadKey(true);
+                        navigator.RunNavigator();
+                    }
+
+                    else
+                    {
+                        ReadText();
+                    }
                 }
 
                 int left = Console.CursorLeft;
@@ -82,7 +93,6 @@ namespace TextEditor
                 {
                     Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
                     Console.Write(ch.KeyChar.ToString());
-                    currentIndex = 0;
                     Files.SearchFile(ch);
                     Console.Write($"{ESC}?25l");
                     Files.RefreshFiles();
@@ -96,7 +106,6 @@ namespace TextEditor
         public static void ResetSettings()
         {
             finder = new StringBuilder();
-            fileName = "";
             match = "";
             startIndex = 0;
             endIndex = 0;

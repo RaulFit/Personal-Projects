@@ -15,11 +15,11 @@ namespace TextEditor
                 Drawer drawer = new Drawer(lineNumbers, relativeLines);
                 string path = Path.GetFullPath(args[0]);
                 navigator = new Navigator(File.ReadAllLines(path).ToList(), drawer, new CommandMode(path));
-                navigator.RunNavigator();
+                navigator.RunNavigator(false);
             }
 
             navigator = new Navigator(new List<string>() { "" }, new Drawer(lineNumbers, relativeLines), new CommandMode(""));
-            navigator.RunNavigator();
+            navigator.RunNavigator(false);
         }
     }
 }

@@ -628,5 +628,54 @@ namespace TextEditor.Facts
             Assert.True(navigator.insertMode);
             Assert.Equal(text[navigator.row].IndexOf(text[navigator.row].First(c => !char.IsWhiteSpace(c))), navigator.col);
         }
+
+        [Fact]
+        public void HandleInput_u_ShouldUndoChanges()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo esc = new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false);
+            ConsoleKeyInfo T = new ConsoleKeyInfo('T', ConsoleKey.T, false, false, false);
+            ConsoleKeyInfo E = new ConsoleKeyInfo('E', ConsoleKey.E, false, false, false);
+            ConsoleKeyInfo S = new ConsoleKeyInfo('S', ConsoleKey.S, false, false, false);
+            ConsoleKeyInfo u = new ConsoleKeyInfo('u', ConsoleKey.U, false, false, false);
+            navigator.HandleInput(ins);
+            navigator.HandleInput(T);
+            navigator.HandleInput(E);
+            navigator.HandleInput(S);
+            navigator.HandleInput(T);
+            Assert.NotEqual(navigator.originalText, navigator.text);
+            navigator.HandleInput(esc);
+            navigator.HandleInput(u);
+            Assert.Equal(navigator.originalText, navigator.text);
+        }
+
+        [Fact]
+        public void HandleInput_CtrlR_ShouldRedoChanges()
+        {
+            string path = Path.GetFullPath("Test.txt");
+            List<string> text = File.ReadAllLines(path).ToList();
+            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
+            ConsoleKeyInfo esc = new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false);
+            ConsoleKeyInfo T = new ConsoleKeyInfo('T', ConsoleKey.T, false, false, false);
+            ConsoleKeyInfo E = new ConsoleKeyInfo('E', ConsoleKey.E, false, false, false);
+            ConsoleKeyInfo S = new ConsoleKeyInfo('S', ConsoleKey.S, false, false, false);
+            ConsoleKeyInfo u = new ConsoleKeyInfo('u', ConsoleKey.U, false, false, false);
+            ConsoleKeyInfo r = new ConsoleKeyInfo('r', ConsoleKey.R, false, false, true);
+            navigator.HandleInput(ins);
+            navigator.HandleInput(T);
+            navigator.HandleInput(E);
+            navigator.HandleInput(S);
+            navigator.HandleInput(T);
+            Assert.NotEqual(navigator.originalText, navigator.text);
+            navigator.HandleInput(esc);
+            navigator.HandleInput(u);
+            Assert.Equal(navigator.originalText, navigator.text);
+            navigator.HandleInput(r);
+            Assert.Equal(navigator.currentText, navigator.text);
+        }
     }
 }

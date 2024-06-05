@@ -5,6 +5,8 @@
         public CommandMode CommandMode;
         public Drawer Drawer;
         public List<string> text = [];
+        public List<string> originalText;
+        public List<string> currentText;
         public int row;
         public int offsetRow;
         public int col;
@@ -16,6 +18,8 @@
         public Navigator(List<string> text, Drawer drawer, CommandMode commandMode)
         {
             this.text = text;
+            originalText = new List<string>(text);
+            currentText = new List<string>(text);
             row = 0;
             offsetRow = 0;
             col = 0;
@@ -27,11 +31,18 @@
             CommandMode = commandMode;
         }
 
-        public void RunNavigator()
+        public void RunNavigator(bool warning)
         {
             Console.Clear();
             Console.SetCursorPosition(0, 0);
             Drawer.DrawContent(this);
+            if (warning)
+            {
+                Drawer.DrawWarning();
+                var key = Console.ReadKey(true);
+                RunNavigator(false);
+            }
+           
             while (true)
             {
                 Drawer.Scroll(this);
@@ -52,6 +63,7 @@
                     return;
                 }
 
+                HandleUndoRedo(ch);
                 ToggleInsertMode(ch);
                 HandleToggleInsertKeys(ch);
                 MoveTo(ch.Key, 1);
@@ -69,6 +81,35 @@
             HandleArrows(ch.Key);
             HandleKeys(ch.Key);
             HandlePageScroll(ch);
+        }
+
+        public void HandleUndoRedo(ConsoleKeyInfo ch)
+        {
+            if (ch.KeyChar.ToString() == "u")
+            {
+                currentText = new List<string>(text);
+                text = new List<string>(originalText);
+                ResetSettings();
+                Drawer.shouldRefresh = true;
+            }
+
+            if ((ch.Modifiers & ConsoleModifiers.Control) != 0 && ch.Key == ConsoleKey.R)
+            {
+                text = new List<string>(currentText);
+                hasChanges = true;
+                Drawer.shouldRefresh = true;
+            }
+        }
+
+        private void ResetSettings()
+        {
+            row = 0;
+            offsetRow = 0;
+            col = 0;
+            offsetCol = 0;
+            prevCol = 0;
+            insertMode = false;
+            hasChanges = false;
         }
 
         public void HandleInsert(ConsoleKeyInfo ch)

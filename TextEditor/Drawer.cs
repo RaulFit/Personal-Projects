@@ -39,6 +39,14 @@ namespace TextEditor
             DrawCursor(navigator);
         }
 
+        public void DrawWarning()
+        {
+            Console.SetCursorPosition(0, Console.WindowHeight - 2);
+            Console.Write(new string(' ', Finder.match.Length));
+            Console.SetCursorPosition(0, Console.WindowHeight - 2);
+            Console.Write($"\x1b[31mSave the current changes before opening a new file!\x1b[0m");
+        }
+
         public void DrawContent(Navigator navigator)
         {
             int len = Math.Min(Console.WindowHeight - 1, navigator.text.Count);
@@ -56,6 +64,7 @@ namespace TextEditor
 
             Console.SetCursorPosition(0, 0);
             Console.Write(text);
+            DrawStatusBar(navigator);
         }
 
         public void DrawStatusBar(Navigator navigator)
@@ -184,12 +193,12 @@ namespace TextEditor
                 int lastNumber = Console.WindowHeight + navigator.offsetRow;
                 if (lastNumber >= 100)
                 {
-                    Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol + rowIndex.Length - 1, Console.WindowWidth - 1),
+                    Console.SetCursorPosition(navigator.col - navigator.offsetCol + rowIndex.Length - 1,
                     Math.Min(navigator.row - navigator.offsetRow, Console.WindowHeight - 2));
                     return;
                 }
 
-                Console.SetCursorPosition(Math.Min(navigator.col - navigator.offsetCol + rowIndex.Length, Console.WindowWidth - 1),
+                Console.SetCursorPosition(navigator.col - navigator.offsetCol + rowIndex.Length,
                 Math.Min(navigator.row - navigator.offsetRow, Console.WindowHeight - 2));
                 return;
             }
@@ -212,9 +221,9 @@ namespace TextEditor
                 shouldRefresh = true;
             }
 
-            if (navigator.col >= Console.WindowWidth + navigator.offsetCol)
+            if (navigator.col >= Console.WindowWidth + navigator.offsetCol - rowIndex.Length)
             {
-                navigator.offsetCol = navigator.col - Console.WindowWidth + 1;
+                navigator.offsetCol = navigator.col - Console.WindowWidth + 1 + rowIndex.Length;
                 shouldRefresh = true;
             }
 

@@ -85,14 +85,14 @@
 
         public void HandleUndoRedo(ConsoleKeyInfo ch)
         {
-            if (ch.KeyChar.ToString() == "u")
+            if (ch.KeyChar.ToString() == "u" & hasChanges)
             {
                 currentText = new List<string>(text);
                 text = new List<string>(originalText);
                 ResetSettings();
                 Drawer.shouldRefresh = true;
             }
-
+            
             if ((ch.Modifiers & ConsoleModifiers.Control) != 0 && ch.Key == ConsoleKey.R)
             {
                 text = new List<string>(currentText);

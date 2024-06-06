@@ -103,11 +103,19 @@
 
         private void ResetSettings()
         {
-            row = 0;
-            offsetRow = 0;
-            col = 0;
-            offsetCol = 0;
-            prevCol = 0;
+            if (row >= originalText.Count)
+            {
+                row = originalText.Count - 1;
+                offsetRow = 0;
+            }
+
+            if (col > originalText[row].Length)
+            {
+                col = originalText[row].Length;
+                offsetCol = 0;
+                prevCol = 0;
+            }
+
             insertMode = false;
             hasChanges = false;
         }
@@ -437,7 +445,7 @@
                 HandleKeys(ConsoleKey.Home);
             }
 
-            if (ch.KeyChar.ToString() == "O")
+            if (ch.KeyChar.ToString() == "o")
             {
                 HandleArrows(ConsoleKey.DownArrow);
                 text.Insert(row, "");
@@ -445,7 +453,7 @@
                 col = 0;
             }
 
-            if (ch.KeyChar.ToString() == "o")
+            if (ch.KeyChar.ToString() == "O")
             {
                 text.Insert(row, "");
                 insertMode = true;

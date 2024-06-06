@@ -568,25 +568,25 @@ namespace TextEditor.Facts
         }
 
         [Fact]
-        public void HandleInput_o_ShouldAddNewLineBeforeCurrentLine()
+        public void HandleInput_O_ShouldAddNewLineBeforeCurrentLine()
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
             Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
-            ConsoleKeyInfo O = new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false);
+            ConsoleKeyInfo O = new ConsoleKeyInfo('O', ConsoleKey.O, false, false, false);
             navigator.HandleInput(down);
             navigator.HandleInput(O);
             Assert.Equal("", text[navigator.row]);
         }
 
         [Fact]
-        public void HandleInput_O_ShouldAddNewLineAfterCurrentLine()
+        public void HandleInput_o_ShouldAddNewLineAfterCurrentLine()
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
             Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
-            ConsoleKeyInfo o = new ConsoleKeyInfo('O', ConsoleKey.O, false, false, false);
+            ConsoleKeyInfo o = new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false);
             int prevRow = navigator.row;
             Assert.Equal("{", text[navigator.row + 1]);
             navigator.HandleInput(o);

@@ -5,8 +5,8 @@
         public CommandMode CommandMode;
         public Drawer Drawer;
         public List<string> text = [];
-        public List<string> originalText;
-        public List<string> currentText;
+        public Stack<ICommand> undo;
+        public Stack<ICommand> redo;
         public int row;
         public int offsetRow;
         public int col;
@@ -18,8 +18,8 @@
         public Navigator(List<string> text, Drawer drawer, CommandMode commandMode)
         {
             this.text = text;
-            originalText = new List<string>(text);
-            currentText = new List<string>(text);
+            undo = new Stack<ICommand>();
+            redo = new Stack<ICommand>();
             row = 0;
             offsetRow = 0;
             col = 0;
@@ -87,51 +87,49 @@
         {
             if (ch.KeyChar.ToString() == "u" & hasChanges)
             {
-                currentText = new List<string>(text);
-                text = new List<string>(originalText);
-                ResetSettings();
-                Drawer.shouldRefresh = true;
+                if (undo.Count > 0)
+                {
+                    ICommand command = undo.Pop();
+                    command.UnExecute();
+                    redo.Push(command);
+                    Drawer.shouldRefresh = true;
+                }
             }
             
             if ((ch.Modifiers & ConsoleModifiers.Control) != 0 && ch.Key == ConsoleKey.R)
             {
-                text = new List<string>(currentText);
-                hasChanges = true;
-                Drawer.shouldRefresh = true;
+                if (redo.Count > 0)
+                {
+                    ICommand command = redo.Pop();
+                    command.Execute();
+                    undo.Push(command);
+                    hasChanges = true;
+                    Drawer.shouldRefresh = true;
+                }
             }
-        }
-
-        private void ResetSettings()
-        {
-            if (row >= originalText.Count)
-            {
-                row = originalText.Count - 1;
-                offsetRow = 0;
-            }
-
-            if (col > originalText[row].Length)
-            {
-                col = originalText[row].Length;
-                offsetCol = 0;
-                prevCol = 0;
-            }
-
-            insertMode = false;
-            hasChanges = false;
         }
 
         public void HandleInsert(ConsoleKeyInfo ch)
         {
+            if (ch.Key == ConsoleKey.RightArrow || ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
+            {
+                return;
+            }
+
             if (ch.Key == ConsoleKey.Enter)
             {
-                HandleEnter();
+                EnterCommand enter = new EnterCommand(this, row, col);
+                enter.Execute();
+                undo.Push(enter);
                 hasChanges = true;
                 return;
             }
 
             if (ch.Key == ConsoleKey.Backspace)
             {
-                HandleBackspace();
+                BackspaceCommand backspace = new BackspaceCommand(this, row, col);
+                backspace.Execute();
+                undo.Push(backspace);
                 hasChanges = true;
                 return;
             }
@@ -143,18 +141,13 @@
                 return;
             }
 
-            if (ch.Key == ConsoleKey.RightArrow || ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
-            {
-                return;
-            }
-
             if (!char.IsControl(ch.KeyChar))
             {
-                text[row] = text[row].Insert(col, ch.KeyChar.ToString());
-                HandleArrows(ConsoleKey.RightArrow);
+                InsertCommand insert = new InsertCommand(this, ch, row, col);
+                insert.Execute();
+                undo.Push(insert);
+                hasChanges = true;
             }
-
-            hasChanges = true;
         }
 
         private void HandleEnter()
@@ -538,7 +531,7 @@
             }
         }
 
-        private void HandleArrows(ConsoleKey ch)
+        public void HandleArrows(ConsoleKey ch)
         {
             if (ch == ConsoleKey.UpArrow && row > 0)
             {
@@ -569,9 +562,9 @@
                 prevCol = col;
             }
 
-            if (col >= text[row - 1].Length)
+            if (col > text[row - 1].Length)
             {
-                col = Math.Min(Drawer.windowWidth + offsetCol - 1, text[row - 1].Length);
+                col = text[row - 1].Length;
             }
 
             else if (text[row - 1].Length > text[row].Length)
@@ -579,7 +572,7 @@
                 col = prevCol > text[row - 1].Length ? text[row - 1].Length : prevCol;
             }
 
-            row--;
+            row = row > 0 ? row - 1 : row; 
             
             if (Drawer.relativeLines)
             {
@@ -594,9 +587,9 @@
                 prevCol = col;
             }
 
-            if (col >= text[row + 1].Length)
+            if (col > text[row + 1].Length)
             {
-                col = Math.Min(Drawer.windowWidth + offsetCol - 1, text[row + 1].Length);
+                col = text[row + 1].Length;
             }
 
             else if (text[row + 1].Length > text[row].Length)

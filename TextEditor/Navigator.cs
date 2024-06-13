@@ -136,7 +136,9 @@
 
             if (ch.Key == ConsoleKey.Delete)
             {
-                HandleDelete();
+                DeleteCommand delete = new DeleteCommand(this, row, col);
+                delete.Execute(); 
+                undo.Push(delete);
                 hasChanges = true;
                 return;
             }
@@ -147,67 +149,6 @@
                 insert.Execute();
                 undo.Push(insert);
                 hasChanges = true;
-            }
-        }
-
-        private void HandleEnter()
-        {
-            if (col == 0)
-            {
-                text.Insert(row, "");
-            }
-
-            else
-            {
-                text.Insert(row + 1, text[row][col..]);
-                text[row] = text[row][0..col];
-            }
-
-            HandleArrows(ConsoleKey.DownArrow);
-        }
-
-        private void HandleBackspace()
-        {
-            if (col == 0)
-            {
-                if (row > 0)
-                {
-                    HandleArrows(ConsoleKey.UpArrow);
-                    col = text[row].Length;
-                    text[row] = text[row].Insert(text[row].Length, text[row + 1]);
-                    text.RemoveAt(row + 1);
-                    if (text.Count + offsetRow > text.Count)
-                    {
-                        offsetRow--;
-                    }
-                }
-            }
-
-            else
-            {
-                text[row] = text[row].Remove(col - 1, 1);
-                HandleArrows(ConsoleKey.LeftArrow);
-            }
-        }
-
-        private void HandleDelete()
-        {
-            if (col == text[row].Length)
-            {
-                if (row < text.Count - 1)
-                {
-                    text[row] = text[row].Insert(text[row].Length, text[row + 1]);
-                    text.RemoveAt(row + 1);
-                    if (text.Count + offsetRow > text.Count)
-                    {
-                        offsetRow--;
-                    }
-                }
-            }
-
-            else
-            {
-                text[row] = text[row].Remove(col, 1);
             }
         }
 
@@ -440,17 +381,18 @@
 
             if (ch.KeyChar.ToString() == "o")
             {
+                string emptySpace = new string(' ', text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))));
                 HandleArrows(ConsoleKey.DownArrow);
-                text.Insert(row, "");
+                text.Insert(row, emptySpace);
+                col = text[row].Length;
                 insertMode = true;
-                col = 0;
             }
 
             if (ch.KeyChar.ToString() == "O")
             {
-                text.Insert(row, "");
+                text.Insert(row, new string(' ', text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c)))));
+                col = text[row].Length;
                 insertMode = true;
-                col = 0;
             }
         }
 

@@ -612,10 +612,12 @@
         private void HandleRightArrow()
         {
             col++;
+
             if (col > text[row].Length)
             {
                 col = text[row].Length;
             }
+
             prevCol = col;
         }
     }

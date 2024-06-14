@@ -5,8 +5,8 @@
         public CommandMode CommandMode;
         public Drawer Drawer;
         public List<string> text = [];
-        public Stack<ICommand> undo;
-        public Stack<ICommand> redo;
+        public Stack<(List<string>, int row, int col)> undo;
+        public Stack<(List<string>, int row, int col)> redo;
         public int row;
         public int offsetRow;
         public int col;
@@ -18,8 +18,8 @@
         public Navigator(List<string> text, Drawer drawer, CommandMode commandMode)
         {
             this.text = text;
-            undo = new Stack<ICommand>();
-            redo = new Stack<ICommand>();
+            undo = new Stack<(List<string>, int row, int col)>();
+            redo = new Stack<(List<string>, int row, int col)>();
             row = 0;
             offsetRow = 0;
             col = 0;
@@ -42,7 +42,7 @@
                 var key = Console.ReadKey(true);
                 Drawer.shouldRefresh = true;
             }
-           
+
             while (true)
             {
                 Drawer.Scroll(this);
@@ -89,20 +89,24 @@
             {
                 if (undo.Count > 0)
                 {
-                    ICommand command = undo.Pop();
-                    command.UnExecute();
-                    redo.Push(command);
+                    (List<string> originalText, int row, int col) values = undo.Pop();
+                    redo.Push((text, values.row, values.col));
+                    text = new List<string>(values.originalText);
+                    row = values.row;
+                    col = values.col;
                     Drawer.shouldRefresh = true;
                 }
             }
-            
+
             if ((ch.Modifiers & ConsoleModifiers.Control) != 0 && ch.Key == ConsoleKey.R)
             {
                 if (redo.Count > 0)
                 {
-                    ICommand command = redo.Pop();
-                    command.Execute();
-                    undo.Push(command);
+                    (List<string> newText, int row, int col) values = redo.Pop();
+                    undo.Push((text, values.row, values.col));
+                    text = new List<string>(values.newText);
+                    row = values.row;
+                    col = values.col;
                     hasChanges = true;
                     Drawer.shouldRefresh = true;
                 }
@@ -111,44 +115,99 @@
 
         public void HandleInsert(ConsoleKeyInfo ch)
         {
-            if (ch.Key == ConsoleKey.RightArrow || ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
-            {
-                return;
-            }
-
             if (ch.Key == ConsoleKey.Enter)
             {
-                EnterCommand enter = new EnterCommand(this, row, col);
-                enter.Execute();
-                undo.Push(enter);
+                HandleEnter();
                 hasChanges = true;
                 return;
             }
 
             if (ch.Key == ConsoleKey.Backspace)
             {
-                BackspaceCommand backspace = new BackspaceCommand(this, row, col);
-                backspace.Execute();
-                undo.Push(backspace);
+                HandleBackspace();
                 hasChanges = true;
                 return;
             }
 
             if (ch.Key == ConsoleKey.Delete)
             {
-                DeleteCommand delete = new DeleteCommand(this, row, col);
-                delete.Execute(); 
-                undo.Push(delete);
+                HandleDelete();
                 hasChanges = true;
+                return;
+            }
+
+            if (ch.Key == ConsoleKey.RightArrow || ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
+            {
                 return;
             }
 
             if (!char.IsControl(ch.KeyChar))
             {
-                InsertCommand insert = new InsertCommand(this, ch, row, col);
-                insert.Execute();
-                undo.Push(insert);
-                hasChanges = true;
+                text[row] = text[row].Insert(col, ch.KeyChar.ToString());
+                HandleArrows(ConsoleKey.RightArrow);
+            }
+
+            hasChanges = true;
+        }
+
+        private void HandleEnter()
+        {
+            if (col == 0)
+            {
+                text.Insert(row, "");
+            }
+
+            else
+            {
+                text.Insert(row + 1, text[row][col..]);
+                text[row] = text[row][0..col];
+            }
+
+            HandleArrows(ConsoleKey.DownArrow);
+        }
+
+        private void HandleBackspace()
+        {
+            if (col == 0)
+            {
+                if (row > 0)
+                {
+                    HandleArrows(ConsoleKey.UpArrow);
+                    col = text[row].Length;
+                    text[row] = text[row].Insert(text[row].Length, text[row + 1]);
+                    text.RemoveAt(row + 1);
+                    if (text.Count + offsetRow > text.Count)
+                    {
+                        offsetRow--;
+                    }
+                }
+            }
+
+            else
+            {
+                text[row] = text[row].Remove(col - 1, 1);
+                HandleArrows(ConsoleKey.LeftArrow);
+            }
+        }
+
+        private void HandleDelete()
+        {
+            if (col == text[row].Length)
+            {
+                if (row < text.Count - 1)
+                {
+                    text[row] = text[row].Insert(text[row].Length, text[row + 1]);
+                    text.RemoveAt(row + 1);
+                    if (text.Count + offsetRow > text.Count)
+                    {
+                        offsetRow--;
+                    }
+                }
+            }
+
+            else
+            {
+                text[row] = text[row].Remove(col, 1);
             }
         }
 
@@ -175,12 +234,13 @@
 
         private void ToggleInsertMode(ConsoleKeyInfo ch)
         {
-            if (ch.KeyChar.ToString() == "i")
+            if (ch.KeyChar.ToString() == "i" && !insertMode)
             {
+                undo.Push((new List<string>(text), row, col));
                 insertMode = true;
             }
 
-            if (ch.Key == ConsoleKey.Escape)
+            if (ch.Key == ConsoleKey.Escape && insertMode)
             {
                 insertMode = false;
             }
@@ -381,6 +441,7 @@
 
             if (ch.KeyChar.ToString() == "o")
             {
+                undo.Push((new List<string>(text), row, col));
                 string emptySpace = new string(' ', text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))));
                 HandleArrows(ConsoleKey.DownArrow);
                 text.Insert(row, emptySpace);
@@ -390,6 +451,7 @@
 
             if (ch.KeyChar.ToString() == "O")
             {
+                undo.Push((new List<string>(text), row, col));
                 text.Insert(row, new string(' ', text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c)))));
                 col = text[row].Length;
                 insertMode = true;
@@ -473,7 +535,7 @@
             }
         }
 
-        public void HandleArrows(ConsoleKey ch)
+        private void HandleArrows(ConsoleKey ch)
         {
             if (ch == ConsoleKey.UpArrow && row > 0)
             {
@@ -504,9 +566,9 @@
                 prevCol = col;
             }
 
-            if (col > text[row - 1].Length)
+            if (col >= text[row - 1].Length)
             {
-                col = text[row - 1].Length;
+                col = Math.Min(Drawer.windowWidth + offsetCol - 1, text[row - 1].Length);
             }
 
             else if (text[row - 1].Length > text[row].Length)
@@ -514,8 +576,8 @@
                 col = prevCol > text[row - 1].Length ? text[row - 1].Length : prevCol;
             }
 
-            row = row > 0 ? row - 1 : row; 
-            
+            row--;
+
             if (Drawer.relativeLines)
             {
                 Drawer.DrawRelativeIndexes(this);
@@ -529,9 +591,9 @@
                 prevCol = col;
             }
 
-            if (col > text[row + 1].Length)
+            if (col >= text[row + 1].Length)
             {
-                col = text[row + 1].Length;
+                col = Math.Min(Drawer.windowWidth + offsetCol - 1, text[row + 1].Length);
             }
 
             else if (text[row + 1].Length > text[row].Length)

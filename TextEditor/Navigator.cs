@@ -213,20 +213,23 @@
 
         private void HandleToggleInsertKeys(ConsoleKeyInfo ch)
         {
-            if (ch.KeyChar.ToString() == "a")
+            if (ch.KeyChar.ToString() == "a" && !insertMode)
             {
+                undo.Push((new List<string>(text), row, col));
                 HandleArrows(ConsoleKey.RightArrow);
                 insertMode = true;
             }
 
-            if (ch.KeyChar.ToString() == "A")
+            if (ch.KeyChar.ToString() == "A" && !insertMode)
             {
+                undo.Push((new List<string>(text), row, col));
                 HandleKeys(ConsoleKey.End);
                 insertMode = true;
             }
 
-            if (ch.KeyChar.ToString() == "I")
+            if (ch.KeyChar.ToString() == "I" && !insertMode)
             {
+                undo.Push((new List<string>(text), row, col));
                 HandleKeys(ConsoleKey.Home);
                 insertMode = true;
             }
@@ -442,7 +445,7 @@
             if (ch.KeyChar.ToString() == "o")
             {
                 undo.Push((new List<string>(text), row, col));
-                string emptySpace = new string(' ', text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))));
+                string emptySpace = new string(' ', Math.Max(text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))), 0));
                 HandleArrows(ConsoleKey.DownArrow);
                 text.Insert(row, emptySpace);
                 col = text[row].Length;
@@ -452,7 +455,7 @@
             if (ch.KeyChar.ToString() == "O")
             {
                 undo.Push((new List<string>(text), row, col));
-                text.Insert(row, new string(' ', text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c)))));
+                text.Insert(row, new string(' ', Math.Max(text[row].IndexOf(text[row].First(c => !char.IsWhiteSpace(c))), 0)));
                 col = text[row].Length;
                 insertMode = true;
             }

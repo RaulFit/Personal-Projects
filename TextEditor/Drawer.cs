@@ -11,12 +11,14 @@ namespace TextEditor
         public int windowHeight;
         public bool lineNumbers;
         public bool relativeLines;
+        public bool mustSave;
         public StringBuilder text;
 
-        public Drawer(bool lineNumbers, bool relativeLines)
+        public Drawer(bool lineNumbers, bool relativeLines, bool mustSave)
         {
             this.lineNumbers = lineNumbers;
             this.relativeLines = relativeLines;
+            this.mustSave = mustSave;
             rowIndex = "";
             shouldRefresh = false;
             text = new StringBuilder();

@@ -38,7 +38,7 @@ namespace TextEditor
                 if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow || ch.Key == ConsoleKey.Enter)
                 {
                     SelectFile(ch);
-                    if (navigator.hasChanges)
+                    if (navigator.hasChanges && navigator.Drawer.mustSave)
                     {
                         navigator.RunNavigator(true);
                     }
@@ -68,7 +68,8 @@ namespace TextEditor
             CommandMode commandMode = new CommandMode(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
             bool lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
             bool relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
-            Drawer drawer = new Drawer(lineNumbers, relativeLines);
+            bool mustSave = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("mustSave"));
+            Drawer drawer = new Drawer(lineNumbers, relativeLines, mustSave);
             Navigator navigator = new Navigator(File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex))).ToList(), drawer, commandMode);
             navigator.RunNavigator(false);
         }
@@ -114,10 +115,9 @@ namespace TextEditor
             Console.SetCursorPosition(0, 0);
             Console.Write(finder);
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
-            Files.files = Directory.GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.AllDirectories).Select(Path.GetFullPath).ToArray();
-            Files.filteredFiles = new string[Files.files.Length];
-            Files.files.CopyTo(Files.filteredFiles, 0);
-            endIndex = Math.Min(Files.files.Length - 1, Console.WindowHeight - 6);
+            Files.files = Directory.GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.AllDirectories).Select(Path.GetFullPath).ToList();
+            Files.filteredFiles = new List<string>(Files.files);
+            endIndex = Math.Min(Files.files.Count - 1, Console.WindowHeight - 6);
             Files.PrintFiles(Files.filteredFiles.Select(f => Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(f))).ToArray());
             Console.SetCursorPosition(1, Console.WindowHeight - 2);
         }

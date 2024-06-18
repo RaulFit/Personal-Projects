@@ -2,8 +2,8 @@ namespace TextEditor
 {
     static class Files
     {
-        public static string[] files = { };
-        public static string[] filteredFiles = { };
+        public static List<string> files = [];
+        public static List<string> filteredFiles = [];
         public static bool caseInsensitive = false;
 
         public static void PrintFiles(string[] files)
@@ -14,20 +14,20 @@ namespace TextEditor
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
             }
 
-            int filesLength = new string(filteredFiles.Length.ToString()).Length;
+            int filesLength = new string(filteredFiles.Count.ToString()).Length;
             Console.SetCursorPosition(Console.WindowWidth - 10, Console.WindowHeight - 2);
             Console.Write(new string(' ', 8));
             Console.SetCursorPosition(Console.WindowWidth - 7 - filesLength, Console.WindowHeight - 2);
-            Console.Write($"{filteredFiles.Length} / {Files.files.Length}");
+            Console.Write($"{filteredFiles.Count} / {Files.files.Count}");
             Console.SetCursorPosition(Finder.match.Length + 1, Console.WindowHeight - 2);
         }
 
-        public static void SelectFile(ConsoleKeyInfo ch, string[] files)
+        public static void SelectFile(ConsoleKeyInfo ch, List<string> files)
         {
             int top = Console.CursorTop;
             if (ch.Key == ConsoleKey.UpArrow)
             {
-                if (top == 1 && Finder.endIndex < files.Length - 1 && Finder.currentIndex < files.Length - 1)
+                if (top == 1 && Finder.endIndex < files.Count - 1 && Finder.currentIndex < files.Count - 1)
                 {
                     Finder.startIndex++;
                     Finder.endIndex++;
@@ -35,7 +35,7 @@ namespace TextEditor
                     Finder.ColorMatchingLetters();
                 }
 
-                if (Finder.currentIndex < filteredFiles.Length - 1)
+                if (Finder.currentIndex < filteredFiles.Count - 1)
                 {
                     Finder.currentIndex++;
                     Console.SetCursorPosition(1, Math.Max(1, top - 1));
@@ -76,7 +76,7 @@ namespace TextEditor
                 filteredFiles = FilterFiles();
                 Finder.currentIndex = 0;
                 Finder.startIndex = 0;
-                Finder.endIndex = Math.Min(Console.WindowHeight - 6, filteredFiles.Length);
+                Finder.endIndex = Math.Min(Console.WindowHeight - 6, filteredFiles.Count);
             }
         }
 
@@ -118,7 +118,7 @@ namespace TextEditor
             filteredFiles = FilterFiles();
             Finder.currentIndex = 0;
             Finder.startIndex = 0;
-            Finder.endIndex = Math.Min(Console.WindowHeight - 6, filteredFiles.Length);
+            Finder.endIndex = Math.Min(Console.WindowHeight - 6, filteredFiles.Count);
         }
 
         public static void RefreshFiles()
@@ -134,12 +134,12 @@ namespace TextEditor
             PrintFiles(filteredFiles.Select(f => Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(f))).ToArray());
         }
 
-        private static string[] FilterFiles()
+        private static List<string> FilterFiles()
         {
-            string[] caseInsensitiveFiles = files.Where(file => Finder.FuzzySearch(Finder.match,
-            Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(file)))).ToArray();
+            List<string> caseInsensitiveFiles = files.Where(file => Finder.FuzzySearch(Finder.match,
+            Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(file)))).ToList();
 
-            if (caseInsensitiveFiles.Length > 0)
+            if (caseInsensitiveFiles.Count > 0)
             {
                 caseInsensitive = true;
                 return caseInsensitiveFiles;
@@ -147,7 +147,7 @@ namespace TextEditor
 
             caseInsensitive = false;
             return files.Where(file => Finder.FuzzySearch(Finder.match.ToLower(),
-            Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(file)).ToLower())).ToArray();
+            Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(file)).ToLower())).ToList();
         }
     }
 }

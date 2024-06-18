@@ -628,7 +628,5 @@ namespace TextEditor.Facts
             Assert.True(navigator.insertMode);
             Assert.Equal(text[navigator.row].IndexOf(text[navigator.row].First(c => !char.IsWhiteSpace(c))), navigator.col);
         }
-
-        
     }
 }

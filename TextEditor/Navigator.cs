@@ -215,22 +215,22 @@
         {
             if (ch.KeyChar.ToString() == "a" && !insertMode)
             {
-                undo.Push((new List<string>(text), row, col));
                 HandleArrows(ConsoleKey.RightArrow);
+                undo.Push((new List<string>(text), row, col));
                 insertMode = true;
             }
 
             if (ch.KeyChar.ToString() == "A" && !insertMode)
             {
-                undo.Push((new List<string>(text), row, col));
                 HandleKeys(ConsoleKey.End);
+                undo.Push((new List<string>(text), row, col));
                 insertMode = true;
             }
 
             if (ch.KeyChar.ToString() == "I" && !insertMode)
             {
-                undo.Push((new List<string>(text), row, col));
                 HandleKeys(ConsoleKey.Home);
+                undo.Push((new List<string>(text), row, col));
                 insertMode = true;
             }
         }

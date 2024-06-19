@@ -510,7 +510,13 @@
                 if (c.Key == ConsoleKey.F)
                 {
                     Finder.ResetSettings();
-                    Finder.OpenFinder(this);
+                    Finder.OpenFinder(this, false);
+                }
+
+                if (c.Key == ConsoleKey.B)
+                {
+                    Finder.ResetSettings();
+                    Finder.OpenFinder(this, true);
                 }
             }
         }

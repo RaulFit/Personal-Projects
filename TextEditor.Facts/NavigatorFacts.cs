@@ -7,7 +7,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
             navigator.HandleInput(right);
             Assert.Equal(1, navigator.col);
@@ -18,7 +18,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
             navigator.HandleInput(right);
             navigator.HandleInput(right);
@@ -32,7 +32,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo left = new ConsoleKeyInfo((char)ConsoleKey.LeftArrow, ConsoleKey.LeftArrow, false, false, false);
             navigator.HandleInput(left);
             Assert.Equal(0, navigator.col);
@@ -43,7 +43,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo left = new ConsoleKeyInfo((char)ConsoleKey.LeftArrow, ConsoleKey.LeftArrow, false, false, false);
             ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
             navigator.HandleInput(right);
@@ -59,7 +59,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
             navigator.HandleInput(down);
             Assert.Equal(1, navigator.row);
@@ -70,7 +70,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
             navigator.HandleInput(down);
             navigator.HandleInput(down);
@@ -84,7 +84,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo up = new ConsoleKeyInfo((char)ConsoleKey.UpArrow, ConsoleKey.UpArrow, false, false, false);
             navigator.HandleInput(up);
             Assert.Equal(0, navigator.row);
@@ -95,7 +95,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
             ConsoleKeyInfo up = new ConsoleKeyInfo((char)ConsoleKey.UpArrow, ConsoleKey.UpArrow, false, false, false);
             navigator.HandleInput(down);
@@ -111,7 +111,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Move(ConsoleKey.RightArrow, 5);
             Assert.Equal(5, navigator.col);
         }
@@ -121,7 +121,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Move(ConsoleKey.RightArrow, 100);
             Assert.Equal(text[navigator.row].Length, navigator.col);
         }
@@ -131,7 +131,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Move(ConsoleKey.RightArrow, 10);
             navigator.Move(ConsoleKey.LeftArrow, 5);
             Assert.Equal(5, navigator.col);
@@ -142,7 +142,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Move(ConsoleKey.RightArrow, 10);
             navigator.Move(ConsoleKey.LeftArrow, 100);
             Assert.Equal(0, navigator.col);
@@ -153,7 +153,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Move(ConsoleKey.DownArrow, 10);
             Assert.Equal(10, navigator.row);
         }
@@ -163,7 +163,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Move(ConsoleKey.DownArrow, 10000);
             Assert.Equal(text.Count - 1, navigator.row);
         }
@@ -173,7 +173,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Move(ConsoleKey.DownArrow, 10);
             navigator.Move(ConsoleKey.UpArrow, 7);
             Assert.Equal(3, navigator.row);
@@ -184,7 +184,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Move(ConsoleKey.UpArrow, 10000);
             Assert.Equal(0, navigator.row);
         }
@@ -194,7 +194,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo symbol = new ConsoleKeyInfo('$', ConsoleKey.D4, true, false, false);
             navigator.HandleInput(symbol);
             Assert.Equal(text[navigator.row].Length, navigator.col);
@@ -205,7 +205,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo symbol = new ConsoleKeyInfo('0', ConsoleKey.D0, false, false, false);
             navigator.HandleInput(symbol);
             Assert.Equal(0, navigator.col);
@@ -216,7 +216,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
             ConsoleKeyInfo symbol = new ConsoleKeyInfo('^', ConsoleKey.D6, true, false, false);
             navigator.HandleInput(down);
@@ -231,7 +231,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
             ConsoleKeyInfo home = new ConsoleKeyInfo((char)ConsoleKey.Home, ConsoleKey.Home, false, false, false);
             navigator.HandleInput(down);
@@ -246,7 +246,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
             ConsoleKeyInfo end = new ConsoleKeyInfo((char)ConsoleKey.End, ConsoleKey.End, false, false, false);
             navigator.HandleInput(down);
@@ -261,7 +261,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Drawer.windowHeight = 30;
             ConsoleKeyInfo pageDown = new ConsoleKeyInfo((char)ConsoleKey.PageDown, ConsoleKey.PageDown, false, false, false);
             navigator.HandleInput(pageDown);           
@@ -273,7 +273,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             navigator.Drawer.windowHeight = 30;
             ConsoleKeyInfo pageDown = new ConsoleKeyInfo((char)ConsoleKey.PageDown, ConsoleKey.PageDown, false, false, false);
             ConsoleKeyInfo pageUp = new ConsoleKeyInfo((char)ConsoleKey.PageUp, ConsoleKey.PageUp, false, false, false);
@@ -287,7 +287,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo w = new ConsoleKeyInfo('w', ConsoleKey.W, false, false, false);
             navigator.HandleInput(w);
             Assert.Equal(text[navigator.row].IndexOf('T'), navigator.col);
@@ -299,7 +299,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo w = new ConsoleKeyInfo('w', ConsoleKey.W, false, false, false);
             navigator.HandleInput(w);
             navigator.HandleInput(w);
@@ -312,7 +312,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo w = new ConsoleKeyInfo('w', ConsoleKey.W, false, false, false);
             navigator.HandleInput(w);
             navigator.HandleInput(w);
@@ -332,7 +332,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo W = new ConsoleKeyInfo('W', ConsoleKey.W, false, false, false);
             navigator.HandleInput(W);
             Assert.Equal(text[navigator.row].IndexOf('T'), navigator.col);
@@ -343,7 +343,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo w = new ConsoleKeyInfo('W', ConsoleKey.W, false, false, false);
             navigator.HandleInput(w);
             navigator.HandleInput(w);
@@ -356,7 +356,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo w = new ConsoleKeyInfo('W', ConsoleKey.W, false, false, false);
             navigator.HandleInput(w);
             navigator.HandleInput(w);
@@ -375,7 +375,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo w = new ConsoleKeyInfo('W', ConsoleKey.W, false, false, false);
             ConsoleKeyInfo b = new ConsoleKeyInfo('b', ConsoleKey.B, false, false, false);
             navigator.HandleInput(w);
@@ -391,7 +391,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo w = new ConsoleKeyInfo('w', ConsoleKey.W, false, false, false);
             ConsoleKeyInfo b = new ConsoleKeyInfo('b', ConsoleKey.B, false, false, false);
             navigator.HandleInput(w);
@@ -406,7 +406,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             navigator.HandleInput(ins);
             Assert.True(navigator.insertMode);
@@ -417,7 +417,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             ConsoleKeyInfo esc = new ConsoleKeyInfo((char)ConsoleKey.Escape, ConsoleKey.Escape, false, false, false);
             navigator.HandleInput(ins);
@@ -431,7 +431,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             ConsoleKeyInfo T = new ConsoleKeyInfo('T', ConsoleKey.T, false, false, false);
             ConsoleKeyInfo E = new ConsoleKeyInfo('E', ConsoleKey.E, false, false, false);
@@ -450,7 +450,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             ConsoleKeyInfo T = new ConsoleKeyInfo('T', ConsoleKey.T, false, false, false);
             ConsoleKeyInfo E = new ConsoleKeyInfo('E', ConsoleKey.E, false, false, false);
@@ -473,7 +473,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             ConsoleKeyInfo enter = new ConsoleKeyInfo((char)ConsoleKey.Enter, ConsoleKey.Enter, false, false, false);
             navigator.HandleInput(ins);
@@ -487,7 +487,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             ConsoleKeyInfo enter = new ConsoleKeyInfo((char)ConsoleKey.Enter, ConsoleKey.Enter, false, false, false);
             ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
@@ -504,7 +504,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             ConsoleKeyInfo backspace = new ConsoleKeyInfo((char)ConsoleKey.Backspace, ConsoleKey.Backspace, false, false, false);
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
@@ -521,7 +521,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             ConsoleKeyInfo backspace = new ConsoleKeyInfo((char)ConsoleKey.Backspace, ConsoleKey.Backspace, false, false, false);
             ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
@@ -539,7 +539,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             ConsoleKeyInfo del = new ConsoleKeyInfo((char)ConsoleKey.Delete, ConsoleKey.Delete, false, false, false);
             navigator.col = navigator.text[navigator.row].Length;
@@ -553,7 +553,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo ins = new ConsoleKeyInfo('i', ConsoleKey.I, false, false, false);
             ConsoleKeyInfo del = new ConsoleKeyInfo((char)ConsoleKey.Delete, ConsoleKey.Delete, false, false, false);
             ConsoleKeyInfo right = new ConsoleKeyInfo((char)ConsoleKey.RightArrow, ConsoleKey.RightArrow, false, false, false);
@@ -572,7 +572,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo down = new ConsoleKeyInfo((char)ConsoleKey.DownArrow, ConsoleKey.DownArrow, false, false, false);
             ConsoleKeyInfo O = new ConsoleKeyInfo('O', ConsoleKey.O, false, false, false);
             navigator.HandleInput(down);
@@ -585,7 +585,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo o = new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false);
             int prevRow = navigator.row;
             Assert.Equal("{", text[navigator.row + 1]);
@@ -598,7 +598,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo a = new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false);
             navigator.HandleInput(a);
             Assert.True(navigator.insertMode);
@@ -610,7 +610,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo A = new ConsoleKeyInfo('A', ConsoleKey.A, false, false, false);
             navigator.HandleInput(A);
             Assert.True(navigator.insertMode);
@@ -622,7 +622,7 @@ namespace TextEditor.Facts
         {
             string path = Path.GetFullPath("Test.txt");
             List<string> text = File.ReadAllLines(path).ToList();
-            Navigator navigator = new Navigator(text, new Drawer(false, false), new CommandMode(""));
+            Navigator navigator = new Navigator(text, new Drawer(false, false, false), new CommandMode(""));
             ConsoleKeyInfo I = new ConsoleKeyInfo('I', ConsoleKey.I, false, false, false);
             navigator.HandleInput(I);
             Assert.True(navigator.insertMode);

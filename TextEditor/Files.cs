@@ -2,13 +2,14 @@ namespace TextEditor
 {
     public class Files
     {
-        public List<string> files = Directory.GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.AllDirectories).Select(Path.GetFullPath).ToList();
+        public List<string> files;
         public List<string> filteredFiles;
         public static bool caseInsensitive;
 
-        public Files()
+        public Files(List<string> files)
         {
-            filteredFiles = [];
+            this.files = files;
+            filteredFiles = new List<string>(files);
             caseInsensitive = false;
         }
 
@@ -28,17 +29,17 @@ namespace TextEditor
             Console.SetCursorPosition(Finder.match.Length + 1, Console.WindowHeight - 2);
         }
 
-        public void SelectFile(ConsoleKeyInfo ch, List<string> files)
+        public void SelectFile(ConsoleKeyInfo ch)
         {
             int top = Console.CursorTop;
             if (ch.Key == ConsoleKey.UpArrow)
             {
-                if (top == 1 && Finder.endIndex < files.Count - 1 && Finder.currentIndex < files.Count - 1)
+                if (top == 1 && Finder.endIndex < filteredFiles.Count - 1 && Finder.currentIndex < filteredFiles.Count - 1)
                 {
                     Finder.startIndex++;
                     Finder.endIndex++;
                     RefreshFiles();
-                    Finder.ColorMatchingLetters();
+                    Finder.ColorMatchingLetters(filteredFiles);
                 }
 
                 if (Finder.currentIndex < filteredFiles.Count - 1)
@@ -55,7 +56,7 @@ namespace TextEditor
                     Finder.startIndex--;
                     Finder.endIndex--;
                     RefreshFiles();
-                    Finder.ColorMatchingLetters();
+                    Finder.ColorMatchingLetters(filteredFiles);
                 }
 
                 if (Finder.currentIndex > 0)

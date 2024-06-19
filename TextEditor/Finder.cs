@@ -10,12 +10,15 @@ namespace TextEditor
         public static int startIndex = 0;
         public static int endIndex = 0;
         public static int currentIndex = 0;
-        public static StringBuilder finder = new StringBuilder();
         public static string fileName = "";
-        public static Files files = new Files();
+        public static StringBuilder finder = new StringBuilder();
+        public static Files Files = new Files(Directory.GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.AllDirectories).Select(Path.GetFullPath).ToList());
+        public static HashSet<string> openedFiles = [];
 
-        public static void OpenFinder(Navigator navigator)
+        public static void OpenFinder(Navigator navigator, bool openFiles)
         {
+            Files = openFiles ? new Files(openedFiles.ToList()) :
+            new Files(Directory.GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.AllDirectories).Select(Path.GetFullPath).ToList());
             Console.Clear();
             DrawFinder();
             while (true)
@@ -23,7 +26,7 @@ namespace TextEditor
                 var ch = Console.ReadKey();
                 if (ch.Key != ConsoleKey.UpArrow && ch.Key != ConsoleKey.DownArrow && ch.Key != ConsoleKey.Enter)
                 {
-                    files.SearchFile(ch);
+                    Files.SearchFile(ch);
                 }
 
                 if (ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.RightArrow)
@@ -46,14 +49,15 @@ namespace TextEditor
 
                     else
                     {
+                        openedFiles.Add(Files.filteredFiles.ElementAt(currentIndex));
                         ReadText();
                     }
                 }
 
                 int left = Console.CursorLeft;
                 Console.Write($"{ESC}?25l");
-                files.RefreshFiles();
-                ColorMatchingLetters();
+                Files.RefreshFiles();
+                ColorMatchingLetters(Files.filteredFiles);
                 Console.Write($"{ESC}?25h");
 
                 if (ch.Key == ConsoleKey.Backspace)
@@ -65,13 +69,13 @@ namespace TextEditor
 
         private static void ReadText()
         {
-            fileName = Path.GetFileName(files.filteredFiles.ElementAt(currentIndex));
-            CommandMode commandMode = new CommandMode(Path.GetFullPath(files.filteredFiles.ElementAt(currentIndex)));
+            fileName = Path.GetFileName(Files.filteredFiles.ElementAt(currentIndex));
+            CommandMode commandMode = new CommandMode(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
             bool lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
             bool relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
             bool mustSave = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("mustSave"));
             Drawer drawer = new Drawer(lineNumbers, relativeLines, mustSave);
-            Navigator navigator = new Navigator(File.ReadAllLines(Path.GetFullPath(files.filteredFiles.ElementAt(currentIndex))).ToList(), drawer, commandMode);
+            Navigator navigator = new Navigator(File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex))).ToList(), drawer, commandMode);
             navigator.RunNavigator(false);
         }
 
@@ -83,17 +87,17 @@ namespace TextEditor
                 ch = Console.ReadKey(true);
                 if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
                 {
-                    files.SelectFile(ch, files.filteredFiles);
+                    Files.SelectFile(ch);
                 }
 
                 else if (ch.Key != ConsoleKey.Enter)
                 {
                     Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
                     Console.Write(ch.KeyChar.ToString());
-                    files.SearchFile(ch);
+                    Files.SearchFile(ch);
                     Console.Write($"{ESC}?25l");
-                    files.RefreshFiles();
-                    ColorMatchingLetters();
+                    Files.RefreshFiles();
+                    ColorMatchingLetters(Files.filteredFiles);
                     Console.Write($"{ESC}?25h");
                     Console.SetCursorPosition(1, Console.WindowHeight - 6);
                 }
@@ -116,9 +120,8 @@ namespace TextEditor
             Console.SetCursorPosition(0, 0);
             Console.Write(finder);
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
-            files.filteredFiles = new List<string>(files.files);
-            endIndex = Math.Min(files.files.Count - 1, Console.WindowHeight - 6);
-            files.PrintFiles(files.filteredFiles.Select(f => Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(f))).ToArray());
+            endIndex = Math.Min(Files.files.Count, Console.WindowHeight - 6);
+            Files.PrintFiles(Files.filteredFiles.Select(f => Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(f))).ToArray());
             Console.SetCursorPosition(1, Console.WindowHeight - 2);
         }
 
@@ -186,13 +189,13 @@ namespace TextEditor
             finder.Append("\x1b" + "(B");
         }
 
-        public static void ColorMatchingLetters()
+        public static void ColorMatchingLetters(List<string> files)
         {
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
             Console.Write($"{ESC}32m");
             for (int i = startIndex; i < endIndex && Console.CursorTop > 0; i++)
             {
-                ColorPattern(files.filteredFiles[i], 0);
+                ColorPattern(files[i], 0);
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
             }
             Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);

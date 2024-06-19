@@ -12,6 +12,7 @@ namespace TextEditor
         public static int currentIndex = 0;
         public static StringBuilder finder = new StringBuilder();
         public static string fileName = "";
+        public static Files files = new Files();
 
         public static void OpenFinder(Navigator navigator)
         {
@@ -22,7 +23,7 @@ namespace TextEditor
                 var ch = Console.ReadKey();
                 if (ch.Key != ConsoleKey.UpArrow && ch.Key != ConsoleKey.DownArrow && ch.Key != ConsoleKey.Enter)
                 {
-                    Files.SearchFile(ch);
+                    files.SearchFile(ch);
                 }
 
                 if (ch.Key == ConsoleKey.LeftArrow || ch.Key == ConsoleKey.RightArrow)
@@ -51,7 +52,7 @@ namespace TextEditor
 
                 int left = Console.CursorLeft;
                 Console.Write($"{ESC}?25l");
-                Files.RefreshFiles();
+                files.RefreshFiles();
                 ColorMatchingLetters();
                 Console.Write($"{ESC}?25h");
 
@@ -64,13 +65,13 @@ namespace TextEditor
 
         private static void ReadText()
         {
-            fileName = Path.GetFileName(Files.filteredFiles.ElementAt(currentIndex));
-            CommandMode commandMode = new CommandMode(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex)));
+            fileName = Path.GetFileName(files.filteredFiles.ElementAt(currentIndex));
+            CommandMode commandMode = new CommandMode(Path.GetFullPath(files.filteredFiles.ElementAt(currentIndex)));
             bool lineNumbers = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("lineNumbers"));
             bool relativeLines = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("relativeLines"));
             bool mustSave = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("mustSave"));
             Drawer drawer = new Drawer(lineNumbers, relativeLines, mustSave);
-            Navigator navigator = new Navigator(File.ReadAllLines(Path.GetFullPath(Files.filteredFiles.ElementAt(currentIndex))).ToList(), drawer, commandMode);
+            Navigator navigator = new Navigator(File.ReadAllLines(Path.GetFullPath(files.filteredFiles.ElementAt(currentIndex))).ToList(), drawer, commandMode);
             navigator.RunNavigator(false);
         }
 
@@ -82,16 +83,16 @@ namespace TextEditor
                 ch = Console.ReadKey(true);
                 if (ch.Key == ConsoleKey.UpArrow || ch.Key == ConsoleKey.DownArrow)
                 {
-                    Files.SelectFile(ch, Files.filteredFiles);
+                    files.SelectFile(ch, files.filteredFiles);
                 }
 
                 else if (ch.Key != ConsoleKey.Enter)
                 {
                     Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);
                     Console.Write(ch.KeyChar.ToString());
-                    Files.SearchFile(ch);
+                    files.SearchFile(ch);
                     Console.Write($"{ESC}?25l");
-                    Files.RefreshFiles();
+                    files.RefreshFiles();
                     ColorMatchingLetters();
                     Console.Write($"{ESC}?25h");
                     Console.SetCursorPosition(1, Console.WindowHeight - 6);
@@ -115,10 +116,9 @@ namespace TextEditor
             Console.SetCursorPosition(0, 0);
             Console.Write(finder);
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
-            Files.files = Directory.GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.AllDirectories).Select(Path.GetFullPath).ToList();
-            Files.filteredFiles = new List<string>(Files.files);
-            endIndex = Math.Min(Files.files.Count - 1, Console.WindowHeight - 6);
-            Files.PrintFiles(Files.filteredFiles.Select(f => Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(f))).ToArray());
+            files.filteredFiles = new List<string>(files.files);
+            endIndex = Math.Min(files.files.Count - 1, Console.WindowHeight - 6);
+            files.PrintFiles(files.filteredFiles.Select(f => Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(f))).ToArray());
             Console.SetCursorPosition(1, Console.WindowHeight - 2);
         }
 
@@ -192,7 +192,7 @@ namespace TextEditor
             Console.Write($"{ESC}32m");
             for (int i = startIndex; i < endIndex && Console.CursorTop > 0; i++)
             {
-                ColorPattern(Files.filteredFiles[i], 0);
+                ColorPattern(files.filteredFiles[i], 0);
                 Console.SetCursorPosition(1, Console.CursorTop - 1);
             }
             Console.SetCursorPosition(match.Length + 1, Console.WindowHeight - 2);

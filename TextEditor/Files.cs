@@ -1,12 +1,18 @@
 namespace TextEditor
 {
-    static class Files
+    public class Files
     {
-        public static List<string> files = [];
-        public static List<string> filteredFiles = [];
-        public static bool caseInsensitive = false;
+        public List<string> files = Directory.GetFiles(Environment.CurrentDirectory, "*.*", SearchOption.AllDirectories).Select(Path.GetFullPath).ToList();
+        public List<string> filteredFiles;
+        public static bool caseInsensitive;
 
-        public static void PrintFiles(string[] files)
+        public Files()
+        {
+            filteredFiles = [];
+            caseInsensitive = false;
+        }
+
+        public void PrintFiles(string[] files)
         {
             for (int i = Finder.startIndex; i < Finder.endIndex; i++)
             {
@@ -18,11 +24,11 @@ namespace TextEditor
             Console.SetCursorPosition(Console.WindowWidth - 10, Console.WindowHeight - 2);
             Console.Write(new string(' ', 8));
             Console.SetCursorPosition(Console.WindowWidth - 7 - filesLength, Console.WindowHeight - 2);
-            Console.Write($"{filteredFiles.Count} / {Files.files.Count}");
+            Console.Write($"{filteredFiles.Count} / {this.files.Count}");
             Console.SetCursorPosition(Finder.match.Length + 1, Console.WindowHeight - 2);
         }
 
-        public static void SelectFile(ConsoleKeyInfo ch, List<string> files)
+        public void SelectFile(ConsoleKeyInfo ch, List<string> files)
         {
             int top = Console.CursorTop;
             if (ch.Key == ConsoleKey.UpArrow)
@@ -61,7 +67,7 @@ namespace TextEditor
             }
         }
 
-        private static void RemoveChar()
+        private void RemoveChar()
         {
             if (Finder.match.Length > 0)
             {
@@ -80,7 +86,7 @@ namespace TextEditor
             }
         }
 
-        public static void SearchFile(ConsoleKeyInfo ch)
+        public void SearchFile(ConsoleKeyInfo ch)
         {
             if (ch.Key == ConsoleKey.Backspace)
             {
@@ -112,7 +118,7 @@ namespace TextEditor
             UpdateFiles(ch);
         }
 
-        private static void UpdateFiles(ConsoleKeyInfo ch)
+        private void UpdateFiles(ConsoleKeyInfo ch)
         {
             Finder.match += ch.KeyChar.ToString();
             filteredFiles = FilterFiles();
@@ -121,7 +127,7 @@ namespace TextEditor
             Finder.endIndex = Math.Min(Console.WindowHeight - 6, filteredFiles.Count);
         }
 
-        public static void RefreshFiles()
+        public void RefreshFiles()
         {
             Console.SetCursorPosition(1, Console.WindowHeight - 6);
             for (int i = 0; i < Console.WindowHeight - 6; i++)
@@ -134,7 +140,7 @@ namespace TextEditor
             PrintFiles(filteredFiles.Select(f => Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(f))).ToArray());
         }
 
-        private static List<string> FilterFiles()
+        private List<string> FilterFiles()
         {
             List<string> caseInsensitiveFiles = files.Where(file => Finder.FuzzySearch(Finder.match,
             Path.GetRelativePath(Directory.GetCurrentDirectory(), Path.GetFullPath(file)))).ToList();

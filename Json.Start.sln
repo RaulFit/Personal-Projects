@@ -3,15 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Json", "Json.Validator\Json.csproj", "{B2614896-35B7-4BAC-A8F6-6AE23AE38333}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Json.Facts", "Json.Facts\Json.Facts.csproj", "{6229320D-ADEC-41E1-8474-74710774B871}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Football", "Football\Football.csproj", "{11E6A199-E124-43DC-B9AC-318F0701CB55}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Football.Facts", "Football.Facts\Football.Facts.csproj", "{3F371E66-A41B-4048-9FD9-C6D534E20FF5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONValidator", "JSONValidator\JSONValidator.csproj", "{00E85B1B-5E5A-44FC-B390-6181ED8F0F21}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "List", "List\List.csproj", "{095319A8-7096-4E9E-B0D5-9FF449D3E8B8}"
 EndProject
@@ -41,16 +37,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextEditor", "TextEditor\Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor.Facts", "TextEditor.Facts\TextEditor.Facts.csproj", "{B9E5B44D-A960-441C-8A1F-24EFE67034CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonValidator", "JsonValidator\JsonValidator.csproj", "{06E8B48D-B55B-4AAF-8ABD-AA5ACCDC5814}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B2614896-35B7-4BAC-A8F6-6AE23AE38333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2614896-35B7-4BAC-A8F6-6AE23AE38333}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B2614896-35B7-4BAC-A8F6-6AE23AE38333}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B2614896-35B7-4BAC-A8F6-6AE23AE38333}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6229320D-ADEC-41E1-8474-74710774B871}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6229320D-ADEC-41E1-8474-74710774B871}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6229320D-ADEC-41E1-8474-74710774B871}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -63,10 +57,6 @@ Global
 		{3F371E66-A41B-4048-9FD9-C6D534E20FF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F371E66-A41B-4048-9FD9-C6D534E20FF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F371E66-A41B-4048-9FD9-C6D534E20FF5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00E85B1B-5E5A-44FC-B390-6181ED8F0F21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00E85B1B-5E5A-44FC-B390-6181ED8F0F21}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00E85B1B-5E5A-44FC-B390-6181ED8F0F21}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00E85B1B-5E5A-44FC-B390-6181ED8F0F21}.Release|Any CPU.Build.0 = Release|Any CPU
 		{095319A8-7096-4E9E-B0D5-9FF449D3E8B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{095319A8-7096-4E9E-B0D5-9FF449D3E8B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{095319A8-7096-4E9E-B0D5-9FF449D3E8B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -123,6 +113,10 @@ Global
 		{B9E5B44D-A960-441C-8A1F-24EFE67034CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9E5B44D-A960-441C-8A1F-24EFE67034CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9E5B44D-A960-441C-8A1F-24EFE67034CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06E8B48D-B55B-4AAF-8ABD-AA5ACCDC5814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06E8B48D-B55B-4AAF-8ABD-AA5ACCDC5814}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06E8B48D-B55B-4AAF-8ABD-AA5ACCDC5814}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06E8B48D-B55B-4AAF-8ABD-AA5ACCDC5814}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

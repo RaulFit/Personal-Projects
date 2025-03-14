@@ -1,10 +1,10 @@
 ﻿using Json;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
-namespace Json
+namespace JsonValidator.MainProgram
 {
     class JSONValidator
     {
@@ -56,6 +56,3 @@ namespace Json
         }
     }
 }
-
-
-    

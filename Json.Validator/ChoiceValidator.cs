@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Choice : IPattern
+    public class ChoiceValidator : IPattern
     {
         private IPattern[] patterns;
 
-        public Choice(params IPattern[] patterns)
+        public ChoiceValidator(params IPattern[] patterns)
         {
             this.patterns = patterns;
         }
 
         public IMatch Match(string text)
         {
-            IMatch modifiedText = new Match(false, text, text);
+            IMatch modifiedText = new MatchValidator(false, text, text);
 
             foreach (var pattern in patterns)
             {

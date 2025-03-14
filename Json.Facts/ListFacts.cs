@@ -17,7 +17,7 @@ namespace Json.Facts
         [InlineData(null, null, true)]
         public void ListWorksWithDigitsAndComma(string input, string expected, bool ok)
         {
-            var a = new List(new Range('0', '9'), new Character(','));
+            var a = new ListValidator(new RangeValidator('0', '9'), new CharacterValidator(','));
             Assert.Equal(expected, a.Match(input).RemainingText());
             Assert.Equal(ok, a.Match(input).Success());
         }
@@ -28,10 +28,10 @@ namespace Json.Facts
         [InlineData("abc", "abc", true)]
         public void ListWorksWithAnyElementAndSeparator(string input, string expected, bool ok)
         {
-            var digits = new OneOrMore(new Range('0', '9'));
-            var whitespace = new Many(new Any(" \r\n\t"));
-            var separator = new Sequence(whitespace, new Character(';'), whitespace);
-            var list = new List(digits, separator);
+            var digits = new OneOrMoreValidator(new RangeValidator('0', '9'));
+            var whitespace = new ManyValidator(new AnyValidator(" \r\n\t"));
+            var separator = new SequenceValidator(whitespace, new CharacterValidator(';'), whitespace);
+            var list = new ListValidator(digits, separator);
             Assert.Equal(expected, list.Match(input).RemainingText());
             Assert.Equal(ok, list.Match(input).Success());
         }

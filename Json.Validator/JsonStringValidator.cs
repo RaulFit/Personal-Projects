@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 
 namespace Json
 {
-    public static class JsonString
+    public static class JsonStringValidator
     {
         const int LastControlCharacter = 31;
         const int Two = 2;

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Any : IPattern
+    public class AnyValidator : IPattern
     {
         private readonly string accepted;
 
-        public Any(string accepted)
+        public AnyValidator(string accepted)
         {
             this.accepted = accepted;
         }
@@ -18,10 +18,10 @@ namespace Json
         {
             if (string.IsNullOrEmpty(text) || !this.accepted.Contains(text[0]))
             {
-                return new Match(false, text, text);
+                return new MatchValidator(false, text, text);
             }
 
-            return new Match(true, text[1..], text[1..]);
+            return new MatchValidator(true, text[1..], text[1..]);
         }
     }
 }

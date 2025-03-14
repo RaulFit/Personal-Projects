@@ -19,14 +19,14 @@ namespace Json.Facts
         [InlineData(@"a\x", false)]
         public void AllStringFacts(string input, bool ok)
         {
-            var num = new String();
+            var num = new StringValidator();
             Assert.Equal(ok, num.Match(Quoted(input)).Success());
         }
 
         [Fact]
         public void StringCannotBeNull()
         {
-            var num = new String();
+            var num = new StringValidator();
             Assert.False(num.Match(null).Success());
         }
 

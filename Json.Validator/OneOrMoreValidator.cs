@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class OneOrMore : IPattern
+    public class OneOrMoreValidator : IPattern
     {
         private readonly IPattern pattern;
 
-        public OneOrMore(IPattern pattern)
+        public OneOrMoreValidator(IPattern pattern)
         {
-            this.pattern = new Sequence(pattern, new Many(pattern));
+            this.pattern = new SequenceValidator(pattern, new ManyValidator(pattern));
         }
 
         public IMatch Match(string text)

@@ -5,20 +5,20 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Number : IPattern
+    public class NumberValidator : IPattern
     {
         private readonly IPattern pattern;
 
-        public Number()
+        public NumberValidator()
         {
-            var minus = new Optional(new Character('-'));
-            var digit = new Range('0', '9');
-            var digits = new OneOrMore(digit);
-            var integer = new Sequence(minus, new Choice(new Character('0'), digits));
-            var sign = new Optional(new Any("+-"));
-            var exponent = new Optional(new Sequence(new Any("eE"), sign, digit));
-            var fraction = new Optional(new Sequence(new Character('.'), digits));
-            this.pattern = new Sequence(integer, fraction, exponent);
+            var minus = new OptionalValidator(new CharacterValidator('-'));
+            var digit = new RangeValidator('0', '9');
+            var digits = new OneOrMoreValidator(digit);
+            var integer = new SequenceValidator(minus, new ChoiceValidator(new CharacterValidator('0'), digits));
+            var sign = new OptionalValidator(new AnyValidator("+-"));
+            var exponent = new OptionalValidator(new SequenceValidator(new AnyValidator("eE"), sign, digit));
+            var fraction = new OptionalValidator(new SequenceValidator(new CharacterValidator('.'), digits));
+            this.pattern = new SequenceValidator(integer, fraction, exponent);
         }
 
         public IMatch Match(string text)

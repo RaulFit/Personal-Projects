@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Optional : IPattern
+    public class OptionalValidator : IPattern
     {
         private readonly IPattern pattern;
 
-        public Optional(IPattern pattern)
+        public OptionalValidator(IPattern pattern)
         {
             this.pattern = pattern;
         }
@@ -17,7 +17,7 @@ namespace Json
         public IMatch Match(string text)
         {
             var match = pattern.Match(text);
-            return new Match(true, match.RemainingText(), match.ModifiedText());
+            return new MatchValidator(true, match.RemainingText(), match.ModifiedText());
         }
     }
 }

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Text : IPattern
+    public class TextValidator : IPattern
     {
         private readonly string prefix;
 
-        public Text(string prefix)
+        public TextValidator(string prefix)
         {
             this.prefix = prefix;
         }
@@ -18,10 +18,10 @@ namespace Json
         {
             if (string.IsNullOrEmpty(text) || !text.StartsWith(prefix))
             {
-                return new Match(false, text, text);
+                return new MatchValidator(false, text, text);
             }
 
-            return new Match(true, text[prefix.Length..], text[prefix.Length..]);
+            return new MatchValidator(true, text[prefix.Length..], text[prefix.Length..]);
         }
     }
 }

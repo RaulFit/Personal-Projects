@@ -16,7 +16,7 @@ namespace Json.Facts
         [InlineData(null, null)]
         public void ManyWorksOnClassCharacter(string text, string result)
         {
-            var a = new Many(new Character('a'));
+            var a = new ManyValidator(new CharacterValidator('a'));
             Assert.Equal(result, a.Match(text).RemainingText());
             Assert.True(a.Match(text).Success());
         }
@@ -27,7 +27,7 @@ namespace Json.Facts
       
         public void ManyWorksOnClassRange(string text, string result)
         {
-            var digits = new Many(new Range('0', '9'));
+            var digits = new ManyValidator(new RangeValidator('0', '9'));
             Assert.Equal(result, digits.Match(text).RemainingText());
             Assert.True(digits.Match(text).Success());
         }

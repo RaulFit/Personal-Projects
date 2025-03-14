@@ -1,6 +1,6 @@
 ﻿
 using Xunit;
-using static Json.JsonNumber;
+using static Json.JsonNumberValidator;
 
 namespace Json.Facts
 {

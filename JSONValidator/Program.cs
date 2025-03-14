@@ -26,7 +26,7 @@ namespace Json
 
             string fileContent = File.ReadAllText(filePath);
 
-            var value = new Value();
+            var value = new ValueValidator();
 
             var validJson = value.Match(fileContent);
 

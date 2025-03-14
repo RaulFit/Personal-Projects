@@ -17,7 +17,7 @@ namespace Json.Facts
         
         public void ClassAnyWorksOnLetters(string constructorText, string matchText, string result)
         {
-            var any = new Any(constructorText);
+            var any = new AnyValidator(constructorText);
             Assert.Equal(result, any.Match(matchText).RemainingText());
         }
 
@@ -30,7 +30,7 @@ namespace Json.Facts
 
         public void ClassAnyWorksOnOperators(string constructorText, string matchText, string result)
         {
-            var any = new Any(constructorText);
+            var any = new AnyValidator(constructorText);
             Assert.Equal(result, any.Match(matchText).RemainingText());
         }
     }

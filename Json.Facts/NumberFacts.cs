@@ -22,7 +22,7 @@ namespace Json.Facts
         [InlineData("10.00000001", true)]
         public void AllNumberFacts(string number, bool isNumber)
         {
-            var num = new Number();
+            var num = new NumberValidator();
             Assert.Equal(isNumber, num.Match(number).Success());
         }
     }

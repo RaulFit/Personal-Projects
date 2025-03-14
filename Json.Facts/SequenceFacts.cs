@@ -16,7 +16,7 @@ namespace Json.Facts
         [InlineData(null, null)]
         public void SequenceWorksOnAnyString(string input, string expected)
         {
-            var ab = new Sequence(new Character('a'), new Character('b'));
+            var ab = new SequenceValidator(new CharacterValidator('a'), new CharacterValidator('b'));
             var match = ab.Match(input);
             Assert.Equal(expected, match.RemainingText());
         }
@@ -29,9 +29,9 @@ namespace Json.Facts
         [InlineData(null, null)]
         public void SequenceWorksWithEveryClass(string input, string expected)
         {
-            var hex = new Choice(new Range('0', '9'), new Range('a', 'f'), new Range('A', 'F'));
+            var hex = new ChoiceValidator(new RangeValidator('0', '9'), new RangeValidator('a', 'f'), new RangeValidator('A', 'F'));
 
-            var hexSeq = new Sequence(new Character('u'), new Sequence(hex,hex,hex,hex));
+            var hexSeq = new SequenceValidator(new CharacterValidator('u'), new SequenceValidator(hex,hex,hex,hex));
 
             var match = hexSeq.Match(input);
 

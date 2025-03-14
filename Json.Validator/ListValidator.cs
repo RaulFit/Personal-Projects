@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class List : IPattern
+    public class ListValidator : IPattern
     {
         private readonly IPattern pattern;
 
-        public List(IPattern element, IPattern separator)
+        public ListValidator(IPattern element, IPattern separator)
         {
-            var separatorElement = new Sequence(separator, element);
-            this.pattern = new Optional(new Sequence(element, new Many(separatorElement)));
+            var separatorElement = new SequenceValidator(separator, element);
+            this.pattern = new OptionalValidator(new SequenceValidator(element, new ManyValidator(separatorElement)));
         }
 
         public IMatch Match(string text)

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Json
 {
-    public static class JsonNumber
+    public static class JsonNumberValidator
     {
         const string Operators = "+-";
 

@@ -5,20 +5,20 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Value : IPattern
+    public class ValueValidator : IPattern
     {
         private readonly IPattern pattern;
 
-        public Value()
+        public ValueValidator()
         {
-            var ws = new Many(new Any(" \n\r\t"));
-            var value = new Choice(new String(), new Number(), new Text("true"), new Text("false"), new Text("null"));
-            var element = new Sequence(ws, value, ws);
-            var elements = new List(element, new Character(','));
-            var member = new Sequence(ws, new String(), ws, new Character(':'), element);
-            var members = new List(member, new Character(','));
-            var obj = new Sequence(new Character('{'), ws, members, ws, new Character('}'));
-            var array = new Sequence(new Character('['), ws, elements, ws, new Character(']'));
+            var ws = new ManyValidator(new AnyValidator(" \n\r\t"));
+            var value = new ChoiceValidator(new StringValidator(), new NumberValidator(), new TextValidator("true"), new TextValidator("false"), new TextValidator("null"));
+            var element = new SequenceValidator(ws, value, ws);
+            var elements = new ListValidator(element, new CharacterValidator(','));
+            var member = new SequenceValidator(ws, new StringValidator(), ws, new CharacterValidator(':'), element);
+            var members = new ListValidator(member, new CharacterValidator(','));
+            var obj = new SequenceValidator(new CharacterValidator('{'), ws, members, ws, new CharacterValidator('}'));
+            var array = new SequenceValidator(new CharacterValidator('['), ws, elements, ws, new CharacterValidator(']'));
             value.Add(array);
             value.Add(obj);
             this.pattern = element;

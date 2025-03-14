@@ -8,9 +8,9 @@ namespace Json.Facts
         [Fact]
         public void ChoiceWorksOnClassCharacter()
         {
-            var digit = new Choice(
-                new Character('0'),
-                new Range('1', '9')
+            var digit = new ChoiceValidator(
+                new CharacterValidator('0'),
+                new RangeValidator('1', '9')
          );
 
             Assert.True(digit.Match("012").Success());
@@ -19,9 +19,9 @@ namespace Json.Facts
         [Fact]
         public void ChoiceWorksOnClassRangeStart()
         {
-            var digit = new Choice(
-                new Character('0'),
-                new Range('1', '9')
+            var digit = new ChoiceValidator(
+                new CharacterValidator('0'),
+                new RangeValidator('1', '9')
          );
 
             Assert.True(digit.Match("12").Success());
@@ -30,9 +30,9 @@ namespace Json.Facts
         [Fact]
         public void ChoiceWorksOnClassRangeEnd()
         {
-            var digit = new Choice(
-                new Character('0'),
-                new Range('1', '9')
+            var digit = new ChoiceValidator(
+                new CharacterValidator('0'),
+                new RangeValidator('1', '9')
          );
 
             Assert.True(digit.Match("92").Success());
@@ -41,9 +41,9 @@ namespace Json.Facts
         [Fact]
         public void TextDoesNotMatchAnyChoiceParameters_ShouldReturnFalse()
         {
-            var digit = new Choice(
-                new Character('0'),
-                new Range('1', '9')
+            var digit = new ChoiceValidator(
+                new CharacterValidator('0'),
+                new RangeValidator('1', '9')
          );
 
             Assert.False(digit.Match("a9").Success());
@@ -52,9 +52,9 @@ namespace Json.Facts
         [Fact]
         public void ChoiceWorksOnAnEmptyString_ShouldReturnFalse()
         {
-            var digit = new Choice(
-                new Character('0'),
-                new Range('1', '9')
+            var digit = new ChoiceValidator(
+                new CharacterValidator('0'),
+                new RangeValidator('1', '9')
          );
 
             Assert.False(digit.Match("").Success());
@@ -63,9 +63,9 @@ namespace Json.Facts
         [Fact]
         public void ChoiceWorksOnNullString_ShouldReturnFalse()
         {
-            var digit = new Choice(
-                new Character('0'),
-                new Range('1', '9')
+            var digit = new ChoiceValidator(
+                new CharacterValidator('0'),
+                new RangeValidator('1', '9')
          );
 
             Assert.False(digit.Match(null).Success());
@@ -74,16 +74,16 @@ namespace Json.Facts
         [Fact]
         public void ChoiceCanHaveChoiceParameter()
         {
-            var digit = new Choice(
-                new Character('0'),
-                new Range('1', '9')
+            var digit = new ChoiceValidator(
+                new CharacterValidator('0'),
+                new RangeValidator('1', '9')
             );
 
-            var hex = new Choice(
+            var hex = new ChoiceValidator(
                 digit,
-                new Choice(
-                    new Range('a', 'f'),
-                    new Range('A', 'F')
+                new ChoiceValidator(
+                    new RangeValidator('a', 'f'),
+                    new RangeValidator('A', 'F')
                 )
             );
 
@@ -93,14 +93,14 @@ namespace Json.Facts
         [Fact]
         public void MethodAddWorksCorrectly()
         {
-            var c = new Choice(
-               new Character('0'),
-            new Character('a')
+            var c = new ChoiceValidator(
+               new CharacterValidator('0'),
+            new CharacterValidator('a')
         );
 
             Assert.Equal("ba", c.Match("ba").RemainingText());
 
-            c.Add(new Character('b'));
+            c.Add(new CharacterValidator('b'));
 
             Assert.Equal("a", c.Match("ba").RemainingText());
         }
@@ -108,8 +108,8 @@ namespace Json.Facts
         [Fact]
         public void ChoiceConsumesTheLongestPattern()
         {
-            var c = new Choice(new Sequence(new Character('a'), new Character('b'), new Character('c'), new Character('1'), new Character('6')), 
-                new Sequence(new Character('a'), new Character('b'), new Character('c'), new Character('1'), new Character('2'), new Character('3'), new Character('4')));
+            var c = new ChoiceValidator(new SequenceValidator(new CharacterValidator('a'), new CharacterValidator('b'), new CharacterValidator('c'), new CharacterValidator('1'), new CharacterValidator('6')), 
+                new SequenceValidator(new CharacterValidator('a'), new CharacterValidator('b'), new CharacterValidator('c'), new CharacterValidator('1'), new CharacterValidator('2'), new CharacterValidator('3'), new CharacterValidator('4')));
 
             string text = "abc123text";
 

@@ -6,24 +6,24 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Sequence : IPattern
+    public class SequenceValidator : IPattern
     {
         private readonly IPattern[] patterns;
 
-        public Sequence(params IPattern[] patterns)
+        public SequenceValidator(params IPattern[] patterns)
         {
             this.patterns = patterns;
         }
 
         public IMatch Match(string text)
         {
-            IMatch match = new Match(true, text, text);
+            IMatch match = new MatchValidator(true, text, text);
             foreach (var pattern in patterns)
             {
                 match = pattern.Match(match.ModifiedText());
                 if (!match.Success())
                 {
-                    return new Match(false, text, match.ModifiedText());
+                    return new MatchValidator(false, text, match.ModifiedText());
                 }
             }
 

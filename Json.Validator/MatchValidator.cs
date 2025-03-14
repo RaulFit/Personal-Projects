@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Json
 {
-    public class Match : IMatch
+    public class MatchValidator : IMatch
     {
         private readonly bool success;
         private readonly string remainingText;
         private readonly string modifiedText;
 
-        public Match(bool success, string remainingText, string modifiedText)
+        public MatchValidator(bool success, string remainingText, string modifiedText)
         {
             this.success = success;
             this.remainingText = remainingText;
